@@ -37,6 +37,7 @@
 - [Installation en local](#installation-en-local)
 - [Variables d'environnement](#variables-denvironnement)
 - [Tests](#tests)
+- [Application mobile](#application-mobile)
 - [Docker](#docker)
 - [Déploiement](#déploiement)
 - [Structure du projet](#structure-du-projet)
@@ -308,6 +309,16 @@ cd backend
 
 Les tests tournent sur H2 avec les **mêmes migrations Flyway** qu'en production, et Hibernate vérifie que le schéma correspond aux entités. Côté frontend, le code est vérifié par **oxlint** (`npm run lint`).
 
+## Application mobile
+
+Une application **Android / iOS** en **React Native (Expo)** est en cours de développement dans [`mobile/`](mobile/README.md). Elle utilise **la même API** que le site web (mêmes comptes et mêmes données) : connexion, inscription, compte de démonstration, session sécurisée et choix de la langue sont déjà disponibles.
+
+```bash
+cd mobile
+npm install
+npx expo start   # puis scanner le QR code avec Expo Go
+```
+
 ## Docker
 
 ```bash
@@ -364,6 +375,7 @@ DevManager/
 │       ├── i18n/                  Traductions français et anglais
 │       ├── pages/                 Pages (chargées à la demande)
 │       └── utils/                 Formatage (FCFA, dates selon la langue), couleurs, règles d'affichage
+├── mobile/                        Application mobile React Native (Expo)
 ├── docs/screenshots/              Captures d'écran
 ├── docker-compose.yml
 └── render.yaml
