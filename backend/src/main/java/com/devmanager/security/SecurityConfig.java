@@ -20,6 +20,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -31,6 +33,10 @@ public class SecurityConfig {
 
 	@Value("${app.frontend-url}")
 	private String frontendUrl;
+
+	// Origines supplementaires, separees par des virgules (ex. version web de l'application mobile en developpement)
+	@Value("${app.cors.extra-origins:}")
+	private String extraOrigins;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -69,7 +75,9 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(List.of(frontendUrl));
+		List<String> origins = new ArrayList<>(List.of(frontendUrl));
+		Arrays.stream(extraOrigins.split(",")).map(String::trim).filter(origin -> !origin.isEmpty()).forEach(origins::add);
+		config.setAllowedOrigins(origins);
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
