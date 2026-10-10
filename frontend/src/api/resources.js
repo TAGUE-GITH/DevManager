@@ -9,6 +9,7 @@ export const projectsApi = {
   update: (id, project) => api.put(`/projects/${id}`, project).then(data),
   updateStatus: (id, status) => api.patch(`/projects/${id}/status`, { status }).then(data),
   remove: (id) => api.delete(`/projects/${id}`),
+  meeting: (id) => api.get(`/projects/${id}/meeting`).then(data),
 }
 
 export const expensesApi = {

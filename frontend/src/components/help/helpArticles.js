@@ -52,6 +52,15 @@ export const HELP_CATEGORIES = [
         ],
       },
       {
+        id: 'reunion',
+        question: 'Comment lancer une réunion vidéo avec mon équipe ?',
+        answer: [
+          'Dans un projet, cliquez sur « Réunion ». La salle de réunion du projet s’ouvre dans l’application : vidéo, micro, discussion et partage d’écran, avec plusieurs participants.',
+          'Chaque projet a sa propre salle, réservée aux personnes qui y ont accès. Utilisez « Copier le lien » pour y inviter quelqu’un, ou « Ouvrir dans un onglet » si votre navigateur bloque la vidéo.',
+          'La visioconférence est fournie par Jitsi Meet : la première personne à ouvrir la salle peut devoir se connecter (Google, GitHub ou Facebook) pour la démarrer.',
+        ],
+      },
+      {
         id: 'mes-taches',
         question: 'Où voir les tâches qui me sont confiées ?',
         answer: [
