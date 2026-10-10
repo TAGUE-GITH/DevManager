@@ -17,7 +17,7 @@ const FILTERS = [{ value: 'ALL', label: 'Tous' }, ...Object.entries(PROJECT_STAT
 
 function ProjectCard({ project }) {
   return (
-    <Link to={`/projects/${project.id}`} className="group block">
+    <Link to={`/app/projects/${project.id}`} className="group block">
       <Card className="flex h-full flex-col p-5 transition group-hover:shadow-md group-hover:ring-indigo-200">
         <div className="flex items-start justify-between gap-3">
           <h3 className="font-semibold text-slate-900 group-hover:text-indigo-600">{project.name}</h3>
@@ -137,7 +137,7 @@ export default function ProjectsPage() {
         <ProjectFormModal
           open
           onClose={() => setFormOpen(false)}
-          onSaved={(project) => navigate(`/projects/${project.id}`)}
+          onSaved={(project) => navigate(`/app/projects/${project.id}`)}
         />
       )}
     </>

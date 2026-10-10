@@ -80,7 +80,7 @@ export default function DashboardPage() {
         <Card className="p-6 lg:col-span-2">
           <div className="flex items-center justify-between">
             <h2 className="font-semibold text-slate-900">Consommation des budgets</h2>
-            <Link to="/projects" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+            <Link to="/app/projects" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
               Voir tout
             </Link>
           </div>
@@ -94,7 +94,7 @@ export default function DashboardPage() {
                 <li key={project.id} className="py-4 first:pt-0 last:pb-0">
                   <div className="mb-2 flex items-center justify-between gap-3">
                     <Link
-                      to={`/projects/${project.id}`}
+                      to={`/app/projects/${project.id}`}
                       className="truncate text-sm font-medium text-slate-900 hover:text-indigo-600"
                     >
                       {project.name}

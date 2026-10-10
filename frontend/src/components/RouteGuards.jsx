@@ -23,14 +23,16 @@ export function ProtectedRoute() {
 // Pages de connexion/inscription : inutiles si l'utilisateur est deja connecte
 export function PublicOnlyRoute() {
   const { isAuthenticated, loading } = useAuth()
+  const location = useLocation()
 
   if (loading) return <FullPageLoader />
-  if (isAuthenticated) return <Navigate to="/" replace />
+  // Apres connexion : retour a la page demandee avant la redirection, sinon au tableau de bord
+  if (isAuthenticated) return <Navigate to={location.state?.from?.pathname ?? '/app'} replace />
   return <Outlet />
 }
 
 // Pages reservees aux administrateurs
 export function AdminRoute() {
   const { user } = useAuth()
-  return user.role === 'ADMIN' ? <Outlet /> : <Navigate to="/" replace />
+  return user.role === 'ADMIN' ? <Outlet /> : <Navigate to="/app" replace />
 }

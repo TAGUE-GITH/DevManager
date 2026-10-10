@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { getErrorMessage, getFieldErrors } from '../api/client'
 import AuthLayout from '../components/AuthLayout'
 import Alert from '../components/ui/Alert'
@@ -9,8 +9,6 @@ import { useAuth } from '../context/useAuth'
 
 export default function LoginPage() {
   const { login } = useAuth()
-  const navigate = useNavigate()
-  const location = useLocation()
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
@@ -24,9 +22,8 @@ export default function LoginPage() {
     setFieldErrors({})
     setSubmitting(true)
     try {
+      // La redirection apres connexion est faite par PublicOnlyRoute
       await login(form)
-      // Retour a la page demandee avant la redirection vers la connexion
-      navigate(location.state?.from?.pathname ?? '/', { replace: true })
     } catch (err) {
       setError(getErrorMessage(err))
       setFieldErrors(getFieldErrors(err))
