@@ -51,6 +51,10 @@ public class Project {
 	@JoinColumn(name = "organization_id")
 	private Organization organization;
 
+	// Nom de la salle de reunion video (aleatoire, donc impossible a deviner)
+	@Column(length = 64)
+	private String meetingRoom;
+
 	@ManyToMany
 	@JoinTable(
 			name = "project_members",

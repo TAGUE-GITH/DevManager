@@ -4,7 +4,6 @@ import {
   Building2,
   CheckCircle2,
   FolderKanban,
-  KeyRound,
   LifeBuoy,
   Lock,
   Menu,
@@ -13,6 +12,7 @@ import {
   ShieldCheck,
   Smartphone,
   UserCog,
+  Video,
   Wallet,
   X,
 } from 'lucide-react'
@@ -71,8 +71,8 @@ const FEATURES = [
   { Icon: Wallet, title: 'Budgets', text: 'Dépenses par catégorie et reste à dépenser.' },
   { Icon: BarChart3, title: 'Graphiques', text: 'Tableau de bord visuel et accessible.' },
   { Icon: MessageSquare, title: 'Messagerie', text: 'Discussions internes centralisées.' },
-  { Icon: UserCog, title: 'Rôles', text: 'Administrateur, manager et employé.' },
-  { Icon: KeyRound, title: 'Invitations', text: 'Votre équipe rejoint l’espace par email.' },
+  { Icon: Video, title: 'Réunions vidéo', text: 'Appels de groupe et partage d’écran dans chaque projet.' },
+  { Icon: UserCog, title: 'Rôles et invitations', text: 'Administrateur, manager, employé, invités par email.' },
 ]
 
 const STEPS = [

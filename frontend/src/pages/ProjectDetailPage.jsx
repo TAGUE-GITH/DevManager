@@ -1,9 +1,10 @@
-import { ArrowLeft, ListTodo, Pencil, Plus, Receipt, Trash2, Wallet } from 'lucide-react'
+import { ArrowLeft, ListTodo, Pencil, Plus, Receipt, Trash2, Video, Wallet } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getErrorMessage } from '../api/client'
 import { expensesApi, projectsApi, tasksApi } from '../api/resources'
 import ExpenseFormModal from '../components/projects/ExpenseFormModal'
+import MeetingRoom from '../components/projects/MeetingRoom'
 import ProjectFormModal from '../components/projects/ProjectFormModal'
 import KanbanBoard from '../components/tasks/KanbanBoard'
 import TaskFormModal from '../components/tasks/TaskFormModal'
@@ -93,6 +94,9 @@ export default function ProjectDetailPage() {
   const [tab, setTab] = useState('tasks')
   // null : fenetre fermee ; {} : nouvelle tache ; { task } : tache existante
   const [taskModal, setTaskModal] = useState(null)
+  const [meetingOpen, setMeetingOpen] = useState(false)
+  // Fonction stable : la reunion ne doit pas se reconnecter a chaque rafraichissement de la page
+  const closeMeeting = useCallback(() => setMeetingOpen(false), [])
   const [editOpen, setEditOpen] = useState(false)
   const [expenseOpen, setExpenseOpen] = useState(false)
   const [deleteProjectOpen, setDeleteProjectOpen] = useState(false)
@@ -184,6 +188,10 @@ export default function ProjectDetailPage() {
           )}
         </div>
         <div className="flex shrink-0 flex-wrap items-end gap-3">
+          <Button onClick={() => setMeetingOpen(true)}>
+            <Video className="size-4" aria-hidden />
+            Réunion
+          </Button>
           {canChangeStatus(user, project) && (
             <Select
               label="Statut"
@@ -318,6 +326,7 @@ export default function ProjectDetailPage() {
         </>
       )}
 
+      {meetingOpen && <MeetingRoom projectId={project.id} onClose={closeMeeting} />}
       {taskModal && (
         <TaskFormModal
           project={project}
