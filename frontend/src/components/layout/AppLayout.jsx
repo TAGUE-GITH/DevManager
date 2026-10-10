@@ -1,4 +1,4 @@
-import { FolderKanban, LayoutDashboard, LogOut, Menu, MessageSquare, Users, X } from 'lucide-react'
+import { FolderKanban, LayoutDashboard, ListTodo, LogOut, Menu, MessageSquare, Users, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { messagesApi } from '../../api/resources'
@@ -12,6 +12,7 @@ function Navigation({ unread, isAdmin, onNavigate }) {
   const items = [
     { to: '/app', label: 'Tableau de bord', Icon: LayoutDashboard, end: true },
     { to: '/app/projects', label: 'Projets', Icon: FolderKanban },
+    { to: '/app/tasks', label: 'Mes tâches', Icon: ListTodo },
     { to: '/app/messages', label: 'Messagerie', Icon: MessageSquare, count: unread },
     ...(isAdmin ? [{ to: '/app/users', label: 'Équipe', Icon: Users }] : []),
   ]
@@ -131,7 +132,8 @@ export default function AppLayout() {
         </div>
       )}
 
-      <main className="flex-1 lg:pl-64">
+      {/* min-w-0 : autorise le contenu large (tableau Kanban) a defiler dans sa zone au lieu d'elargir la page */}
+      <main className="min-w-0 flex-1 lg:pl-64">
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
           <Outlet />
         </div>

@@ -39,3 +39,12 @@ export const invitationsApi = {
   create: (invitation) => api.post('/invitations', invitation).then(data),
   revoke: (id) => api.delete(`/invitations/${id}`),
 }
+
+export const tasksApi = {
+  list: (projectId) => api.get(`/projects/${projectId}/tasks`).then(data),
+  mine: () => api.get('/tasks/mine').then(data),
+  create: (projectId, task) => api.post(`/projects/${projectId}/tasks`, task).then(data),
+  update: (id, task) => api.put(`/tasks/${id}`, task).then(data),
+  move: (id, status, position) => api.patch(`/tasks/${id}/move`, { status, position }).then(data),
+  remove: (id) => api.delete(`/tasks/${id}`),
+}

@@ -1,10 +1,12 @@
-import { ArrowLeft, Pencil, Plus, Receipt, Trash2 } from 'lucide-react'
+import { ArrowLeft, ListTodo, Pencil, Plus, Receipt, Trash2, Wallet } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getErrorMessage } from '../api/client'
-import { expensesApi, projectsApi } from '../api/resources'
+import { expensesApi, projectsApi, tasksApi } from '../api/resources'
 import ExpenseFormModal from '../components/projects/ExpenseFormModal'
 import ProjectFormModal from '../components/projects/ProjectFormModal'
+import KanbanBoard from '../components/tasks/KanbanBoard'
+import TaskFormModal from '../components/tasks/TaskFormModal'
 import Alert from '../components/ui/Alert'
 import Avatar from '../components/ui/Avatar'
 import { StatusBadge } from '../components/ui/Badge'
@@ -20,7 +22,9 @@ import {
   EXPENSE_CATEGORY,
   PROJECT_STATUS,
   canChangeStatus,
+  canEditTask,
   canManageProject,
+  canWorkOnTasks,
   formatCurrency,
   formatDate,
   fullName,
@@ -80,9 +84,15 @@ export default function ProjectDetailPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
 
-  const loadProject = useCallback(() => Promise.all([projectsApi.get(id), expensesApi.list(id)]), [id])
+  const loadProject = useCallback(
+    () => Promise.all([projectsApi.get(id), expensesApi.list(id), tasksApi.list(id)]),
+    [id],
+  )
   const { data, loading, error, reload } = useFetch(loadProject)
 
+  const [tab, setTab] = useState('tasks')
+  // null : fenetre fermee ; {} : nouvelle tache ; { task } : tache existante
+  const [taskModal, setTaskModal] = useState(null)
   const [editOpen, setEditOpen] = useState(false)
   const [expenseOpen, setExpenseOpen] = useState(false)
   const [deleteProjectOpen, setDeleteProjectOpen] = useState(false)
@@ -92,8 +102,20 @@ export default function ProjectDetailPage() {
   if (loading) return <PageLoader />
   if (error) return <ErrorState message={error} />
 
-  const [project, expenses] = data
+  const [project, expenses, tasks] = data
   const canManage = canManageProject(user, project)
+  const canWork = canWorkOnTasks(user, project)
+  const progress = project.taskCount ? Math.round((project.completedTaskCount / project.taskCount) * 100) : 0
+
+  // Le tableau est deja a jour a l'ecran ; en cas d'erreur, on recharge l'etat du serveur
+  const moveTask = (taskId, status, position) =>
+    tasksApi
+      .move(taskId, status, position)
+      .then(reload)
+      .catch((err) => {
+        setActionError(getErrorMessage(err))
+        reload()
+      })
 
   const runAction = async (action) => {
     setActionError('')
@@ -143,6 +165,23 @@ export default function ProjectDetailPage() {
               Du {formatDate(project.startDate)} au {formatDate(project.endDate)}
             </p>
           )}
+          {project.taskCount > 0 && (
+            <div className="mt-4 flex max-w-sm items-center gap-3">
+              <div
+                className="h-2 flex-1 overflow-hidden rounded-full bg-slate-200"
+                role="progressbar"
+                aria-valuenow={progress}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Avancement des tâches"
+              >
+                <div className="h-full rounded-full bg-emerald-500" style={{ width: `${progress}%` }} />
+              </div>
+              <span className="text-xs whitespace-nowrap text-slate-600">
+                {project.completedTaskCount}/{project.taskCount} tâches terminées
+              </span>
+            </div>
+          )}
         </div>
         <div className="flex shrink-0 flex-wrap items-end gap-3">
           {canChangeStatus(user, project) && (
@@ -174,67 +213,124 @@ export default function ProjectDetailPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <BudgetSummary project={project} />
-        </div>
-        <Team project={project} />
+      <div className="mb-6 flex w-fit gap-1 rounded-lg bg-slate-100 p-1" role="tablist" aria-label="Sections du projet">
+        {[
+          { value: 'tasks', label: `Tâches (${tasks.length})`, Icon: ListTodo },
+          { value: 'budget', label: 'Budget et équipe', Icon: Wallet },
+        ].map(({ value, label, Icon }) => (
+          <button
+            key={value}
+            role="tab"
+            aria-selected={tab === value}
+            onClick={() => setTab(value)}
+            className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition ${
+              tab === value ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Icon className="size-4" aria-hidden />
+            {label}
+          </button>
+        ))}
       </div>
 
-      <Card className="mt-6">
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-          <h2 className="font-semibold text-slate-900">Dépenses</h2>
-          {canManage && (
-            <Button onClick={() => setExpenseOpen(true)}>
-              <Plus className="size-4" aria-hidden />
-              Ajouter
-            </Button>
+      {tab === 'tasks' && (
+        <>
+          {canWork && (
+            <div className="mb-4 flex justify-end">
+              <Button onClick={() => setTaskModal({})}>
+                <Plus className="size-4" aria-hidden />
+                Nouvelle tâche
+              </Button>
+            </div>
           )}
-        </div>
-        {expenses.length === 0 ? (
-          <div className="p-6">
-            <EmptyState icon={Receipt} title="Aucune dépense enregistrée" />
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 text-xs font-medium text-slate-500 uppercase">
-                <tr>
-                  <th scope="col" className="px-6 py-3">Libellé</th>
-                  <th scope="col" className="px-6 py-3">Catégorie</th>
-                  <th scope="col" className="px-6 py-3">Date</th>
-                  <th scope="col" className="px-6 py-3 text-right">Montant</th>
-                  {canManage && <th scope="col" className="w-12 px-6 py-3"><span className="sr-only">Actions</span></th>}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {expenses.map((expense) => (
-                  <tr key={expense.id} className="hover:bg-slate-50">
-                    <td className="px-6 py-3.5 font-medium text-slate-900">{expense.label}</td>
-                    <td className="px-6 py-3.5 text-slate-600">{EXPENSE_CATEGORY[expense.category]}</td>
-                    <td className="px-6 py-3.5 whitespace-nowrap text-slate-600">{formatDate(expense.date)}</td>
-                    <td className="px-6 py-3.5 text-right font-medium whitespace-nowrap text-slate-900 tabular-nums">
-                      {formatCurrency(expense.amount)}
-                    </td>
-                    {canManage && (
-                      <td className="px-6 py-3.5 text-right">
-                        <button
-                          onClick={() => setExpenseToDelete(expense)}
-                          className="rounded-md p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
-                          aria-label={`Supprimer la dépense ${expense.label}`}
-                        >
-                          <Trash2 className="size-4" />
-                        </button>
-                      </td>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Card>
+          <KanbanBoard
+            tasks={tasks}
+            canEdit={canWork}
+            onOpen={(task) => setTaskModal({ task })}
+            onAdd={() => setTaskModal({})}
+            onMove={moveTask}
+          />
+        </>
+      )}
 
+      {tab === 'budget' && (
+        <>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <BudgetSummary project={project} />
+            </div>
+            <Team project={project} />
+          </div>
+
+          <Card className="mt-6">
+            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+              <h2 className="font-semibold text-slate-900">Dépenses</h2>
+              {canManage && (
+                <Button onClick={() => setExpenseOpen(true)}>
+                  <Plus className="size-4" aria-hidden />
+                  Ajouter
+                </Button>
+              )}
+            </div>
+            {expenses.length === 0 ? (
+              <div className="p-6">
+                <EmptyState icon={Receipt} title="Aucune dépense enregistrée" />
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-slate-50 text-xs font-medium text-slate-500 uppercase">
+                    <tr>
+                      <th scope="col" className="px-6 py-3">Libellé</th>
+                      <th scope="col" className="px-6 py-3">Catégorie</th>
+                      <th scope="col" className="px-6 py-3">Date</th>
+                      <th scope="col" className="px-6 py-3 text-right">Montant</th>
+                      {canManage && <th scope="col" className="w-12 px-6 py-3"><span className="sr-only">Actions</span></th>}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {expenses.map((expense) => (
+                      <tr key={expense.id} className="hover:bg-slate-50">
+                        <td className="px-6 py-3.5 font-medium text-slate-900">{expense.label}</td>
+                        <td className="px-6 py-3.5 text-slate-600">{EXPENSE_CATEGORY[expense.category]}</td>
+                        <td className="px-6 py-3.5 whitespace-nowrap text-slate-600">{formatDate(expense.date)}</td>
+                        <td className="px-6 py-3.5 text-right font-medium whitespace-nowrap text-slate-900 tabular-nums">
+                          {formatCurrency(expense.amount)}
+                        </td>
+                        {canManage && (
+                          <td className="px-6 py-3.5 text-right">
+                            <button
+                              onClick={() => setExpenseToDelete(expense)}
+                              className="rounded-md p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
+                              aria-label={`Supprimer la dépense ${expense.label}`}
+                            >
+                              <Trash2 className="size-4" />
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Card>
+        </>
+      )}
+
+      {taskModal && (
+        <TaskFormModal
+          project={project}
+          task={taskModal.task}
+          canEdit={!taskModal.task || canEditTask(user, taskModal.task, project)}
+          canMove={canWork}
+          onClose={() => setTaskModal(null)}
+          onSaved={() => {
+            setTaskModal(null)
+            reload()
+          }}
+        />
+      )}
       {editOpen && (
         <ProjectFormModal
           open
@@ -259,7 +355,7 @@ export default function ProjectDetailPage() {
       <ConfirmDialog
         open={deleteProjectOpen}
         title="Supprimer le projet ?"
-        message={`Le projet « ${project.name} » et toutes ses dépenses seront définitivement supprimés.`}
+        message={`Le projet « ${project.name} », ses tâches et ses dépenses seront définitivement supprimés.`}
         onConfirm={deleteProject}
         onClose={() => setDeleteProjectOpen(false)}
       />

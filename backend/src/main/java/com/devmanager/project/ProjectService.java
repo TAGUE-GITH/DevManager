@@ -4,6 +4,8 @@ import com.devmanager.budget.ExpenseRepository;
 import com.devmanager.common.ApiException;
 import com.devmanager.project.ProjectDtos.ProjectRequest;
 import com.devmanager.project.ProjectDtos.ProjectResponse;
+import com.devmanager.task.TaskRepository;
+import com.devmanager.task.TaskStatus;
 import com.devmanager.user.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ public class ProjectService {
 
 	private final ProjectRepository projectRepository;
 	private final ExpenseRepository expenseRepository;
+	private final TaskRepository taskRepository;
 	private final UserRepository userRepository;
 	private final CurrentUser currentUser;
 
@@ -63,7 +66,7 @@ public class ProjectService {
 	public ProjectResponse updateStatus(Long id, ProjectStatus status) {
 		User user = currentUser.get();
 		Project project = getVisibleProject(id);
-		if (!canManage(user, project) && !isMember(user, project)) {
+		if (!isParticipant(user, project)) {
 			throw ApiException.forbidden("Seuls les membres du projet peuvent changer son statut");
 		}
 		project.setStatus(status);
@@ -74,6 +77,7 @@ public class ProjectService {
 	public void delete(Long id) {
 		Project project = getManageableProject(id);
 		expenseRepository.deleteByProjectId(project.getId());
+		taskRepository.deleteByProjectId(project.getId());
 		projectRepository.delete(project);
 	}
 
@@ -142,7 +146,9 @@ public class ProjectService {
 				project.getStartDate(),
 				project.getEndDate(),
 				UserResponse.from(project.getOwner()),
-				members);
+				members,
+				taskRepository.countByProjectId(project.getId()),
+				taskRepository.countByProjectIdAndStatus(project.getId(), TaskStatus.DONE));
 	}
 
 	// Pourcentage du budget deja depense (peut depasser 100 en cas de depassement)
@@ -161,8 +167,18 @@ public class ProjectService {
 		return user.getRole() == Role.ADMIN || user.getRole() == Role.MANAGER;
 	}
 
-	private boolean canManage(User user, Project project) {
+	// Participants : administrateurs, responsable et membres du projet (ils travaillent sur ses taches)
+	public boolean isParticipant(User user, Project project) {
+		return canManage(user, project) || isMember(user, project);
+	}
+
+	public boolean canManage(User user, Project project) {
 		return user.getRole() == Role.ADMIN || isOwner(user, project);
+	}
+
+	// Equipe du projet : son responsable et ses membres (les seuls a qui l'on peut confier une tache)
+	public boolean isOnTeam(User user, Project project) {
+		return isOwner(user, project) || isMember(user, project);
 	}
 
 	private boolean isOwner(User user, Project project) {

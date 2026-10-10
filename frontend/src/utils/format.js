@@ -42,3 +42,26 @@ export const canCreateProject = (user) => user.role === 'ADMIN' || user.role ===
 export const canManageProject = (user, project) => user.role === 'ADMIN' || project.owner.id === user.id
 export const canChangeStatus = (user, project) =>
   canManageProject(user, project) || project.members.some((member) => member.id === user.id)
+
+// Colonnes du tableau Kanban, dans l'ordre d'affichage
+export const TASK_STATUS = {
+  TODO: { label: 'À faire', dot: 'bg-slate-400' },
+  IN_PROGRESS: { label: 'En cours', dot: 'bg-indigo-500' },
+  REVIEW: { label: 'En revue', dot: 'bg-amber-500' },
+  DONE: { label: 'Terminé', dot: 'bg-emerald-500' },
+}
+
+export const TASK_PRIORITY = {
+  LOW: { label: 'Basse', badge: 'bg-slate-100 text-slate-600 ring-slate-200' },
+  MEDIUM: { label: 'Moyenne', badge: 'bg-sky-50 text-sky-700 ring-sky-200' },
+  HIGH: { label: 'Haute', badge: 'bg-red-50 text-red-700 ring-red-200' },
+}
+
+// Membres de l'equipe d'un projet : responsable + membres
+export const projectTeam = (project) => [project.owner, ...project.members]
+
+export const canWorkOnTasks = (user, project) =>
+  user.role === 'ADMIN' || projectTeam(project).some((member) => member.id === user.id)
+
+export const canEditTask = (user, task, project) =>
+  canManageProject(user, project) || task.createdBy.id === user.id

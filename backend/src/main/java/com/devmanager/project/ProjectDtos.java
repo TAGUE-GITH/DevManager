@@ -37,6 +37,8 @@ public final class ProjectDtos {
 			LocalDate startDate,
 			LocalDate endDate,
 			UserResponse owner,
-			List<UserResponse> members) {
+			List<UserResponse> members,
+			long taskCount,
+			long completedTaskCount) {
 	}
 }
