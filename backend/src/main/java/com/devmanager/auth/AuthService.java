@@ -2,6 +2,7 @@ package com.devmanager.auth;
 
 import com.devmanager.auth.dto.AuthDtos.*;
 import com.devmanager.common.ApiException;
+import com.devmanager.demo.DemoService;
 import com.devmanager.invitation.Invitation;
 import com.devmanager.invitation.InvitationService;
 import com.devmanager.mail.EmailService;
@@ -37,6 +38,7 @@ public class AuthService {
 	private final JwtService jwtService;
 	private final EmailService emailService;
 	private final OrganizationService organizationService;
+	private final DemoService demoService;
 
 	@Value("${app.frontend-url}")
 	private String frontendUrl;
@@ -69,6 +71,11 @@ public class AuthService {
 				invitation.getRole(), invitation.getOrganization());
 		invitation.setAccepted(true);
 		return toAuthResponse(user);
+	}
+
+	// Connexion en un clic a l'entreprise de demonstration (sans mot de passe)
+	public AuthResponse demoLogin() {
+		return toAuthResponse(demoService.getDemoUser());
 	}
 
 	public AuthResponse login(LoginRequest request) {

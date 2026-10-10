@@ -12,6 +12,7 @@ import {
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { Plus } from 'lucide-react'
 import { useRef, useState } from 'react'
+import { useTaskStatusColors } from '../../utils/chartColors'
 import { TASK_STATUS } from '../../utils/format'
 import TaskCard, { TaskCardContent } from './TaskCard'
 
@@ -29,7 +30,8 @@ function groupByStatus(tasks) {
 function Column({ status, tasks, canEdit, onOpen, onAdd }) {
   // La colonne entiere accepte les depots, meme vide
   const { setNodeRef, isOver } = useDroppable({ id: status })
-  const { label, color } = TASK_STATUS[status]
+  const { label } = TASK_STATUS[status]
+  const color = useTaskStatusColors()[status]
 
   return (
     <section className="flex w-72 shrink-0 flex-col rounded-xl bg-slate-100/80 p-3 xl:w-auto" aria-label={label}>

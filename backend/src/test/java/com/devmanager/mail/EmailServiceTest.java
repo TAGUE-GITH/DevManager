@@ -1,5 +1,6 @@
 package com.devmanager.mail;
 
+import com.devmanager.demo.DemoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -40,6 +41,13 @@ class EmailServiceTest {
 
 		assertThat(subject).isEqualTo("Alice Martin vous invite sur DevManager");
 		assertThat(html).contains("Martin SARL").contains("https://app/invitation?token=xyz");
+	}
+
+	@Test
+	void demoAddresses_neverReceiveEmails() {
+		emailService.sendInvitation("paul.etoga" + DemoService.EMAIL_DOMAIN, "Jean", "Kamga Services", "https://app/invitation");
+
+		assertThat(subject).isNull();
 	}
 
 	@Test

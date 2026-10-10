@@ -33,4 +33,8 @@ public class Organization {
 
 	// Fin de la periode payee en cours (offre Pro)
 	private LocalDateTime currentPeriodEnd;
+
+	// Entreprise de demonstration : donnees fictives, reinitialisees regulierement
+	@Builder.Default
+	private boolean demo = false;
 }

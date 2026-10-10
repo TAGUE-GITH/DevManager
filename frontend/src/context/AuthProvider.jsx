@@ -39,6 +39,8 @@ export function AuthProvider({ children }) {
     [saveSession],
   )
 
+  const loginDemo = useCallback(async () => saveSession(await authApi.demo()), [saveSession])
+
   const register = useCallback(
     async (data) => saveSession(await authApi.register(data)),
     [saveSession],
@@ -53,8 +55,8 @@ export function AuthProvider({ children }) {
   )
 
   const value = useMemo(
-    () => ({ user, loading, isAuthenticated: Boolean(user), login, register, acceptInvitation, refreshUser, logout }),
-    [user, loading, login, register, acceptInvitation, refreshUser, logout],
+    () => ({ user, loading, isAuthenticated: Boolean(user), login, loginDemo, register, acceptInvitation, refreshUser, logout }),
+    [user, loading, login, loginDemo, register, acceptInvitation, refreshUser, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

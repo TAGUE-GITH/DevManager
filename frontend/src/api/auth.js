@@ -6,6 +6,7 @@ export const authApi = {
   forgotPassword: (email) => api.post('/auth/forgot-password', { email }).then((res) => res.data),
   resetPassword: (token, newPassword) =>
     api.post('/auth/reset-password', { token, newPassword }).then((res) => res.data),
+  demo: () => api.post('/auth/demo').then((res) => res.data),
   me: () => api.get('/users/me').then((res) => res.data),
 }
 
