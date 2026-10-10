@@ -1,5 +1,6 @@
 package com.devmanager.organization;
 
+import com.devmanager.image.Image;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,4 +38,9 @@ public class Organization {
 	// Entreprise de demonstration : donnees fictives, reinitialisees regulierement
 	@Builder.Default
 	private boolean demo = false;
+
+	// Logo de l'entreprise (facultatif)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "logo_id")
+	private Image logo;
 }

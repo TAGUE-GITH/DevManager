@@ -54,4 +54,13 @@ export const organizationApi = {
   rename: (name) => api.put('/organization', { name }).then(data),
   subscribe: (method) => api.post('/organization/subscription', { method }).then(data),
   cancel: () => api.delete('/organization/subscription').then(data),
+  updateLogo: (dataUrl) => api.put('/organization/logo', { dataUrl }).then(data),
+  removeLogo: () => api.delete('/organization/logo').then(data),
+}
+
+export const profileApi = {
+  update: (profile) => api.put('/users/me', profile).then(data),
+  updateAvatar: (dataUrl) => api.put('/users/me/avatar', { dataUrl }).then(data),
+  removeAvatar: () => api.delete('/users/me/avatar').then(data),
+  changePassword: (passwords) => api.put('/users/me/password', passwords),
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -40,6 +41,8 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/auth/**", "/api/health").permitAll()
+						// Images (photos, logos) : publiques, mais a une adresse aleatoire impossible a deviner
+						.requestMatchers(HttpMethod.GET, "/api/images/*").permitAll()
 						// Page d'erreur interne de Spring : publique, sinon une erreur 400 ou 500 serait masquee en 401
 						// (et le frontend deconnecterait l'utilisateur a tort)
 						.requestMatchers("/error").permitAll()

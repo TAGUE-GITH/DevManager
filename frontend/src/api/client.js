@@ -50,3 +50,6 @@ export function getFieldErrors(error) {
 
 // 402 : limite de l'offre Gratuite atteinte
 export const isPlanLimitError = (error) => error.response?.status === 402
+
+// Adresse complete d'une image servie par l'API (ex. "/api/images/...")
+export const apiUrl = (path) => (path ? `${import.meta.env.VITE_API_URL ?? ''}${path}` : null)

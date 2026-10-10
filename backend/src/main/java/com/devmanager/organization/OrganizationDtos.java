@@ -18,6 +18,9 @@ public final class OrganizationDtos {
 			@Size(max = 150, message = "150 caractères maximum") String name) {
 	}
 
+	public record LogoRequest(@NotBlank(message = "L'image est obligatoire") String dataUrl) {
+	}
+
 	public record SubscribeRequest(@NotNull(message = "Le moyen de paiement est obligatoire") PaymentMethod method) {
 	}
 
@@ -34,7 +37,7 @@ public final class OrganizationDtos {
 		}
 	}
 
-	public record OrganizationResponse(Long id, String name, Plan plan, BigDecimal proMonthlyPrice,
+	public record OrganizationResponse(Long id, String name, String logoUrl, Plan plan, BigDecimal proMonthlyPrice,
 									   LocalDateTime currentPeriodEnd, Usage usage, List<PaymentResponse> payments) {
 	}
 }

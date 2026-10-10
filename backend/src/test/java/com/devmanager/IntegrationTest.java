@@ -2,6 +2,7 @@ package com.devmanager;
 
 import com.devmanager.auth.PasswordResetTokenRepository;
 import com.devmanager.budget.ExpenseRepository;
+import com.devmanager.image.ImageRepository;
 import com.devmanager.invitation.InvitationRepository;
 import com.devmanager.message.MessageRepository;
 import com.devmanager.organization.Organization;
@@ -65,6 +66,9 @@ public abstract class IntegrationTest {
 	protected PaymentRepository paymentRepository;
 
 	@Autowired
+	protected ImageRepository imageRepository;
+
+	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	// Entreprise dans laquelle createUser() ajoute les utilisateurs
@@ -81,6 +85,7 @@ public abstract class IntegrationTest {
 		userRepository.deleteAll();
 		paymentRepository.deleteAll();
 		organizationRepository.deleteAll();
+		imageRepository.deleteAll();
 
 		organization = organizationRepository.save(Organization.builder().name("Entreprise de test").build());
 	}
