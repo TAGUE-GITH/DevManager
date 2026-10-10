@@ -10,10 +10,10 @@ import Avatar from '../ui/Avatar'
 
 function Navigation({ unread, isAdmin, onNavigate }) {
   const items = [
-    { to: '/', label: 'Tableau de bord', Icon: LayoutDashboard, end: true },
-    { to: '/projects', label: 'Projets', Icon: FolderKanban },
-    { to: '/messages', label: 'Messagerie', Icon: MessageSquare, count: unread },
-    ...(isAdmin ? [{ to: '/users', label: 'Utilisateurs', Icon: Users }] : []),
+    { to: '/app', label: 'Tableau de bord', Icon: LayoutDashboard, end: true },
+    { to: '/app/projects', label: 'Projets', Icon: FolderKanban },
+    { to: '/app/messages', label: 'Messagerie', Icon: MessageSquare, count: unread },
+    ...(isAdmin ? [{ to: '/app/users', label: 'Utilisateurs', Icon: Users }] : []),
   ]
 
   return (
@@ -85,7 +85,7 @@ export default function AppLayout() {
       {/* Barre laterale (ordinateur) */}
       <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white p-4 lg:flex lg:fixed lg:inset-y-0">
         <div className="mb-8 px-2 pt-2">
-          <Logo />
+          <Logo to="/app" />
         </div>
         <div className="flex-1">
           <Navigation unread={unread} isAdmin={isAdmin} />
@@ -95,7 +95,7 @@ export default function AppLayout() {
 
       {/* Barre du haut (mobile) */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
-        <Logo />
+        <Logo to="/app" />
         <button
           onClick={() => setMobileOpen(true)}
           className="rounded-lg p-2 text-slate-600 hover:bg-slate-100"
@@ -111,7 +111,7 @@ export default function AppLayout() {
           <div className="absolute inset-0 bg-slate-900/50" onClick={() => setMobileOpen(false)} aria-hidden />
           <div className="absolute inset-y-0 left-0 flex w-72 flex-col bg-white p-4 shadow-xl">
             <div className="mb-8 flex items-center justify-between px-2 pt-2">
-              <Logo />
+              <Logo to="/app" />
               <button
                 onClick={() => setMobileOpen(false)}
                 className="rounded-lg p-1 text-slate-500 hover:bg-slate-100"

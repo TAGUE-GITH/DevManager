@@ -110,7 +110,7 @@ export default function ProjectDetailPage() {
   const deleteProject = async () => {
     try {
       await projectsApi.remove(project.id)
-      navigate('/projects', { replace: true })
+      navigate('/app/projects', { replace: true })
     } catch (err) {
       setDeleteProjectOpen(false)
       setActionError(getErrorMessage(err))
@@ -124,7 +124,7 @@ export default function ProjectDetailPage() {
 
   return (
     <>
-      <Link to="/projects" className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-900">
+      <Link to="/app/projects" className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-900">
         <ArrowLeft className="size-4" aria-hidden />
         Projets
       </Link>

@@ -34,7 +34,7 @@ export default function RegisterPage() {
     try {
       const { confirmPassword: _, ...data } = form
       await register(data)
-      navigate('/', { replace: true })
+      navigate('/app', { replace: true })
     } catch (err) {
       setError(getErrorMessage(err))
       setFieldErrors(getFieldErrors(err))
