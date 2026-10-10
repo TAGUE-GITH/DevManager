@@ -105,7 +105,7 @@ public class AuthService {
 	public void resetPassword(ResetPasswordRequest request) {
 		PasswordResetToken resetToken = resetTokenRepository.findByToken(request.token())
 				.filter(token -> !token.isUsed() && !token.isExpired())
-				.orElseThrow(() -> ApiException.badRequest("Lien de réinitialisation invalide ou expiré"));
+				.orElseThrow(() -> ApiException.badRequest("error.resetLink.invalid"));
 
 		User user = resetToken.getUser();
 		user.setPassword(passwordEncoder.encode(request.newPassword()));
@@ -114,7 +114,7 @@ public class AuthService {
 
 	private void ensureEmailAvailable(String email) {
 		if (userRepository.existsByEmail(email)) {
-			throw ApiException.conflict("Un compte existe déjà avec cet email");
+			throw ApiException.conflict("error.email.taken");
 		}
 	}
 

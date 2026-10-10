@@ -42,7 +42,7 @@ public class MessageService {
 		Message message = getMessage(id);
 		User user = currentUser.get();
 		if (!isSender(user, message) && !isRecipient(user, message)) {
-			throw ApiException.forbidden("Vous n'avez pas accès à ce message");
+			throw ApiException.forbidden("error.message.forbidden");
 		}
 		return MessageResponse.from(message);
 	}
@@ -51,11 +51,11 @@ public class MessageService {
 	public MessageResponse send(SendMessageRequest request) {
 		User sender = currentUser.get();
 		if (sender.getId().equals(request.recipientId())) {
-			throw ApiException.badRequest("Vous ne pouvez pas vous envoyer un message");
+			throw ApiException.badRequest("error.message.self");
 		}
 		// Le destinataire doit appartenir a la meme entreprise
 		User recipient = userRepository.findByIdAndOrganizationId(request.recipientId(), sender.getOrganization().getId())
-				.orElseThrow(() -> ApiException.notFound("Destinataire introuvable"));
+				.orElseThrow(() -> ApiException.notFound("error.recipient.notFound"));
 
 		Message message = messageRepository.save(Message.builder()
 				.sender(sender)
@@ -70,7 +70,7 @@ public class MessageService {
 	public MessageResponse markAsRead(Long id) {
 		Message message = getMessage(id);
 		if (!isRecipient(currentUser.get(), message)) {
-			throw ApiException.forbidden("Seul le destinataire peut marquer ce message comme lu");
+			throw ApiException.forbidden("error.message.markRead");
 		}
 		message.setRead(true);
 		return MessageResponse.from(message);
@@ -78,7 +78,7 @@ public class MessageService {
 
 	private Message getMessage(Long id) {
 		return messageRepository.findById(id)
-				.orElseThrow(() -> ApiException.notFound("Message introuvable"));
+				.orElseThrow(() -> ApiException.notFound("error.message.notFound"));
 	}
 
 	private boolean isSender(User user, Message message) {

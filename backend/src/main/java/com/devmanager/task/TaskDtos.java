@@ -15,17 +15,17 @@ public final class TaskDtos {
 	}
 
 	public record TaskRequest(
-			@NotBlank(message = "Le titre est obligatoire") @Size(max = 200, message = "200 caractères maximum") String title,
-			@Size(max = 2000, message = "2000 caractères maximum") String description,
-			@NotNull(message = "La priorité est obligatoire") TaskPriority priority,
+			@NotBlank(message = "{validation.required}") @Size(max = 200, message = "{validation.size.max}") String title,
+			@Size(max = 2000, message = "{validation.size.max}") String description,
+			@NotNull(message = "{validation.required}") TaskPriority priority,
 			LocalDate dueDate,
 			Long assigneeId) {
 	}
 
 	// Deplacement d'une carte : nouvelle colonne et nouveau rang dans cette colonne
 	public record MoveRequest(
-			@NotNull(message = "Le statut est obligatoire") TaskStatus status,
-			@NotNull(message = "La position est obligatoire") @Min(value = 0, message = "Position invalide") Integer position) {
+			@NotNull(message = "{validation.required}") TaskStatus status,
+			@NotNull(message = "{validation.required}") @Min(value = 0, message = "{validation.position}") Integer position) {
 	}
 
 	public record TaskResponse(

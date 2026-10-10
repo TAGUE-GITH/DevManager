@@ -29,16 +29,16 @@ public class ImageService {
 	public Image save(String dataUrl) {
 		Matcher matcher = DATA_URL.matcher(dataUrl == null ? "" : dataUrl);
 		if (!matcher.matches() || !ALLOWED_TYPES.contains(matcher.group(1))) {
-			throw ApiException.badRequest("Format d'image non pris en charge (PNG, JPEG ou WebP)");
+			throw ApiException.badRequest("error.image.format");
 		}
 		String base64 = matcher.group(2);
 		if (base64.length() > MAX_BASE64_LENGTH) {
-			throw ApiException.badRequest("Image trop lourde (200 Ko maximum)");
+			throw ApiException.badRequest("error.image.tooLarge");
 		}
 		try {
 			Base64.getDecoder().decode(base64);
 		} catch (IllegalArgumentException e) {
-			throw ApiException.badRequest("Image invalide");
+			throw ApiException.badRequest("error.image.invalid");
 		}
 		return imageRepository.save(Image.builder()
 				.id(UUID.randomUUID().toString())

@@ -21,18 +21,18 @@ public class ProfileService {
 	private final PasswordEncoder passwordEncoder;
 
 	public record UpdateProfileRequest(
-			@NotBlank(message = "Le prénom est obligatoire") @Size(max = 100, message = "100 caractères maximum") String firstName,
-			@NotBlank(message = "Le nom est obligatoire") @Size(max = 100, message = "100 caractères maximum") String lastName,
-			@Size(max = 100, message = "100 caractères maximum") String jobTitle) {
+			@NotBlank(message = "{validation.required}") @Size(max = 100, message = "{validation.size.max}") String firstName,
+			@NotBlank(message = "{validation.required}") @Size(max = 100, message = "{validation.size.max}") String lastName,
+			@Size(max = 100, message = "{validation.size.max}") String jobTitle) {
 	}
 
-	public record ImageRequest(@NotBlank(message = "L'image est obligatoire") String dataUrl) {
+	public record ImageRequest(@NotBlank(message = "{validation.required}") String dataUrl) {
 	}
 
 	public record ChangePasswordRequest(
-			@NotBlank(message = "Le mot de passe actuel est obligatoire") String currentPassword,
-			@NotBlank(message = "Le nouveau mot de passe est obligatoire")
-			@Size(min = 8, message = "Le mot de passe doit contenir au moins 8 caractères") String newPassword) {
+			@NotBlank(message = "{validation.required}") String currentPassword,
+			@NotBlank(message = "{validation.required}")
+			@Size(min = 8, message = "{validation.password.size}") String newPassword) {
 	}
 
 	public UserResponse update(UpdateProfileRequest request) {
@@ -45,7 +45,7 @@ public class ProfileService {
 
 	public UserResponse updateAvatar(ImageRequest request) {
 		User user = currentUser.get();
-		ensureNotDemo(user, "Les photos de profil sont désactivées dans le compte de démonstration.");
+		ensureNotDemo(user, "error.demo.avatar");
 		Image previous = user.getAvatar();
 		user.setAvatar(imageService.save(request.dataUrl()));
 		imageService.delete(previous);
@@ -62,9 +62,9 @@ public class ProfileService {
 
 	public void changePassword(ChangePasswordRequest request) {
 		User user = currentUser.get();
-		ensureNotDemo(user, "Le mot de passe du compte de démonstration ne peut pas être modifié.");
+		ensureNotDemo(user, "error.demo.password");
 		if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
-			throw ApiException.badRequest("Le mot de passe actuel est incorrect");
+			throw ApiException.badRequest("error.password.current");
 		}
 		user.setPassword(passwordEncoder.encode(request.newPassword()));
 	}

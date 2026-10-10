@@ -13,9 +13,9 @@ public final class MessageDtos {
 	}
 
 	public record SendMessageRequest(
-			@NotNull(message = "Le destinataire est obligatoire") Long recipientId,
-			@NotBlank(message = "Le sujet est obligatoire") @Size(max = 200, message = "200 caractères maximum") String subject,
-			@NotBlank(message = "Le message est obligatoire") @Size(max = 5000, message = "5000 caractères maximum") String content) {
+			@NotNull(message = "{validation.required}") Long recipientId,
+			@NotBlank(message = "{validation.required}") @Size(max = 200, message = "{validation.size.max}") String subject,
+			@NotBlank(message = "{validation.required}") @Size(max = 5000, message = "{validation.size.max}") String content) {
 	}
 
 	public record MessageResponse(Long id, UserResponse sender, UserResponse recipient, String subject,

@@ -17,6 +17,6 @@ public class CurrentUser {
 	public User get() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return userRepository.findByEmail(authentication.getName())
-				.orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Utilisateur non authentifié"));
+				.orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "error.unauthenticated"));
 	}
 }

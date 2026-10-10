@@ -28,7 +28,7 @@ class SubscriptionTest extends IntegrationTest {
 		}
 		createProject("Projet 4")
 				.andExpect(status().isPaymentRequired())
-				.andExpect(jsonPath("$.message").value(startsWith("L'offre Gratuite est limitée à 3 projets")));
+				.andExpect(jsonPath("$.message").value(startsWith("L’offre Gratuite est limitée à 3 projets")));
 
 		perform(post("/api/organization/subscription"), adminToken, "{\"method\":\"MOBILE_MONEY\"}")
 				.andExpect(status().isOk())

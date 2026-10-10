@@ -20,7 +20,7 @@ public class UserController {
 	private final CurrentUser currentUser;
 	private final ProfileService profileService;
 
-	public record UpdateRoleRequest(@NotNull(message = "Le rôle est obligatoire") Role role) {
+	public record UpdateRoleRequest(@NotNull(message = "{validation.required}") Role role) {
 	}
 
 	// Profil de l'utilisateur connecte (identifie grace a son jeton JWT)
@@ -63,10 +63,10 @@ public class UserController {
 	@Transactional
 	public UserResponse updateRole(@PathVariable Long id, @Valid @RequestBody UpdateRoleRequest request) {
 		User user = userRepository.findByIdAndOrganizationId(id, organizationId())
-				.orElseThrow(() -> ApiException.notFound("Utilisateur introuvable"));
+				.orElseThrow(() -> ApiException.notFound("error.user.notFound"));
 		// Empeche l'administrateur de se retirer ses propres droits par erreur
 		if (user.getId().equals(currentUser.get().getId())) {
-			throw ApiException.badRequest("Vous ne pouvez pas modifier votre propre rôle");
+			throw ApiException.badRequest("error.role.self");
 		}
 		user.setRole(request.role());
 		return UserResponse.from(user);
