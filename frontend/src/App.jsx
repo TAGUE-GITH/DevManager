@@ -1,10 +1,15 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { ProtectedRoute, PublicOnlyRoute } from './components/RouteGuards'
+import AppLayout from './components/layout/AppLayout'
+import { AdminRoute, ProtectedRoute, PublicOnlyRoute } from './components/RouteGuards'
 import DashboardPage from './pages/DashboardPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import LoginPage from './pages/LoginPage'
+import MessagesPage from './pages/MessagesPage'
+import ProjectDetailPage from './pages/ProjectDetailPage'
+import ProjectsPage from './pages/ProjectsPage'
 import RegisterPage from './pages/RegisterPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
+import UsersPage from './pages/UsersPage'
 
 export default function App() {
   return (
@@ -19,7 +24,15 @@ export default function App() {
       <Route path="/reset-password" element={<ResetPasswordPage />} />
 
       <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<DashboardPage />} />
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/projects/:id" element={<ProjectDetailPage />} />
+          <Route path="/messages" element={<MessagesPage />} />
+          <Route element={<AdminRoute />}>
+            <Route path="/users" element={<UsersPage />} />
+          </Route>
+        </Route>
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
