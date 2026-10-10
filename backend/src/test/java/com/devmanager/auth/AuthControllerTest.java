@@ -1,14 +1,9 @@
 package com.devmanager.auth;
 
-import com.devmanager.user.UserRepository;
+import com.devmanager.IntegrationTest;
 import com.jayway.jsonpath.JsonPath;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -16,24 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class AuthControllerTest {
-
-	@Autowired
-	private MockMvc mockMvc;
-
-	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
-	private PasswordResetTokenRepository resetTokenRepository;
-
-	@BeforeEach
-	void cleanDatabase() {
-		resetTokenRepository.deleteAll();
-		userRepository.deleteAll();
-	}
+class AuthControllerTest extends IntegrationTest {
 
 	@Test
 	void register_createsAccount_andFirstUserIsAdmin() throws Exception {

@@ -25,14 +25,14 @@ public class AuthController {
 	}
 
 	@PostMapping("/forgot-password")
-	public MessageResponse forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+	public InfoResponse forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
 		authService.forgotPassword(request);
-		return new MessageResponse("Si un compte existe avec cet email, un lien de réinitialisation a été envoyé");
+		return new InfoResponse("Si un compte existe avec cet email, un lien de réinitialisation a été envoyé");
 	}
 
 	@PostMapping("/reset-password")
-	public MessageResponse resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+	public InfoResponse resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
 		authService.resetPassword(request);
-		return new MessageResponse("Mot de passe modifié avec succès");
+		return new InfoResponse("Mot de passe modifié avec succès");
 	}
 }
