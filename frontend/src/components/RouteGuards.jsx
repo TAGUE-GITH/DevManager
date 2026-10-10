@@ -28,3 +28,9 @@ export function PublicOnlyRoute() {
   if (isAuthenticated) return <Navigate to="/" replace />
   return <Outlet />
 }
+
+// Pages reservees aux administrateurs
+export function AdminRoute() {
+  const { user } = useAuth()
+  return user.role === 'ADMIN' ? <Outlet /> : <Navigate to="/" replace />
+}
