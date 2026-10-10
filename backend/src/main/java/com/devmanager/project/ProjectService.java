@@ -70,7 +70,7 @@ public class ProjectService {
 		User user = currentUser.get();
 		Project project = getVisibleProject(id);
 		if (!isParticipant(user, project)) {
-			throw ApiException.forbidden("Seuls les membres du projet peuvent changer son statut");
+			throw ApiException.forbidden("error.project.status");
 		}
 		project.setStatus(status);
 		return toResponse(project);
@@ -88,9 +88,9 @@ public class ProjectService {
 		User user = currentUser.get();
 		// Un projet d'une autre entreprise est introuvable, comme s'il n'existait pas
 		Project project = projectRepository.findByIdAndOrganizationId(id, organizationId(user))
-				.orElseThrow(() -> ApiException.notFound("Projet introuvable"));
+				.orElseThrow(() -> ApiException.notFound("error.project.notFound"));
 		if (!canSeeAll(user) && !isOwner(user, project) && !isMember(user, project)) {
-			throw ApiException.forbidden("Vous n'avez pas accès à ce projet");
+			throw ApiException.forbidden("error.project.forbidden");
 		}
 		return project;
 	}
@@ -98,7 +98,7 @@ public class ProjectService {
 	public Project getManageableProject(Long id) {
 		Project project = getVisibleProject(id);
 		if (!canManage(currentUser.get(), project)) {
-			throw ApiException.forbidden("Seul le responsable du projet ou un administrateur peut effectuer cette action");
+			throw ApiException.forbidden("error.project.manage");
 		}
 		return project;
 	}
@@ -106,7 +106,7 @@ public class ProjectService {
 	private void apply(Project project, ProjectRequest request, User user) {
 		if (request.startDate() != null && request.endDate() != null
 				&& request.endDate().isBefore(request.startDate())) {
-			throw ApiException.badRequest("La date de fin doit être après la date de début");
+			throw ApiException.badRequest("error.project.dates");
 		}
 		project.setName(request.name().trim());
 		project.setDescription(request.description());
@@ -125,7 +125,7 @@ public class ProjectService {
 				.filter(member -> member.getOrganization().getId().equals(organizationId))
 				.toList();
 		if (members.size() != memberIds.size()) {
-			throw ApiException.badRequest("Un ou plusieurs membres sont introuvables");
+			throw ApiException.badRequest("error.project.members");
 		}
 		return new HashSet<>(members);
 	}

@@ -3,6 +3,8 @@ package com.devmanager.auth;
 import com.devmanager.auth.dto.AuthDtos.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
 	private final AuthService authService;
+	private final MessageSource messageSource;
 
 	@PostMapping("/register")
 	@ResponseStatus(HttpStatus.CREATED)
@@ -38,12 +41,16 @@ public class AuthController {
 	@PostMapping("/forgot-password")
 	public InfoResponse forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
 		authService.forgotPassword(request);
-		return new InfoResponse("Si un compte existe avec cet email, un lien de réinitialisation a été envoyé");
+		return info("info.forgotPassword");
 	}
 
 	@PostMapping("/reset-password")
 	public InfoResponse resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
 		authService.resetPassword(request);
-		return new InfoResponse("Mot de passe modifié avec succès");
+		return info("info.passwordReset");
+	}
+
+	private InfoResponse info(String key) {
+		return new InfoResponse(messageSource.getMessage(key, null, LocaleContextHolder.getLocale()));
 	}
 }

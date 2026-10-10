@@ -51,7 +51,7 @@ public class OrganizationService {
 	public OrganizationResponse updateLogo(String dataUrl) {
 		Organization organization = currentOrganization();
 		if (organization.isDemo()) {
-			throw ApiException.forbidden("Le logo ne peut pas être modifié dans le compte de démonstration.");
+			throw ApiException.forbidden("error.demo.logo");
 		}
 		Image previous = organization.getLogo();
 		organization.setLogo(imageService.save(dataUrl));
@@ -104,8 +104,7 @@ public class OrganizationService {
 
 	public void checkCanCreateProject(Organization organization) {
 		if (!organization.getPlan().allowsProjects(projectRepository.countByOrganizationId(organization.getId()))) {
-			throw ApiException.paymentRequired("L'offre Gratuite est limitée à %d projets. Passez à l'offre Pro pour en créer davantage."
-					.formatted(organization.getPlan().getMaxProjects()));
+			throw ApiException.paymentRequired("error.plan.projects", organization.getPlan().getMaxProjects());
 		}
 	}
 
@@ -116,8 +115,7 @@ public class OrganizationService {
 			members += pendingInvitations(organization);
 		}
 		if (!organization.getPlan().allowsMembers(members)) {
-			throw ApiException.paymentRequired("L'offre Gratuite est limitée à %d membres. Passez à l'offre Pro pour agrandir votre équipe."
-					.formatted(organization.getPlan().getMaxMembers()));
+			throw ApiException.paymentRequired("error.plan.members", organization.getPlan().getMaxMembers());
 		}
 	}
 

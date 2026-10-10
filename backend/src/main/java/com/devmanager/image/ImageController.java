@@ -21,7 +21,7 @@ public class ImageController {
 
 	@GetMapping("/api/images/{id}")
 	public ResponseEntity<byte[]> get(@PathVariable String id) {
-		Image image = imageRepository.findById(id).orElseThrow(() -> ApiException.notFound("Image introuvable"));
+		Image image = imageRepository.findById(id).orElseThrow(() -> ApiException.notFound("error.image.notFound"));
 		// Une image n'est jamais modifiee (une nouvelle photo = un nouvel identifiant) : cache long
 		return ResponseEntity.ok()
 				.contentType(MediaType.parseMediaType(image.getContentType()))

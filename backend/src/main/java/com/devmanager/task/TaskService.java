@@ -54,7 +54,7 @@ public class TaskService {
 		User user = currentUser.get();
 		Project project = projectService.getVisibleProject(projectId);
 		if (!projectService.isParticipant(user, project)) {
-			throw ApiException.forbidden("Seuls les membres du projet peuvent ajouter des tâches");
+			throw ApiException.forbidden("error.task.create");
 		}
 
 		// Une nouvelle tache arrive en bas de la colonne "A faire"
@@ -81,7 +81,7 @@ public class TaskService {
 		Task task = getTask(id);
 		User user = currentUser.get();
 		if (!projectService.isParticipant(user, task.getProject())) {
-			throw ApiException.forbidden("Seuls les membres du projet peuvent déplacer les tâches");
+			throw ApiException.forbidden("error.task.move");
 		}
 
 		Long projectId = task.getProject().getId();
@@ -128,12 +128,12 @@ public class TaskService {
 		}
 		return userRepository.findByIdAndOrganizationId(assigneeId, project.getOrganization().getId())
 				.filter(user -> projectService.isOnTeam(user, project))
-				.orElseThrow(() -> ApiException.badRequest("La tâche doit être confiée à un membre du projet"));
+				.orElseThrow(() -> ApiException.badRequest("error.task.assignee"));
 	}
 
 	private Task getTask(Long id) {
 		Task task = taskRepository.findById(id)
-				.orElseThrow(() -> ApiException.notFound("Tâche introuvable"));
+				.orElseThrow(() -> ApiException.notFound("error.task.notFound"));
 		// Verifie que le projet est visible (meme entreprise, droits d'acces)
 		projectService.getVisibleProject(task.getProject().getId());
 		return task;
@@ -144,7 +144,7 @@ public class TaskService {
 		User user = currentUser.get();
 		boolean isAuthor = task.getCreatedBy().getId().equals(user.getId());
 		if (!isAuthor && !projectService.canManage(user, task.getProject())) {
-			throw ApiException.forbidden("Seuls l'auteur de la tâche et le responsable du projet peuvent la modifier");
+			throw ApiException.forbidden("error.task.edit");
 		}
 		return task;
 	}

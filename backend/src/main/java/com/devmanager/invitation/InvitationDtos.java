@@ -13,8 +13,8 @@ public final class InvitationDtos {
 	}
 
 	public record InvitationRequest(
-			@NotBlank(message = "L'email est obligatoire") @Email(message = "Email invalide") String email,
-			@NotNull(message = "Le rôle est obligatoire") Role role) {
+			@NotBlank(message = "{validation.required}") @Email(message = "{validation.email}") String email,
+			@NotNull(message = "{validation.required}") Role role) {
 	}
 
 	// Vue administrateur : le lien est inclus pour pouvoir le partager autrement que par email

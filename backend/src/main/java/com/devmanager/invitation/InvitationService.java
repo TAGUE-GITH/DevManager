@@ -40,12 +40,12 @@ public class InvitationService {
 		User admin = currentUser.get();
 		// Pas d'invitation depuis la demo : sinon n'importe quel visiteur pourrait envoyer des emails
 		if (admin.getOrganization().isDemo()) {
-			throw ApiException.forbidden("Les invitations sont désactivées dans le compte de démonstration. Créez votre propre espace pour inviter votre équipe.");
+			throw ApiException.forbidden("error.demo.invitations");
 		}
 		String email = request.email().trim().toLowerCase();
 
 		if (userRepository.existsByEmail(email)) {
-			throw ApiException.conflict("Un compte existe déjà avec cet email");
+			throw ApiException.conflict("error.email.taken");
 		}
 
 		// Une nouvelle invitation remplace celle encore en attente pour le meme email
@@ -82,7 +82,7 @@ public class InvitationService {
 	public void revoke(Long id) {
 		Invitation invitation = invitationRepository.findById(id)
 				.filter(i -> i.getOrganization().getId().equals(currentUser.get().getOrganization().getId()))
-				.orElseThrow(() -> ApiException.notFound("Invitation introuvable"));
+				.orElseThrow(() -> ApiException.notFound("error.invitation.notFound"));
 		invitationRepository.delete(invitation);
 	}
 
@@ -97,7 +97,7 @@ public class InvitationService {
 	public Invitation getPending(String token) {
 		return invitationRepository.findByToken(token)
 				.filter(Invitation::isPending)
-				.orElseThrow(() -> ApiException.badRequest("Invitation invalide ou expirée"));
+				.orElseThrow(() -> ApiException.badRequest("error.invitation.invalid"));
 	}
 
 	private InvitationResponse toResponse(Invitation invitation) {

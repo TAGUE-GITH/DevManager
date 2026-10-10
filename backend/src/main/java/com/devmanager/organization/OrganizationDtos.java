@@ -14,14 +14,14 @@ public final class OrganizationDtos {
 	}
 
 	public record UpdateOrganizationRequest(
-			@NotBlank(message = "Le nom de l'entreprise est obligatoire")
-			@Size(max = 150, message = "150 caractères maximum") String name) {
+			@NotBlank(message = "{validation.required}")
+			@Size(max = 150, message = "{validation.size.max}") String name) {
 	}
 
-	public record LogoRequest(@NotBlank(message = "L'image est obligatoire") String dataUrl) {
+	public record LogoRequest(@NotBlank(message = "{validation.required}") String dataUrl) {
 	}
 
-	public record SubscribeRequest(@NotNull(message = "Le moyen de paiement est obligatoire") PaymentMethod method) {
+	public record SubscribeRequest(@NotNull(message = "{validation.required}") PaymentMethod method) {
 	}
 
 	// Limites de l'offre (null = illimite) et utilisation actuelle

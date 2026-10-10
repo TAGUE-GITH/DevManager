@@ -14,10 +14,10 @@ public final class ExpenseDtos {
 	}
 
 	public record ExpenseRequest(
-			@NotBlank(message = "Le libellé est obligatoire") @Size(max = 150, message = "150 caractères maximum") String label,
-			@NotNull(message = "Le montant est obligatoire") @Positive(message = "Le montant doit être positif") BigDecimal amount,
-			@NotNull(message = "La catégorie est obligatoire") ExpenseCategory category,
-			@NotNull(message = "La date est obligatoire") LocalDate date) {
+			@NotBlank(message = "{validation.required}") @Size(max = 150, message = "{validation.size.max}") String label,
+			@NotNull(message = "{validation.required}") @Positive(message = "{validation.positive}") BigDecimal amount,
+			@NotNull(message = "{validation.required}") ExpenseCategory category,
+			@NotNull(message = "{validation.required}") LocalDate date) {
 	}
 
 	public record ExpenseResponse(Long id, String label, BigDecimal amount, ExpenseCategory category,

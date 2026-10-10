@@ -14,15 +14,15 @@ public final class ProjectDtos {
 	}
 
 	public record ProjectRequest(
-			@NotBlank(message = "Le nom est obligatoire") @Size(max = 150, message = "150 caractères maximum") String name,
-			@Size(max = 2000, message = "2000 caractères maximum") String description,
-			@NotNull(message = "Le budget est obligatoire") @PositiveOrZero(message = "Le budget doit être positif") BigDecimal budget,
+			@NotBlank(message = "{validation.required}") @Size(max = 150, message = "{validation.size.max}") String name,
+			@Size(max = 2000, message = "{validation.size.max}") String description,
+			@NotNull(message = "{validation.required}") @PositiveOrZero(message = "{validation.positive}") BigDecimal budget,
 			LocalDate startDate,
 			LocalDate endDate,
 			Set<Long> memberIds) {
 	}
 
-	public record StatusRequest(@NotNull(message = "Le statut est obligatoire") ProjectStatus status) {
+	public record StatusRequest(@NotNull(message = "{validation.required}") ProjectStatus status) {
 	}
 
 	public record ProjectResponse(

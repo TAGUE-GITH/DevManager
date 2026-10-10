@@ -1,9 +1,14 @@
 package com.devmanager.mail;
 
 import com.devmanager.demo.DemoService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,15 +27,27 @@ class EmailServiceTest {
 			html = htmlContent;
 			text = textContent;
 		};
-		emailService = new EmailService(fakeMailer);
+		ResourceBundleMessageSource messages = new ResourceBundleMessageSource();
+		messages.setBasename("messages");
+		messages.setDefaultEncoding("UTF-8");
+		messages.setFallbackToSystemLocale(false);
+
+		emailService = new EmailService(fakeMailer, messages);
 		ReflectionTestUtils.setField(emailService, "resetExpirationMinutes", 30L);
 		ReflectionTestUtils.setField(emailService, "invitationExpirationDays", 7L);
+		LocaleContextHolder.setLocale(Locale.FRENCH);
+	}
+
+	@AfterEach
+	void resetLocale() {
+		LocaleContextHolder.resetLocaleContext();
 	}
 
 	@Test
 	void passwordReset_containsLinkAndExpiration() {
 		emailService.sendPasswordReset("alice@devmanager.com", "Alice", "https://app/reset-password?token=abc");
 
+		assertThat(subject).isEqualTo("Réinitialisation de votre mot de passe DevManager");
 		assertThat(html).contains("https://app/reset-password?token=abc").contains("30 minutes");
 		assertThat(text).contains("Bonjour Alice");
 	}
@@ -40,7 +57,17 @@ class EmailServiceTest {
 		emailService.sendInvitation("bob@devmanager.com", "Alice Martin", "Martin SARL", "https://app/invitation?token=xyz");
 
 		assertThat(subject).isEqualTo("Alice Martin vous invite sur DevManager");
-		assertThat(html).contains("Martin SARL").contains("https://app/invitation?token=xyz");
+		assertThat(html).contains("<strong>Martin SARL</strong>").contains("https://app/invitation?token=xyz");
+	}
+
+	@Test
+	void emails_areWrittenInTheRequestLanguage() {
+		LocaleContextHolder.setLocale(Locale.ENGLISH);
+
+		emailService.sendInvitation("bob@devmanager.com", "Alice Martin", "Martin SARL", "https://app/invitation");
+
+		assertThat(subject).isEqualTo("Alice Martin invites you to DevManager");
+		assertThat(text).contains("Join the team").contains("valid for 7 days");
 	}
 
 	@Test

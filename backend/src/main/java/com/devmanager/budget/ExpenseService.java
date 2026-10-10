@@ -43,7 +43,7 @@ public class ExpenseService {
 	@Transactional
 	public void delete(Long expenseId) {
 		Expense expense = expenseRepository.findById(expenseId)
-				.orElseThrow(() -> ApiException.notFound("Dépense introuvable"));
+				.orElseThrow(() -> ApiException.notFound("error.expense.notFound"));
 		projectService.getManageableProject(expense.getProject().getId());
 		expenseRepository.delete(expense);
 	}

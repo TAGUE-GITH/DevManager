@@ -4,16 +4,22 @@ import com.devmanager.demo.DemoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
-// Construit le contenu des emails de l'application (texte + HTML) et les confie au Mailer
+/**
+ * Construit le contenu des emails (texte + HTML) et les confie au Mailer.
+ * Les textes viennent de messages.properties / messages_en.properties, dans la langue de la requete en cours.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailService {
 
 	private final Mailer mailer;
+	private final MessageSource messageSource;
 
 	@Value("${app.password-reset.expiration-minutes}")
 	private long resetExpirationMinutes;
@@ -22,43 +28,28 @@ public class EmailService {
 	private long invitationExpirationDays;
 
 	public void sendPasswordReset(String email, String firstName, String resetLink) {
-		String text = """
-				Bonjour %s,
+		String greetingText = message("email.reset.greeting", firstName);
+		String intro = message("email.reset.intro");
+		String button = message("email.reset.button");
+		String footnote = message("email.reset.footnote", resetExpirationMinutes);
 
-				Vous avez demandé à réinitialiser votre mot de passe DevManager.
-				Ouvrez ce lien pour choisir un nouveau mot de passe (valable %d minutes) :
-				%s
-
-				Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.
-				""".formatted(firstName, resetExpirationMinutes, resetLink);
-
-		String html = layout(
-				"Bonjour %s,".formatted(escape(firstName)),
-				"Vous avez demandé à réinitialiser votre mot de passe.",
-				resetLink, "Choisir un nouveau mot de passe",
-				"Ce lien est valable %d minutes et ne peut être utilisé qu'une seule fois. Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email."
-						.formatted(resetExpirationMinutes));
-
-		send(email, "Réinitialisation de votre mot de passe DevManager", html, text);
+		String text = "%s\n\n%s\n%s : %s\n\n%s".formatted(greetingText, intro, button, resetLink, footnote);
+		String html = layout(message("email.reset.greeting", escape(firstName)), escape(intro), resetLink, button, footnote);
+		send(email, message("email.reset.subject"), html, text);
 	}
 
 	public void sendInvitation(String email, String inviterName, String organizationName, String invitationLink) {
-		String text = """
-				Bonjour,
+		String greeting = message("email.invitation.greeting");
+		String button = message("email.invitation.button");
+		String footnote = message("email.invitation.footnote", invitationExpirationDays);
 
-				%s vous invite à rejoindre l'espace « %s » sur DevManager.
-				Ouvrez ce lien pour créer votre compte (valable %d jours) :
-				%s
-				""".formatted(inviterName, organizationName, invitationExpirationDays, invitationLink);
-
-		String html = layout(
-				"Bonjour,",
-				"<strong>%s</strong> vous invite à rejoindre l'espace <strong>%s</strong> sur DevManager."
-						.formatted(escape(inviterName), escape(organizationName)),
-				invitationLink, "Rejoindre l'équipe",
-				"Cette invitation est valable %d jours.".formatted(invitationExpirationDays));
-
-		send(email, "%s vous invite sur DevManager".formatted(inviterName), html, text);
+		String text = "%s\n\n%s\n%s : %s\n\n%s".formatted(greeting,
+				message("email.invitation.intro", inviterName, "« " + organizationName + " »"), button, invitationLink, footnote);
+		// Version HTML : noms echappes (saisis par les utilisateurs) et mis en gras
+		String introHtml = message("email.invitation.intro",
+				"<strong>" + escape(inviterName) + "</strong>", "<strong>" + escape(organizationName) + "</strong>");
+		String html = layout(greeting, introHtml, invitationLink, button, footnote);
+		send(email, message("email.invitation.subject", inviterName), html, text);
 	}
 
 	// Les comptes de demonstration ont des adresses fictives : on n'envoie jamais rien a ces adresses
@@ -68,6 +59,10 @@ public class EmailService {
 			return;
 		}
 		mailer.send(to, subject, html, text);
+	}
+
+	private String message(String key, Object... args) {
+		return messageSource.getMessage(key, args, LocaleContextHolder.getLocale());
 	}
 
 	// Les valeurs saisies par les utilisateurs (noms...) sont echappees pour eviter toute injection HTML
@@ -86,6 +81,6 @@ public class EmailService {
 				  </p>
 				  <p style="font-size:13px;color:#64748b">%s</p>
 				</div>
-				""".formatted(greeting, message, escape(link), buttonLabel, footnote);
+				""".formatted(greeting, message, escape(link), escape(buttonLabel), escape(footnote));
 	}
 }
