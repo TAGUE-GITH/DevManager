@@ -25,6 +25,11 @@ public class AuthController {
 		return authService.acceptInvitation(request);
 	}
 
+	@PostMapping("/demo")
+	public AuthResponse demoLogin() {
+		return authService.demoLogin();
+	}
+
 	@PostMapping("/login")
 	public AuthResponse login(@Valid @RequestBody LoginRequest request) {
 		return authService.login(request);

@@ -26,8 +26,8 @@ export default function Logo({ light = false, to = '/' }) {
   return (
     <Link to={to} className="flex items-center gap-2.5" aria-label="DevManager, accueil">
       <LogoMark />
-      <span className={`text-lg font-extrabold tracking-tight ${light ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
-        Dev<span className={light ? 'text-indigo-200' : 'text-indigo-600 dark:text-indigo-400'}>Manager</span>
+      <span className={`text-lg font-extrabold tracking-tight ${light ? 'text-on-accent' : 'text-slate-900'}`}>
+        Dev<span className={light ? 'text-on-accent-muted' : 'text-indigo-500'}>Manager</span>
       </span>
     </Link>
   )

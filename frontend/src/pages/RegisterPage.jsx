@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getErrorMessage, getFieldErrors } from '../api/client'
 import AuthLayout from '../components/AuthLayout'
+import DemoDivider from '../components/DemoDivider'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
@@ -116,6 +117,7 @@ export default function RegisterPage() {
           Créer mon espace
         </Button>
       </form>
+      <DemoDivider />
       <p className="mt-8 text-center text-sm text-slate-600">
         Déjà inscrit ?{' '}
         <Link to="/login" className="font-semibold text-indigo-600 hover:text-indigo-500">

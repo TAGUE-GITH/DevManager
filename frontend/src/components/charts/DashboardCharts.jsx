@@ -1,11 +1,9 @@
 import { AlertTriangle } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, LabelList, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { CHROME, SERIES } from '../../utils/chartColors'
+import { useChartColors, useTaskStatusColors } from '../../utils/chartColors'
 import { prefersReducedMotion } from '../../utils/motion'
 import { EXPENSE_CATEGORY, TASK_STATUS, formatCompact, formatCurrency, formatMonth } from '../../utils/format'
 import ChartCard from './ChartCard'
-
-const AXIS_TICK = { fill: CHROME.muted, fontSize: 12 }
 
 // Pas d'animation d'entree des barres si l'utilisateur a demande a reduire les animations
 const ANIMATE = !prefersReducedMotion()
@@ -27,10 +25,10 @@ function ChartTooltip({ active, payload, label, labelFormatter = (value) => valu
 }
 
 // Nom de projet sur une seule ligne, tronque si besoin (le nom complet reste dans l'infobulle et le tableau)
-function ProjectTick({ x, y, payload }) {
+function ProjectTick({ x, y, payload, color }) {
   const name = payload.value.length > 17 ? `${payload.value.slice(0, 16)}…` : payload.value
   return (
-    <text x={x - 8} y={y} dy={4} textAnchor="end" fill={CHROME.text} fontSize={12}>
+    <text x={x - 8} y={y} dy={4} textAnchor="end" fill={color} fontSize={12}>
       {name}
     </text>
   )
@@ -46,6 +44,8 @@ function NoData({ children }) {
 
 // Budget prevu et depenses des projets les plus importants (barres horizontales groupees)
 export function BudgetByProjectChart({ projects, className }) {
+  const { series, chrome } = useChartColors()
+  const tick = { fill: chrome.muted, fontSize: 12 }
   const data = [...projects]
     .sort((a, b) => b.budget - a.budget)
     .slice(0, 6)
@@ -66,23 +66,23 @@ export function BudgetByProjectChart({ projects, className }) {
       ) : (
         <ResponsiveContainer width="100%" height={70 + data.length * 52}>
           <BarChart data={data} layout="vertical" barGap={2} margin={{ top: 0, right: 48, bottom: 0, left: 0 }}>
-            <CartesianGrid horizontal={false} stroke={CHROME.grid} />
-            <XAxis type="number" tickFormatter={formatCompact} tick={AXIS_TICK} axisLine={false} tickLine={false} />
+            <CartesianGrid horizontal={false} stroke={chrome.grid} />
+            <XAxis type="number" tickFormatter={formatCompact} tick={tick} axisLine={false} tickLine={false} />
             <YAxis
               type="category"
               dataKey="name"
               width={150}
-              tick={<ProjectTick />}
-              axisLine={{ stroke: CHROME.axis }}
+              tick={<ProjectTick color={chrome.text} />}
+              axisLine={{ stroke: chrome.axis }}
               tickLine={false}
             />
-            <Tooltip content={<ChartTooltip />} cursor={{ fill: '#f1f5f9' }} />
+            <Tooltip content={<ChartTooltip />} cursor={{ fill: chrome.cursor }} />
             <Legend verticalAlign="top" align="left" iconType="square" iconSize={10} wrapperStyle={{ fontSize: 13, paddingBottom: 12 }} />
-            <Bar dataKey="budget" name="Budget" fill={SERIES[0]} isAnimationActive={ANIMATE} barSize={12} radius={[0, 4, 4, 0]}>
-              <LabelList dataKey="budget" position="right" formatter={formatCompact} style={{ fill: CHROME.text, fontSize: 11 }} />
+            <Bar dataKey="budget" name="Budget" fill={series[0]} isAnimationActive={ANIMATE} barSize={12} radius={[0, 4, 4, 0]}>
+              <LabelList dataKey="budget" position="right" formatter={formatCompact} style={{ fill: chrome.text, fontSize: 11 }} />
             </Bar>
-            <Bar dataKey="spent" name="Dépensé" fill={SERIES[1]} isAnimationActive={ANIMATE} barSize={12} radius={[0, 4, 4, 0]}>
-              <LabelList dataKey="spent" position="right" formatter={formatCompact} style={{ fill: CHROME.text, fontSize: 11 }} />
+            <Bar dataKey="spent" name="Dépensé" fill={series[1]} isAnimationActive={ANIMATE} barSize={12} radius={[0, 4, 4, 0]}>
+              <LabelList dataKey="spent" position="right" formatter={formatCompact} style={{ fill: chrome.text, fontSize: 11 }} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
@@ -93,8 +93,10 @@ export function BudgetByProjectChart({ projects, className }) {
 
 // Repartition des taches par statut : une barre empilee + legende chiffree (etiquettes directes)
 export function TaskProgressChart({ tasksByStatus, overdueTasks, className }) {
+  const statusColors = useTaskStatusColors()
   const total = Object.values(tasksByStatus).reduce((sum, count) => sum + count, 0)
-  const rows = Object.entries(TASK_STATUS).map(([status, { label, color }]) => {
+  const rows = Object.entries(TASK_STATUS).map(([status, { label }]) => {
+    const color = statusColors[status]
     const count = tasksByStatus[status] ?? 0
     return { status, label, color, count, percent: total ? Math.round((count / total) * 100) : 0 }
   })
@@ -146,6 +148,8 @@ export function TaskProgressChart({ tasksByStatus, overdueTasks, className }) {
 
 // Depenses des 6 derniers mois (colonnes, une seule serie)
 export function MonthlyExpensesChart({ monthlyExpenses, className }) {
+  const { series, chrome } = useChartColors()
+  const tick = { fill: chrome.muted, fontSize: 12 }
   const hasData = monthlyExpenses.some((month) => month.amount > 0)
 
   return (
@@ -163,25 +167,25 @@ export function MonthlyExpensesChart({ monthlyExpenses, className }) {
       ) : (
         <ResponsiveContainer width="100%" height={260}>
           <BarChart data={monthlyExpenses} margin={{ top: 20, right: 8, bottom: 0, left: 0 }}>
-            <CartesianGrid vertical={false} stroke={CHROME.grid} />
+            <CartesianGrid vertical={false} stroke={chrome.grid} />
             <XAxis
               dataKey="month"
               tickFormatter={(month) => formatMonth(month)}
-              tick={AXIS_TICK}
-              axisLine={{ stroke: CHROME.axis }}
+              tick={tick}
+              axisLine={{ stroke: chrome.axis }}
               tickLine={false}
             />
-            <YAxis tickFormatter={formatCompact} tick={AXIS_TICK} axisLine={false} tickLine={false} width={48} />
+            <YAxis tickFormatter={formatCompact} tick={tick} axisLine={false} tickLine={false} width={48} />
             <Tooltip
               content={<ChartTooltip labelFormatter={(month) => formatMonth(month, true)} />}
-              cursor={{ fill: '#f1f5f9' }}
+              cursor={{ fill: chrome.cursor }}
             />
-            <Bar dataKey="amount" name="Dépenses" fill={SERIES[0]} isAnimationActive={ANIMATE} maxBarSize={40} radius={[4, 4, 0, 0]}>
+            <Bar dataKey="amount" name="Dépenses" fill={series[0]} isAnimationActive={ANIMATE} maxBarSize={40} radius={[4, 4, 0, 0]}>
               <LabelList
                 dataKey="amount"
                 position="top"
                 formatter={(value) => (value > 0 ? formatCompact(value) : '')}
-                style={{ fill: CHROME.text, fontSize: 11 }}
+                style={{ fill: chrome.text, fontSize: 11 }}
               />
             </Bar>
           </BarChart>
@@ -193,6 +197,7 @@ export function MonthlyExpensesChart({ monthlyExpenses, className }) {
 
 // Depenses par categorie, de la plus importante a la plus faible (barres horizontales, une seule serie)
 export function ExpensesByCategoryChart({ expensesByCategory, className }) {
+  const { series } = useChartColors()
   const total = Object.values(expensesByCategory).reduce((sum, amount) => sum + Number(amount), 0)
   const rows = Object.entries(expensesByCategory)
     .map(([category, amount]) => ({
@@ -227,7 +232,7 @@ export function ExpensesByCategoryChart({ expensesByCategory, className }) {
               <div className="h-2.5 rounded-full bg-slate-100">
                 <div
                   className="h-full rounded-full"
-                  style={{ width: `${row.percent}%`, backgroundColor: SERIES[0], minWidth: row.amount > 0 ? 4 : 0 }}
+                  style={{ width: `${row.percent}%`, backgroundColor: series[0], minWidth: row.amount > 0 ? 4 : 0 }}
                 />
               </div>
             </li>

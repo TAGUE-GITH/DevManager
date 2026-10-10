@@ -1,7 +1,8 @@
-import { lazy } from 'react'
+import { Suspense, lazy } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import AppLayout from './components/layout/AppLayout'
 import { AdminRoute, ProtectedRoute, PublicOnlyRoute } from './components/RouteGuards'
+import { PageLoader } from './components/ui/States'
 import AcceptInvitationPage from './pages/AcceptInvitationPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import LandingPage from './pages/LandingPage'
@@ -18,6 +19,8 @@ const MyTasksPage = lazy(() => import('./pages/MyTasksPage'))
 const MessagesPage = lazy(() => import('./pages/MessagesPage'))
 const UsersPage = lazy(() => import('./pages/UsersPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const HelpPage = lazy(() => import('./pages/HelpPage'))
+const AppHelpPage = lazy(() => import('./pages/HelpPage').then((module) => ({ default: module.AppHelpPage })))
 
 export default function App() {
   return (
@@ -34,6 +37,14 @@ export default function App() {
       {/* Accessibles connecte ou non : on arrive ici depuis un lien recu par email */}
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/invitation" element={<AcceptInvitationPage />} />
+      <Route
+        path="/aide"
+        element={
+          <Suspense fallback={<PageLoader />}>
+            <HelpPage />
+          </Suspense>
+        }
+      />
 
       {/* Application, reservee aux utilisateurs connectes */}
       <Route path="/app" element={<ProtectedRoute />}>
@@ -43,6 +54,7 @@ export default function App() {
           <Route path="projects/:id" element={<ProjectDetailPage />} />
           <Route path="tasks" element={<MyTasksPage />} />
           <Route path="messages" element={<MessagesPage />} />
+          <Route path="help" element={<AppHelpPage />} />
           <Route element={<AdminRoute />}>
             <Route path="users" element={<UsersPage />} />
             <Route path="settings" element={<SettingsPage />} />

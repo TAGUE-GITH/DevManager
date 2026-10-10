@@ -44,12 +44,12 @@ export const canChangeStatus = (user, project) =>
   canManageProject(user, project) || project.members.some((member) => member.id === user.id)
 
 // Colonnes du tableau Kanban, dans l'ordre d'affichage
-// La couleur de chaque statut est la meme partout (colonnes Kanban et graphiques)
+// Colonnes du Kanban, dans l'ordre d'affichage (couleurs : useTaskStatusColors dans utils/chartColors)
 export const TASK_STATUS = {
-  TODO: { label: 'À faire', color: '#2a78d6' },
-  IN_PROGRESS: { label: 'En cours', color: '#eb6834' },
-  REVIEW: { label: 'En revue', color: '#1baf7a' },
-  DONE: { label: 'Terminé', color: '#eda100' },
+  TODO: { label: 'À faire' },
+  IN_PROGRESS: { label: 'En cours' },
+  REVIEW: { label: 'En revue' },
+  DONE: { label: 'Terminé' },
 }
 
 export const TASK_PRIORITY = {

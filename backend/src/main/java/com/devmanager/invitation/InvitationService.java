@@ -38,6 +38,10 @@ public class InvitationService {
 	@Transactional
 	public InvitationResponse invite(InvitationRequest request) {
 		User admin = currentUser.get();
+		// Pas d'invitation depuis la demo : sinon n'importe quel visiteur pourrait envoyer des emails
+		if (admin.getOrganization().isDemo()) {
+			throw ApiException.forbidden("Les invitations sont désactivées dans le compte de démonstration. Créez votre propre espace pour inviter votre équipe.");
+		}
 		String email = request.email().trim().toLowerCase();
 
 		if (userRepository.existsByEmail(email)) {

@@ -1,11 +1,14 @@
 package com.devmanager.mail;
 
+import com.devmanager.demo.DemoService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
 // Construit le contenu des emails de l'application (texte + HTML) et les confie au Mailer
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailService {
@@ -36,7 +39,7 @@ public class EmailService {
 				"Ce lien est valable %d minutes et ne peut être utilisé qu'une seule fois. Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email."
 						.formatted(resetExpirationMinutes));
 
-		mailer.send(email, "Réinitialisation de votre mot de passe DevManager", html, text);
+		send(email, "Réinitialisation de votre mot de passe DevManager", html, text);
 	}
 
 	public void sendInvitation(String email, String inviterName, String organizationName, String invitationLink) {
@@ -55,7 +58,16 @@ public class EmailService {
 				invitationLink, "Rejoindre l'équipe",
 				"Cette invitation est valable %d jours.".formatted(invitationExpirationDays));
 
-		mailer.send(email, "%s vous invite sur DevManager".formatted(inviterName), html, text);
+		send(email, "%s vous invite sur DevManager".formatted(inviterName), html, text);
+	}
+
+	// Les comptes de demonstration ont des adresses fictives : on n'envoie jamais rien a ces adresses
+	private void send(String to, String subject, String html, String text) {
+		if (to.endsWith(DemoService.EMAIL_DOMAIN)) {
+			log.info("Email « {} » non envoyé : {} est une adresse de démonstration", subject, to);
+			return;
+		}
+		mailer.send(to, subject, html, text);
 	}
 
 	// Les valeurs saisies par les utilisateurs (noms...) sont echappees pour eviter toute injection HTML

@@ -214,7 +214,7 @@ export default function SettingsPage() {
                 <h2 className="font-semibold text-slate-900">Offre actuelle</h2>
                 <Badge
                   className={
-                    isPro ? 'bg-indigo-600 text-white ring-indigo-600' : 'bg-slate-100 text-slate-700 ring-slate-200'
+                    isPro ? 'bg-indigo-600 text-on-accent ring-indigo-600' : 'bg-slate-100 text-slate-700 ring-slate-200'
                   }
                 >
                   {PLAN[organization.plan].label}
