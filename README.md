@@ -36,6 +36,16 @@ npm install
 npm run dev
 ```
 
+## Lancer avec Docker
+
+Toute l'application (PostgreSQL, backend, frontend) démarre avec une seule commande :
+
+```bash
+docker compose up --build
+```
+
+Puis ouvrir http://localhost:3000. Pour personnaliser les secrets, copier `.env.example` en `.env`.
+
 ## Auteur
 
 TAGUE — [GitHub](https://github.com/TAGUE-GITH)

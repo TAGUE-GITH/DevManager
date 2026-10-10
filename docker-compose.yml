@@ -1,0 +1,39 @@
+# Lance toute l'application : docker compose up --build
+# puis ouvrir http://localhost:3000
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: devmanager
+      POSTGRES_USER: devmanager
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-devmanager}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devmanager -d devmanager"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DATABASE_URL: jdbc:postgresql://db:5432/devmanager
+      DATABASE_USERNAME: devmanager
+      DATABASE_PASSWORD: ${DB_PASSWORD:-devmanager}
+      JWT_SECRET: ${JWT_SECRET:-cle-locale-docker-a-changer-0123456789abcdef}
+      FRONTEND_URL: http://localhost:3000
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  db-data:
