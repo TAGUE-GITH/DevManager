@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useSearchParams } from 'react-router-dom'
 import { authApi } from '../api/auth'
 import { getErrorMessage, getFieldErrors } from '../api/client'
@@ -9,6 +10,7 @@ import { buttonClasses } from '../components/ui/buttonStyles'
 import Input from '../components/ui/Input'
 
 export default function ResetPasswordPage() {
+  const { t } = useTranslation()
   // Le jeton arrive dans le lien recu par email : /reset-password?token=...
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
@@ -27,7 +29,7 @@ export default function ResetPasswordPage() {
     setFieldErrors({})
 
     if (form.newPassword !== form.confirmPassword) {
-      setFieldErrors({ confirmPassword: 'Les mots de passe ne correspondent pas' })
+      setFieldErrors({ confirmPassword: t('fields.passwordMismatch') })
       return
     }
 
@@ -45,22 +47,22 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <AuthLayout title="Lien invalide">
-        <Alert>Ce lien de réinitialisation est incomplet. Veuillez refaire une demande.</Alert>
+      <AuthLayout title={t('auth.reset.invalidTitle')}>
+        <Alert>{t('auth.reset.incomplete')}</Alert>
         <Link to="/forgot-password" className={buttonClasses('primary', 'mt-6 w-full')}>
-          Nouvelle demande
+          {t('auth.reset.newRequest')}
         </Link>
       </AuthLayout>
     )
   }
 
   return (
-    <AuthLayout title="Nouveau mot de passe" subtitle="Choisissez un mot de passe d'au moins 8 caractères.">
+    <AuthLayout title={t('auth.reset.title')} subtitle={t('auth.reset.subtitle')}>
       {done ? (
         <div className="space-y-6">
-          <Alert type="success">Votre mot de passe a été modifié. Vous pouvez maintenant vous connecter.</Alert>
+          <Alert type="success">{t('auth.reset.done')}</Alert>
           <Link to="/login" className={buttonClasses('primary', 'w-full')}>
-            Se connecter
+            {t('auth.login.submit')}
           </Link>
         </div>
       ) : (
@@ -71,13 +73,13 @@ export default function ResetPasswordPage() {
               <>
                 {' '}
                 <Link to="/forgot-password" className="font-semibold underline">
-                  Refaire une demande
+                  {t('auth.reset.retry')}
                 </Link>
               </>
             )}
           </Alert>
           <Input
-            label="Nouveau mot de passe"
+            label={t('fields.newPassword')}
             name="newPassword"
             type="password"
             autoComplete="new-password"
@@ -87,7 +89,7 @@ export default function ResetPasswordPage() {
             required
           />
           <Input
-            label="Confirmer le mot de passe"
+            label={t('fields.confirmPassword')}
             name="confirmPassword"
             type="password"
             autoComplete="new-password"
@@ -97,7 +99,7 @@ export default function ResetPasswordPage() {
             required
           />
           <Button type="submit" loading={submitting} className="w-full">
-            Enregistrer
+            {t('common.save')}
           </Button>
         </form>
       )}

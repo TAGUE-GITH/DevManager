@@ -13,7 +13,7 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
 ![Flyway](https://img.shields.io/badge/Flyway-migrations-CC0200?logo=flyway&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-compose-2496ED?logo=docker&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-61%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-72%20passing-brightgreen)
 
 ![Tableau de bord](docs/screenshots/02-tableau-de-bord.png)
 
@@ -109,7 +109,18 @@ L'application est pensée comme un **SaaS multi-entreprise** : chaque entreprise
 ### 💬 Messagerie interne
 - Boîte de réception, messages envoyés, compteur de non lus, réponse rapide
 
+### 🎥 Réunions vidéo
+- Une **salle de réunion par projet** (Jitsi Meet), ouverte dans l'application
+- **Appels de groupe**, micro, discussion et **partage d'écran**
+- Nom et photo de l'utilisateur transmis automatiquement, salle réservée aux membres du projet
+
+### 👤 Profil et image de l'entreprise
+- **Photo de profil**, nom, poste et changement de mot de passe
+- **Logo de l'entreprise** affiché dans le menu de tous les membres
+- Images recadrées et compressées dans le navigateur avant l'envoi
+
 ### 🎨 Interface
+- **Bilingue français / anglais** : interface, centre d'aide, dates, montants, messages d'erreur du serveur et réunions vidéo
 - **Mode sombre** (clair, sombre ou réglage du système), graphiques adaptés
 - **Centre d'aide** avec recherche, accessible sans compte ([/aide](https://devmanager-five.vercel.app/aide))
 - Responsive, accessible au clavier, respect du réglage « réduire les animations »
@@ -127,7 +138,8 @@ L'application est pensée comme un **SaaS multi-entreprise** : chaque entreprise
 | **Backend** | Java 21, Spring Boot 4, Spring Security, Spring Data JPA, Bean Validation, Lombok |
 | **Base de données** | PostgreSQL (production, Neon), H2 en mode PostgreSQL (développement et tests), **Flyway** (migrations versionnées) |
 | **Authentification** | JWT (jjwt), BCrypt |
-| **Frontend** | React 19, Vite, React Router, Axios, Tailwind CSS 4, Recharts, dnd-kit, Lucide |
+| **Frontend** | React 19, Vite, React Router, Axios, Tailwind CSS 4, Recharts, dnd-kit, i18next, Lucide |
+| **Visioconférence** | Jitsi Meet (API intégrée) |
 | **Emails** | API Brevo |
 | **Tests** | JUnit 5, MockMvc, AssertJ, `@DataJpaTest`, MockRestServiceServer |
 | **Médias** | Captures et vidéo générées automatiquement (Puppeteer, Edge) |
@@ -182,13 +194,16 @@ Toutes les routes, sauf `/api/auth/**` et `/api/health`, nécessitent l'en-tête
 | POST | `/api/auth/reset-password` | Choisir un nouveau mot de passe |
 | GET | `/api/auth/invitations/{token}` | Informations d'une invitation (public) |
 | POST | `/api/auth/accept-invitation` | Créer son compte à partir d'une invitation |
-| GET | `/api/users/me` | Profil de l'utilisateur connecté |
+| GET / PUT | `/api/users/me` | Profil de l'utilisateur connecté, modification |
+| PUT / DELETE | `/api/users/me/avatar` | Photo de profil |
+| PUT | `/api/users/me/password` | Changer son mot de passe |
 | GET | `/api/users` | Membres de l'entreprise |
 | PATCH | `/api/users/{id}/role` | Changer un rôle (administrateur) |
 | GET / POST / DELETE | `/api/invitations` | Invitations (administrateur) |
 | GET / POST | `/api/projects` | Projets visibles, création |
 | GET / PUT / DELETE | `/api/projects/{id}` | Détail, modification, suppression |
 | PATCH | `/api/projects/{id}/status` | Changer le statut |
+| GET | `/api/projects/{id}/meeting` | Salle de réunion vidéo du projet |
 | GET / POST | `/api/projects/{id}/expenses` | Dépenses d'un projet |
 | DELETE | `/api/expenses/{id}` | Supprimer une dépense |
 | GET / POST | `/api/projects/{id}/tasks` | Tâches d'un projet |
@@ -199,15 +214,17 @@ Toutes les routes, sauf `/api/auth/**` et `/api/health`, nécessitent l'en-tête
 | PATCH | `/api/messages/{id}/read` | Marquer comme lu |
 | GET | `/api/dashboard` | Statistiques et données des graphiques |
 | GET / PUT | `/api/organization` | Entreprise et utilisation (administrateur) |
+| PUT / DELETE | `/api/organization/logo` | Logo de l'entreprise (administrateur) |
+| GET | `/api/images/{id}` | Photo ou logo (public, identifiant aléatoire) |
 | POST / DELETE | `/api/organization/subscription` | Passer en Pro, revenir en Gratuit |
 | GET | `/api/health` | État de l'API (public) |
 
-Exemple de limite d'offre atteinte :
+L'API répond dans la langue demandée par l'en-tête `Accept-Language` (`fr` par défaut, ou `en`). Exemple de limite d'offre atteinte :
 
 ```json
 {
   "status": 402,
-  "message": "L'offre Gratuite est limitée à 3 projets. Passez à l'offre Pro pour en créer davantage."
+  "message": "L’offre Gratuite est limitée à 3 projets. Passez à l’offre Pro pour en créer davantage."
 }
 ```
 
@@ -268,7 +285,7 @@ Aucun secret n'est écrit dans le code.
 
 ## Tests
 
-Le backend compte **61 tests automatisés** :
+Le backend compte **72 tests automatisés** :
 
 ```bash
 cd backend
@@ -284,6 +301,9 @@ cd backend
 | **Tableau de bord** | Regroupement des dépenses par mois et par catégorie, tâches en retard |
 | **Offres** | Limites de l'offre Gratuite, passage en Pro, résiliation |
 | **Démonstration** | Données pré-remplies, recréation après 6 heures, invitations bloquées, isolation |
+| **Profil et images** | Photo, logo, mot de passe, images invalides refusées, restrictions du compte de démonstration |
+| **Réunions** | Salle propre à chaque projet, accès réservé aux membres |
+| **Langues** | Messages d'erreur et de validation en français (par défaut) et en anglais |
 | **Emails** | Contenu des emails, échappement HTML, appel à Brevo simulé |
 
 Les tests tournent sur H2 avec les **mêmes migrations Flyway** qu'en production, et Hibernate vérifie que le schéma correspond aux entités. Côté frontend, le code est vérifié par **oxlint** (`npm run lint`).
@@ -323,23 +343,27 @@ DevManager/
 │       │   ├── invitation/        Invitations par email
 │       │   ├── security/          JWT, filtre d'authentification, configuration
 │       │   ├── user/              Utilisateurs et rôles
-│       │   ├── project/           Projets
+│       │   ├── project/           Projets et réunions vidéo
 │       │   ├── task/              Tâches Kanban
 │       │   ├── budget/            Dépenses
 │       │   ├── message/           Messagerie
 │       │   ├── dashboard/         Statistiques
+│       │   ├── image/             Photos de profil et logos
 │       │   ├── demo/              Compte de démonstration
 │       │   ├── mail/              Envoi d'emails (Brevo ou logs)
-│       │   └── common/            Erreurs, santé de l'API
-│       └── resources/db/migration Migrations Flyway (V1 à V4)
+│       │   └── common/            Erreurs traduites, langue, santé de l'API
+│       └── resources/
+│           ├── db/migration       Migrations Flyway (V1 à V6)
+│           └── messages*.properties  Textes du serveur en français et en anglais
 ├── frontend/                      Application React
 │   └── src/
 │       ├── api/                   Client Axios et appels à l'API
 │       ├── components/            UI, mise en page, Kanban, graphiques, formulaires
 │       ├── context/               État d'authentification
 │       ├── hooks/                 Chargement des données
+│       ├── i18n/                  Traductions français et anglais
 │       ├── pages/                 Pages (chargées à la demande)
-│       └── utils/                 Formatage (FCFA, dates), couleurs, règles d'affichage
+│       └── utils/                 Formatage (FCFA, dates selon la langue), couleurs, règles d'affichage
 ├── docs/screenshots/              Captures d'écran
 ├── docker-compose.yml
 └── render.yaml
@@ -355,6 +379,7 @@ DevManager/
 - **Paiement prêt pour un vrai prestataire** : le paiement simulé peut être remplacé par NotchPay, CinetPay ou Flutterwave (Mobile Money), sans changer les limites ni l'historique.
 - **Droits vérifiés côté serveur** : l'interface masque les actions interdites, mais c'est le backend qui fait foi.
 - **Performance** : pages chargées à la demande (*code splitting*). La page d'accueil ne télécharge pas les graphiques.
+- **Traductions des deux côtés** : React affiche l'interface avec i18next, et Spring traduit les erreurs et les emails avec `MessageSource` selon l'en-tête `Accept-Language` envoyé automatiquement par le client.
 - **Accessibilité** : glisser-déposer au clavier, vue tableau des graphiques, palette validée pour les daltoniens, alertes avec icône et texte, respect du réglage « réduire les animations ».
 
 ## Auteur

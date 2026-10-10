@@ -1,4 +1,5 @@
 import axios from 'axios'
+import i18n from '../i18n'
 
 const TOKEN_KEY = 'devmanager_token'
 
@@ -13,8 +14,9 @@ export const api = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL ?? ''}/api`,
 })
 
-// Ajoute le jeton JWT a chaque requete
+// Ajoute le jeton JWT et la langue de l'interface a chaque requete (le serveur repond dans cette langue)
 api.interceptors.request.use((config) => {
+  config.headers['Accept-Language'] = i18n.language
   const token = tokenStorage.get()
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
@@ -36,9 +38,9 @@ api.interceptors.response.use(
 )
 
 // Message d'erreur lisible a partir d'une reponse de l'API
-export function getErrorMessage(error, fallback = 'Une erreur est survenue. Veuillez réessayer.') {
+export function getErrorMessage(error, fallback = i18n.t('errors.generic')) {
   if (!error.response) {
-    return 'Impossible de contacter le serveur. Vérifiez votre connexion.'
+    return i18n.t('errors.network')
   }
   return error.response.data?.message ?? fallback
 }

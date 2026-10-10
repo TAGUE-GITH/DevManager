@@ -16,40 +16,43 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-do
 import { apiUrl } from '../../api/client'
 import { messagesApi } from '../../api/resources'
 import { useAuth } from '../../context/useAuth'
+import { Trans, useTranslation } from 'react-i18next'
 import { MESSAGES_CHANGED } from '../../utils/events'
 import { ROLE, fullName } from '../../utils/format'
 import Logo from '../Logo'
+import LanguageSwitcher from '../LanguageSwitcher'
 import ThemeToggle from '../ThemeToggle'
 import Avatar from '../ui/Avatar'
 import { PageLoader } from '../ui/States'
 
 function Navigation({ unread, isAdmin, onNavigate }) {
+  const { t } = useTranslation()
   const sections = [
     {
-      title: 'Espace de travail',
+      title: t('nav.workspace'),
       items: [
-        { to: '/app', label: 'Tableau de bord', Icon: LayoutDashboard, end: true },
-        { to: '/app/projects', label: 'Projets', Icon: FolderKanban },
-        { to: '/app/tasks', label: 'Mes tâches', Icon: ListTodo },
-        { to: '/app/messages', label: 'Messagerie', Icon: MessageSquare, count: unread },
+        { to: '/app', label: t('nav.dashboard'), Icon: LayoutDashboard, end: true },
+        { to: '/app/projects', label: t('nav.projects'), Icon: FolderKanban },
+        { to: '/app/tasks', label: t('nav.myTasks'), Icon: ListTodo },
+        { to: '/app/messages', label: t('nav.messages'), Icon: MessageSquare, count: unread },
       ],
     },
     ...(isAdmin
       ? [
           {
-            title: 'Administration',
+            title: t('nav.administration'),
             items: [
-              { to: '/app/users', label: 'Équipe', Icon: Users },
-              { to: '/app/settings', label: 'Entreprise', Icon: Building2 },
+              { to: '/app/users', label: t('nav.team'), Icon: Users },
+              { to: '/app/settings', label: t('nav.company'), Icon: Building2 },
             ],
           },
         ]
       : []),
-    { title: 'Support', items: [{ to: '/app/help', label: 'Aide', Icon: LifeBuoy }] },
+    { title: t('nav.support'), items: [{ to: '/app/help', label: t('nav.help'), Icon: LifeBuoy }] },
   ]
 
   return (
-    <nav className="space-y-6" aria-label="Navigation de l'application">
+    <nav className="space-y-6" aria-label={t('nav.label')}>
       {sections.map(({ title, items }) => (
         <div key={title}>
           <p className="mb-2 px-3 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">{title}</p>
@@ -73,7 +76,7 @@ function Navigation({ unread, isAdmin, onNavigate }) {
                 {count > 0 && (
                   <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-on-accent">
                     {count}
-                    <span className="sr-only"> non lus</span>
+                    <span className="sr-only"> {t('nav.unread')}</span>
                   </span>
                 )}
               </NavLink>
@@ -86,12 +89,13 @@ function Navigation({ unread, isAdmin, onNavigate }) {
 }
 
 function Sidebar({ user, unread, onNavigate, onLogout, onClose }) {
+  const { t } = useTranslation()
   return (
     <div className="flex h-full flex-col bg-white p-4">
       <div className="mb-6 flex items-center justify-between px-2 pt-1">
         <Logo to="/app" />
         {onClose && (
-          <button onClick={onClose} className="rounded-lg p-1 text-slate-500 hover:bg-slate-100" aria-label="Fermer le menu">
+          <button onClick={onClose} className="rounded-lg p-1 text-slate-500 hover:bg-slate-100" aria-label={t('nav.closeMenu')}>
             <X className="size-6" />
           </button>
         )}
@@ -114,7 +118,7 @@ function Sidebar({ user, unread, onNavigate, onLogout, onClose }) {
           <p className="truncate text-sm font-semibold text-slate-900" title={user.organizationName}>
             {user.organizationName}
           </p>
-          <p className="text-xs text-slate-500">{user.organizationPlan === 'PRO' ? 'Offre Pro' : 'Offre Gratuite'}</p>
+          <p className="text-xs text-slate-500">{user.organizationPlan === 'PRO' ? t('plan.proPlan') : t('plan.freePlan')}</p>
         </div>
         {user.organizationPlan === 'PRO' && (
           <span className="rounded-md bg-gradient-to-r from-indigo-600 to-violet-600 px-1.5 py-0.5 text-[10px] font-bold text-on-accent">
@@ -128,13 +132,16 @@ function Sidebar({ user, unread, onNavigate, onLogout, onClose }) {
       </div>
 
       <div className="mt-4 space-y-3 border-t border-slate-200 pt-4">
-        <ThemeToggle />
+        <div className="flex gap-2">
+          <ThemeToggle className="flex-1" />
+          <LanguageSwitcher className="w-24" />
+        </div>
         <div className="flex items-center gap-2">
           <Link
             to="/app/profile"
             onClick={onNavigate}
             className="-m-1.5 flex min-w-0 flex-1 items-center gap-3 rounded-lg p-1.5 hover:bg-slate-100"
-            title="Mon profil"
+            title={t('nav.profile')}
           >
             <Avatar user={user} />
             <div className="min-w-0 flex-1">
@@ -145,8 +152,8 @@ function Sidebar({ user, unread, onNavigate, onLogout, onClose }) {
           <button
             onClick={onLogout}
             className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-            aria-label="Se déconnecter"
-            title="Se déconnecter"
+            aria-label={t('nav.logout')}
+            title={t('nav.logout')}
           >
             <LogOut className="size-5" />
           </button>
@@ -158,6 +165,7 @@ function Sidebar({ user, unread, onNavigate, onLogout, onClose }) {
 
 // Bandeau du compte de demonstration : rappelle que les donnees sont fictives
 function DemoBanner({ onCreateAccount }) {
+  const { t } = useTranslation()
   return (
     <div
       data-demo-banner
@@ -166,21 +174,21 @@ function DemoBanner({ onCreateAccount }) {
       <span className="flex items-center gap-2">
         <Sparkles className="size-4 shrink-0" aria-hidden />
         <span>
-          Vous explorez le <strong>compte de démonstration</strong> : les données sont fictives et réinitialisées
-          régulièrement.
+          <Trans i18nKey="demo.banner" components={{ strong: <strong /> }} />
         </span>
       </span>
       <button
         onClick={onCreateAccount}
         className="rounded-md bg-white/15 px-3 py-1 text-sm font-semibold text-on-accent ring-1 ring-white/30 hover:bg-white/25"
       >
-        Créer mon espace
+        {t('demo.createSpace')}
       </button>
     </div>
   )
 }
 
 export default function AppLayout() {
+  const { t } = useTranslation()
   const { user, logout } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
@@ -218,7 +226,7 @@ export default function AppLayout() {
             <button
               onClick={() => setMobileOpen(true)}
               className="rounded-lg p-2 text-slate-600 hover:bg-slate-100"
-              aria-label="Ouvrir le menu"
+              aria-label={t('nav.openMenu')}
             >
               <Menu className="size-6" />
             </button>

@@ -7,15 +7,17 @@ import Button from '../ui/Button'
 import Input from '../ui/Input'
 import Modal from '../ui/Modal'
 import Select from '../ui/Select'
+import { useTranslation } from 'react-i18next'
 
-const CATEGORY_OPTIONS = Object.entries(EXPENSE_CATEGORY).map(([value, label]) => ({ value, label }))
 const today = () => new Date().toISOString().slice(0, 10)
 
 export default function ExpenseFormModal({ projectId, onClose, onSaved }) {
+  const { t } = useTranslation()
   const [form, setForm] = useState({ label: '', amount: '', category: 'OTHER', date: today() })
   const [error, setError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
   const [saving, setSaving] = useState(false)
+  const categoryOptions = Object.entries(EXPENSE_CATEGORY).map(([value, label]) => ({ value, label }))
 
   const handleChange = (event) => setForm({ ...form, [event.target.name]: event.target.value })
 
@@ -36,13 +38,13 @@ export default function ExpenseFormModal({ projectId, onClose, onSaved }) {
   }
 
   return (
-    <Modal open title="Nouvelle dépense" onClose={onClose}>
+    <Modal open title={t('expenses.new')} onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <Alert>{error}</Alert>
         <Input
-          label="Libellé"
+          label={t('expenses.label')}
           name="label"
-          placeholder="Ex. Licences logicielles"
+          placeholder={t('expenses.labelPlaceholder')}
           value={form.label}
           onChange={handleChange}
           error={fieldErrors.label}
@@ -50,7 +52,7 @@ export default function ExpenseFormModal({ projectId, onClose, onSaved }) {
         />
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Input
-            label="Montant (FCFA)"
+            label={t('expenses.amount')}
             name="amount"
             type="number"
             min="1"
@@ -59,15 +61,15 @@ export default function ExpenseFormModal({ projectId, onClose, onSaved }) {
             error={fieldErrors.amount}
             required
           />
-          <Input label="Date" name="date" type="date" value={form.date} onChange={handleChange} error={fieldErrors.date} required />
+          <Input label={t('expenses.date')} name="date" type="date" value={form.date} onChange={handleChange} error={fieldErrors.date} required />
         </div>
-        <Select label="Catégorie" name="category" value={form.category} onChange={handleChange} options={CATEGORY_OPTIONS} />
+        <Select label={t('expenses.category')} name="category" value={form.category} onChange={handleChange} options={categoryOptions} />
         <div className="flex justify-end gap-3 pt-2">
           <Button type="button" variant="secondary" onClick={onClose}>
-            Annuler
+            {t('common.cancel')}
           </Button>
           <Button type="submit" loading={saving}>
-            Ajouter
+            {t('common.add')}
           </Button>
         </div>
       </form>

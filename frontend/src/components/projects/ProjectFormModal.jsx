@@ -9,6 +9,7 @@ import Button from '../ui/Button'
 import Input from '../ui/Input'
 import Modal from '../ui/Modal'
 import Textarea from '../ui/Textarea'
+import { useTranslation } from 'react-i18next'
 
 const toForm = (project) => ({
   name: project?.name ?? '',
@@ -21,6 +22,7 @@ const toForm = (project) => ({
 
 // Formulaire de creation (project absent) ou de modification d'un projet
 export default function ProjectFormModal({ open, project, onClose, onSaved }) {
+  const { t } = useTranslation()
   const { user: currentUser } = useAuth()
   const [form, setForm] = useState(() => toForm(project))
   const [users, setUsers] = useState([])
@@ -73,13 +75,13 @@ export default function ProjectFormModal({ open, project, onClose, onSaved }) {
   const candidates = users.filter((user) => user.id !== ownerId)
 
   return (
-    <Modal open={open} onClose={onClose} title={project ? 'Modifier le projet' : 'Nouveau projet'} size="lg">
+    <Modal open={open} onClose={onClose} title={project ? t('projects.edit') : t('projects.new')} size="lg">
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <Alert>{error}</Alert>
         {limitError && <PlanLimitAlert message={limitError} />}
-        <Input label="Nom du projet" name="name" value={form.name} onChange={handleChange} error={fieldErrors.name} required />
+        <Input label={t('projects.form.name')} name="name" value={form.name} onChange={handleChange} error={fieldErrors.name} required />
         <Textarea
-          label="Description"
+          label={t('projects.form.description')}
           name="description"
           value={form.description}
           onChange={handleChange}
@@ -87,7 +89,7 @@ export default function ProjectFormModal({ open, project, onClose, onSaved }) {
         />
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
           <Input
-            label="Budget (FCFA)"
+            label={t('projects.form.budget')}
             name="budget"
             type="number"
             min="0"
@@ -97,14 +99,14 @@ export default function ProjectFormModal({ open, project, onClose, onSaved }) {
             error={fieldErrors.budget}
             required
           />
-          <Input label="Début" name="startDate" type="date" value={form.startDate} onChange={handleChange} />
-          <Input label="Fin" name="endDate" type="date" value={form.endDate} onChange={handleChange} />
+          <Input label={t('projects.form.start')} name="startDate" type="date" value={form.startDate} onChange={handleChange} />
+          <Input label={t('projects.form.end')} name="endDate" type="date" value={form.endDate} onChange={handleChange} />
         </div>
 
         <fieldset>
-          <legend className="mb-2 text-sm font-medium text-slate-700">Membres de l'équipe</legend>
+          <legend className="mb-2 text-sm font-medium text-slate-700">{t('projects.form.members')}</legend>
           {candidates.length === 0 ? (
-            <p className="text-sm text-slate-500">Aucun autre utilisateur pour le moment.</p>
+            <p className="text-sm text-slate-500">{t('projects.form.noUsers')}</p>
           ) : (
             <div className="grid max-h-48 grid-cols-1 gap-2 overflow-y-auto rounded-lg border border-slate-200 p-3 sm:grid-cols-2">
               {candidates.map((user) => (
@@ -124,10 +126,10 @@ export default function ProjectFormModal({ open, project, onClose, onSaved }) {
 
         <div className="flex justify-end gap-3 pt-2">
           <Button type="button" variant="secondary" onClick={onClose}>
-            Annuler
+            {t('common.cancel')}
           </Button>
           <Button type="submit" loading={saving}>
-            {project ? 'Enregistrer' : 'Créer le projet'}
+            {project ? t('common.save') : t('projects.form.create')}
           </Button>
         </div>
       </form>

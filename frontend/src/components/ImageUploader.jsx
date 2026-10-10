@@ -3,12 +3,14 @@ import { useRef, useState } from 'react'
 import { getErrorMessage } from '../api/client'
 import { resizeImage } from '../utils/image'
 import Button from './ui/Button'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Choix d'une image (photo de profil ou logo) : apercu, changement et suppression.
  * L'image est redimensionnee dans le navigateur avant l'envoi (voir utils/image.js).
  */
 export default function ImageUploader({ preview, label, hint, onUpload, onRemove, hasImage, disabledReason }) {
+  const { t } = useTranslation()
   const input = useRef(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -40,8 +42,8 @@ export default function ImageUploader({ preview, label, hint, onUpload, onRemove
           onClick={() => input.current.click()}
           disabled={busy || Boolean(disabledReason)}
           className="absolute -right-1 -bottom-1 flex size-9 items-center justify-center rounded-full bg-indigo-600 text-on-accent shadow-md ring-4 ring-white transition hover:bg-indigo-500 disabled:opacity-50"
-          aria-label={`Changer : ${label}`}
-          title={`Changer : ${label}`}
+          aria-label={t('image.change', { label })}
+          title={t('image.change', { label })}
         >
           <Camera className="size-4" aria-hidden />
         </button>
@@ -58,12 +60,12 @@ export default function ImageUploader({ preview, label, hint, onUpload, onRemove
             onClick={() => input.current.click()}
           >
             <Camera className="size-4" aria-hidden />
-            Choisir une image
+            {t('image.choose')}
           </Button>
           {hasImage && (
             <Button type="button" variant="ghost" disabled={busy} onClick={() => run(onRemove)}>
               <Trash2 className="size-4 text-red-600" aria-hidden />
-              Supprimer
+              {t('common.delete')}
             </Button>
           )}
         </div>

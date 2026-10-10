@@ -3,7 +3,9 @@ import { useEffect, useRef, useState } from 'react'
 import { apiUrl, getErrorMessage } from '../../api/client'
 import { projectsApi } from '../../api/resources'
 import { useAuth } from '../../context/useAuth'
+import i18n from '../../i18n'
 import { fullName } from '../../utils/format'
+import { useTranslation } from 'react-i18next'
 
 // Le script officiel de Jitsi n'est charge qu'a la premiere reunion
 let jitsiScript
@@ -15,7 +17,7 @@ function loadJitsi(domain) {
     script.onload = () => resolve(window.JitsiMeetExternalAPI)
     script.onerror = () => {
       jitsiScript = undefined
-      reject(new Error('Impossible de charger le service de visioconférence. Vérifiez votre connexion.'))
+      reject(new Error(i18n.t('meeting.loadError')))
     }
     document.head.appendChild(script)
   })
@@ -27,6 +29,7 @@ function loadJitsi(domain) {
  * Le nom et la photo de l'utilisateur sont transmis automatiquement.
  */
 export default function MeetingRoom({ projectId, onClose }) {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const container = useRef(null)
   const [meeting, setMeeting] = useState(null)
@@ -47,10 +50,10 @@ export default function MeetingRoom({ projectId, onClose }) {
           parentNode: container.current,
           width: '100%',
           height: '100%',
-          lang: 'fr',
+          lang: i18n.language,
           userInfo: { displayName: fullName(user) },
           configOverwrite: {
-            subject: `Réunion : ${info.projectName}`,
+            subject: t('meeting.subject', { name: info.projectName }),
             prejoinPageEnabled: true,
             startWithAudioMuted: true,
             startWithVideoMuted: false,
@@ -69,7 +72,7 @@ export default function MeetingRoom({ projectId, onClose }) {
       cancelled = true
       api?.dispose()
     }
-  }, [projectId, user, onClose])
+  }, [projectId, user, onClose, t])
 
   // Echap ferme la reunion, comme les autres fenetres de l'application
   useEffect(() => {
@@ -89,11 +92,11 @@ export default function MeetingRoom({ projectId, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-[#0b1020]" role="dialog" aria-modal="true" aria-label="Réunion vidéo">
+    <div className="fixed inset-0 z-50 flex flex-col bg-[#0b1020]" role="dialog" aria-modal="true" aria-label={t('meeting.label')}>
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
         <div className="min-w-0">
-          <p className="text-xs font-medium tracking-wide text-[#94a3b8] uppercase">Réunion du projet</p>
-          <p className="truncate font-semibold text-on-accent">{meeting?.projectName ?? 'Connexion…'}</p>
+          <p className="text-xs font-medium tracking-wide text-[#94a3b8] uppercase">{t('meeting.title')}</p>
+          <p className="truncate font-semibold text-on-accent">{meeting?.projectName ?? t('meeting.connecting')}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {meeting && (
@@ -103,7 +106,7 @@ export default function MeetingRoom({ projectId, onClose }) {
                 className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-[#e2e8f0] ring-1 ring-white/20 hover:bg-white/10"
               >
                 {copied ? <Check className="size-4" aria-hidden /> : <Link2 className="size-4" aria-hidden />}
-                {copied ? 'Lien copié' : 'Copier le lien'}
+                {copied ? t('meeting.copied') : t('users.copyLink')}
               </button>
               <a
                 href={meeting.url}
@@ -112,7 +115,7 @@ export default function MeetingRoom({ projectId, onClose }) {
                 className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-[#e2e8f0] ring-1 ring-white/20 hover:bg-white/10"
               >
                 <ExternalLink className="size-4" aria-hidden />
-                Ouvrir dans un onglet
+                {t('meeting.openTab')}
               </a>
             </>
           )}
@@ -121,7 +124,7 @@ export default function MeetingRoom({ projectId, onClose }) {
             className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-on-accent hover:bg-red-500"
           >
             <PhoneOff className="size-4" aria-hidden />
-            Quitter
+            {t('meeting.leave')}
           </button>
         </div>
       </header>
@@ -130,7 +133,7 @@ export default function MeetingRoom({ projectId, onClose }) {
         {!meeting && !error && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-[#cbd5e1]">
             <Loader2 className="size-8 animate-spin" aria-hidden />
-            Préparation de la réunion…
+            {t('meeting.preparing')}
           </div>
         )}
         {error && (

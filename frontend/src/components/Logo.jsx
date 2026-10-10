@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 // Symbole du logo : un "D" contenant des barres de croissance (gestion + pilotage)
 export function LogoMark({ className = 'size-8' }) {
@@ -23,8 +24,9 @@ export function LogoMark({ className = 'size-8' }) {
 }
 
 export default function Logo({ light = false, to = '/' }) {
+  const { t } = useTranslation()
   return (
-    <Link to={to} className="flex items-center gap-2.5" aria-label="DevManager, accueil">
+    <Link to={to} className="flex items-center gap-2.5" aria-label={t('common.homeLink')}>
       <LogoMark />
       <span className={`text-lg font-extrabold tracking-tight ${light ? 'text-on-accent' : 'text-slate-900'}`}>
         Dev<span className={light ? 'text-on-accent-muted' : 'text-indigo-500'}>Manager</span>

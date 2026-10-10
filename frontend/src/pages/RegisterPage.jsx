@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 import { getErrorMessage, getFieldErrors } from '../api/client'
 import AuthLayout from '../components/AuthLayout'
@@ -8,9 +9,17 @@ import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import { useAuth } from '../context/useAuth'
 
-const EMPTY_FORM = { companyName: '', firstName: '', lastName: '', email: '', password: '', confirmPassword: '' }
+const EMPTY_FORM = {
+  companyName: '',
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+}
 
 export default function RegisterPage() {
+  const { t } = useTranslation()
   const { register } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState(EMPTY_FORM)
@@ -27,7 +36,7 @@ export default function RegisterPage() {
 
     // Verification faite cote client : le backend ne recoit qu'un seul mot de passe
     if (form.password !== form.confirmPassword) {
-      setFieldErrors({ confirmPassword: 'Les mots de passe ne correspondent pas' })
+      setFieldErrors({ confirmPassword: t('fields.passwordMismatch') })
       return
     }
 
@@ -45,17 +54,14 @@ export default function RegisterPage() {
   }
 
   return (
-    <AuthLayout
-      title="Créer votre espace"
-      subtitle="Créez l'espace de votre entreprise : vous en serez l'administrateur et pourrez inviter votre équipe."
-    >
+    <AuthLayout title={t('auth.register.title')} subtitle={t('auth.register.subtitle')}>
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <Alert>{error}</Alert>
         <Input
-          label="Nom de l'entreprise"
+          label={t('fields.companyName')}
           name="companyName"
           autoComplete="organization"
-          placeholder="Ex. Kamga Services SARL"
+          placeholder={t('fields.companyPlaceholder')}
           value={form.companyName}
           onChange={handleChange}
           error={fieldErrors.companyName}
@@ -63,7 +69,7 @@ export default function RegisterPage() {
         />
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Input
-            label="Prénom"
+            label={t('fields.firstName')}
             name="firstName"
             autoComplete="given-name"
             value={form.firstName}
@@ -72,7 +78,7 @@ export default function RegisterPage() {
             required
           />
           <Input
-            label="Nom"
+            label={t('fields.lastName')}
             name="lastName"
             autoComplete="family-name"
             value={form.lastName}
@@ -82,29 +88,29 @@ export default function RegisterPage() {
           />
         </div>
         <Input
-          label="Email"
+          label={t('fields.email')}
           name="email"
           type="email"
           autoComplete="email"
-          placeholder="vous@entreprise.com"
+          placeholder={t('fields.emailPlaceholder')}
           value={form.email}
           onChange={handleChange}
           error={fieldErrors.email}
           required
         />
         <Input
-          label="Mot de passe"
+          label={t('fields.password')}
           name="password"
           type="password"
           autoComplete="new-password"
-          placeholder="8 caractères minimum"
+          placeholder={t('fields.passwordPlaceholder')}
           value={form.password}
           onChange={handleChange}
           error={fieldErrors.password}
           required
         />
         <Input
-          label="Confirmer le mot de passe"
+          label={t('fields.confirmPassword')}
           name="confirmPassword"
           type="password"
           autoComplete="new-password"
@@ -114,14 +120,14 @@ export default function RegisterPage() {
           required
         />
         <Button type="submit" loading={submitting} className="w-full">
-          Créer mon espace
+          {t('auth.register.submit')}
         </Button>
       </form>
       <DemoDivider />
       <p className="mt-8 text-center text-sm text-slate-600">
-        Déjà inscrit ?{' '}
+        {t('auth.register.hasAccount')}{' '}
         <Link to="/login" className="font-semibold text-indigo-600 hover:text-indigo-500">
-          Se connecter
+          {t('auth.login.submit')}
         </Link>
       </p>
     </AuthLayout>

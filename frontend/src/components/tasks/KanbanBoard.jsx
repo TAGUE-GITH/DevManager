@@ -15,6 +15,7 @@ import { useRef, useState } from 'react'
 import { useTaskStatusColors } from '../../utils/chartColors'
 import { TASK_STATUS } from '../../utils/format'
 import TaskCard, { TaskCardContent } from './TaskCard'
+import { useTranslation } from 'react-i18next'
 
 const STATUSES = Object.keys(TASK_STATUS)
 
@@ -28,6 +29,7 @@ function groupByStatus(tasks) {
 }
 
 function Column({ status, tasks, canEdit, onOpen, onAdd }) {
+  const { t } = useTranslation()
   // La colonne entiere accepte les depots, meme vide
   const { setNodeRef, isOver } = useDroppable({ id: status })
   const { label } = TASK_STATUS[status]
@@ -43,8 +45,8 @@ function Column({ status, tasks, canEdit, onOpen, onAdd }) {
           <button
             onClick={onAdd}
             className="ml-auto rounded-md p-1 text-slate-500 hover:bg-white hover:text-indigo-600"
-            aria-label="Ajouter une tâche"
-            title="Ajouter une tâche"
+            aria-label={t('tasks.add')}
+            title={t('tasks.add')}
           >
             <Plus className="size-4" />
           </button>
@@ -60,7 +62,7 @@ function Column({ status, tasks, canEdit, onOpen, onAdd }) {
           ))}
           {tasks.length === 0 && (
             <li className="rounded-lg border-2 border-dashed border-slate-200 p-4 text-center text-xs text-slate-400">
-              Glissez une tâche ici
+              {t('tasks.dropHere')}
             </li>
           )}
         </ul>
@@ -74,6 +76,7 @@ function Column({ status, tasks, canEdit, onOpen, onAdd }) {
  * L'affichage est mis a jour immediatement, puis le serveur est informe (onMove).
  */
 export default function KanbanBoard({ tasks, canEdit, onOpen, onAdd, onMove }) {
+  const { t } = useTranslation()
   const [columns, setColumns] = useState(() => groupByStatus(tasks))
   const [syncedTasks, setSyncedTasks] = useState(tasks)
   const [activeTask, setActiveTask] = useState(null)
@@ -92,7 +95,7 @@ export default function KanbanBoard({ tasks, canEdit, onOpen, onAdd, onMove }) {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   )
 
-  const findColumn = (id) => (id in columns ? id : STATUSES.find((status) => columns[status].some((t) => t.id === id)))
+  const findColumn = (id) => (id in columns ? id : STATUSES.find((status) => columns[status].some((task) => task.id === id)))
 
   const handleDragStart = ({ active }) => {
     startColumn.current = findColumn(active.id)
@@ -147,7 +150,7 @@ export default function KanbanBoard({ tasks, canEdit, onOpen, onAdd, onMove }) {
       onDragCancel={handleDragCancel}
       accessibility={{
         screenReaderInstructions: {
-          draggable: 'Appuyez sur Espace pour saisir la tâche, utilisez les flèches pour la déplacer, puis Espace pour la déposer.',
+          draggable: t('tasks.dragInstructions'),
         },
       }}
     >

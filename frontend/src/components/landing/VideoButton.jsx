@@ -1,9 +1,11 @@
 import { PlayCircle } from 'lucide-react'
 import { useState } from 'react'
 import Modal from '../ui/Modal'
+import { useTranslation } from 'react-i18next'
 
 // Bouton "Voir la video" : la video de demonstration s'ouvre dans une fenetre
 export default function VideoButton() {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   return (
     <>
@@ -12,10 +14,10 @@ export default function VideoButton() {
         className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-700 hover:text-indigo-600"
       >
         <PlayCircle className="size-5" aria-hidden />
-        Voir la vidéo de présentation (37 s)
+        {t('video.button')}
       </button>
       {open && (
-        <Modal open title="Découvrez DevManager" onClose={() => setOpen(false)} size="xl">
+        <Modal open title={t('video.title')} onClose={() => setOpen(false)} size="xl">
           <video
             src="/demo/devmanager-demo.mp4"
             poster="/demo/devmanager-demo-poster.jpg"
@@ -25,10 +27,10 @@ export default function VideoButton() {
             playsInline
             className="w-full rounded-lg bg-black"
           >
-            Votre navigateur ne peut pas lire cette vidéo.
+            {t('video.unsupported')}
           </video>
           <p className="mt-3 text-sm text-slate-500">
-            Démonstration : compte d’essai, tableau de bord, Kanban, messagerie et mode sombre.
+            {t('video.caption')}
           </p>
         </Modal>
       )}

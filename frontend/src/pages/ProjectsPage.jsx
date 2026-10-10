@@ -12,10 +12,10 @@ import { EmptyState, ErrorState, PageLoader } from '../components/ui/States'
 import { useAuth } from '../context/useAuth'
 import { useFetch } from '../hooks/useFetch'
 import { PROJECT_STATUS, canCreateProject, formatCurrency, formatDate } from '../utils/format'
-
-const FILTERS = [{ value: 'ALL', label: 'Tous' }, ...Object.entries(PROJECT_STATUS).map(([value, { label }]) => ({ value, label }))]
+import { useTranslation } from 'react-i18next'
 
 function ProjectCard({ project }) {
+  const { t } = useTranslation()
   return (
     <Link to={`/app/projects/${project.id}`} className="group block">
       <Card className="flex h-full flex-col p-5 transition group-hover:shadow-md group-hover:ring-indigo-200">
@@ -23,29 +23,29 @@ function ProjectCard({ project }) {
           <h3 className="font-semibold text-slate-900 group-hover:text-indigo-600">{project.name}</h3>
           <StatusBadge status={project.status} />
         </div>
-        <p className="mt-2 line-clamp-2 flex-1 text-sm text-slate-500">{project.description || 'Aucune description'}</p>
+        <p className="mt-2 line-clamp-2 flex-1 text-sm text-slate-500">{project.description || t('projects.noDescription')}</p>
         <div className="mt-5">
           <div className="mb-2 flex items-baseline justify-between text-sm">
             <span className="font-semibold text-slate-900">{formatCurrency(project.spent)}</span>
-            <span className="text-slate-500">sur {formatCurrency(project.budget)}</span>
+            <span className="text-slate-500">{t('projects.of', { budget: formatCurrency(project.budget) })}</span>
           </div>
           <BudgetBar percent={project.consumedPercent} />
         </div>
         <div className="mt-4 flex items-center gap-4 border-t border-slate-100 pt-4 text-xs text-slate-500">
           <span className="flex items-center gap-1.5">
             <Users className="size-4" aria-hidden />
-            {project.members.length + 1} personne{project.members.length > 0 && 's'}
+            {t('projects.people', { count: project.members.length + 1 })}
           </span>
           {project.taskCount > 0 && (
             <span className="flex items-center gap-1.5">
               <ListTodo className="size-4" aria-hidden />
-              {project.completedTaskCount}/{project.taskCount} tâches
+              {t('projects.tasksDone', { done: project.completedTaskCount, total: project.taskCount })}
             </span>
           )}
           {project.endDate && (
             <span className="flex items-center gap-1.5">
               <CalendarDays className="size-4" aria-hidden />
-              Fin le {formatDate(project.endDate)}
+              {t('projects.endsOn', { date: formatDate(project.endDate) })}
             </span>
           )}
         </div>
@@ -55,18 +55,23 @@ function ProjectCard({ project }) {
 }
 
 export default function ProjectsPage() {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const navigate = useNavigate()
   const { data: projects, loading, error } = useFetch(useCallback(() => projectsApi.list(), []))
   const [filter, setFilter] = useState('ALL')
   const [search, setSearch] = useState('')
   const [formOpen, setFormOpen] = useState(false)
+  const filters = [
+    { value: 'ALL', label: t('projects.all') },
+    ...Object.entries(PROJECT_STATUS).map(([value, { label }]) => ({ value, label })),
+  ]
 
   const canCreate = canCreateProject(user)
   const newProjectButton = canCreate && (
     <Button onClick={() => setFormOpen(true)}>
       <Plus className="size-4" aria-hidden />
-      Nouveau projet
+      {t('projects.new')}
     </Button>
   )
 
@@ -78,7 +83,7 @@ export default function ProjectsPage() {
 
   return (
     <>
-      <PageHeader title="Projets" description="Suivez l'avancement et le budget de chaque projet." actions={newProjectButton} />
+      <PageHeader title={t('nav.projects')} description={t('projects.description')} actions={newProjectButton} />
 
       {loading && <PageLoader />}
       {error && <ErrorState message={error} />}
@@ -86,11 +91,11 @@ export default function ProjectsPage() {
       {projects && projects.length === 0 && (
         <EmptyState
           icon={FolderKanban}
-          title="Aucun projet"
+          title={t('projects.emptyTitle')}
           description={
             canCreate
-              ? 'Créez votre premier projet pour commencer à suivre son budget.'
-              : "Vous n'êtes membre d'aucun projet pour le moment."
+              ? t('projects.emptyCreate')
+              : t('projects.emptyMember')
           }
           action={newProjectButton}
         />
@@ -99,8 +104,8 @@ export default function ProjectsPage() {
       {projects && projects.length > 0 && (
         <>
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex gap-1 overflow-x-auto rounded-lg bg-slate-100 p-1" role="tablist" aria-label="Filtrer par statut">
-              {FILTERS.map(({ value, label }) => (
+            <div className="flex gap-1 overflow-x-auto rounded-lg bg-slate-100 p-1" role="tablist" aria-label={t('projects.filter')}>
+              {filters.map(({ value, label }) => (
                 <button
                   key={value}
                   role="tab"
@@ -118,8 +123,8 @@ export default function ProjectsPage() {
               <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" aria-hidden />
               <input
                 type="search"
-                placeholder="Rechercher un projet"
-                aria-label="Rechercher un projet"
+                placeholder={t('projects.search')}
+                aria-label={t('projects.search')}
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 className="w-full rounded-lg border border-slate-300 bg-white py-2 pr-3 pl-9 text-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
@@ -128,7 +133,7 @@ export default function ProjectsPage() {
           </div>
 
           {visible.length === 0 ? (
-            <p className="py-12 text-center text-sm text-slate-500">Aucun projet ne correspond à votre recherche.</p>
+            <p className="py-12 text-center text-sm text-slate-500">{t('projects.noMatch')}</p>
           ) : (
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
               {visible.map((project) => (

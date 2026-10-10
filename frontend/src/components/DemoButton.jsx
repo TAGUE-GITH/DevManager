@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom'
 import { getErrorMessage } from '../api/client'
 import { useAuth } from '../context/useAuth'
 import Button from './ui/Button'
+import { useTranslation } from 'react-i18next'
 
 // Connexion en un clic a l'entreprise de demonstration
-export default function DemoButton({ variant = 'secondary', className = '', children = 'Essayer la démo' }) {
+export default function DemoButton({ variant = 'secondary', className = '', children }) {
+  const { t } = useTranslation()
   const { loginDemo } = useAuth()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
@@ -28,7 +30,7 @@ export default function DemoButton({ variant = 'secondary', className = '', chil
     <div className={className}>
       <Button variant={variant} loading={loading} onClick={start} className="w-full">
         {!loading && <PlayCircle className="size-4" aria-hidden />}
-        {loading ? 'Préparation de la démo…' : children}
+        {loading ? t('demo.preparing') : (children ?? t('demo.try'))}
       </Button>
       {error && (
         <p role="alert" className="mt-2 text-sm text-red-600">

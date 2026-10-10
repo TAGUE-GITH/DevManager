@@ -10,14 +10,15 @@ import PageHeader from '../components/ui/PageHeader'
 import { EmptyState, ErrorState, PageLoader } from '../components/ui/States'
 import { useFetch } from '../hooks/useFetch'
 import { TASK_PRIORITY, TASK_STATUS, formatDate } from '../utils/format'
-
-const STATUS_OPTIONS = Object.entries(TASK_STATUS).map(([value, { label }]) => ({ value, label }))
+import { useTranslation } from 'react-i18next'
 
 // Toutes les taches confiees a l'utilisateur connecte, tous projets confondus
 export default function MyTasksPage() {
+  const { t } = useTranslation()
   const { data: tasks, loading, error, reload } = useFetch(useCallback(() => tasksApi.mine(), []))
   const [actionError, setActionError] = useState('')
   const [showDone, setShowDone] = useState(false)
+  const statusOptions = Object.entries(TASK_STATUS).map(([value, { label }]) => ({ value, label }))
 
   if (loading) return <PageLoader />
   if (error) return <ErrorState message={error} />
@@ -41,11 +42,13 @@ export default function MyTasksPage() {
   return (
     <>
       <PageHeader
-        title="Mes tâches"
+        title={t('nav.myTasks')}
         description={
           open.length === 0
-            ? 'Aucune tâche en cours.'
-            : `${open.length} tâche${open.length > 1 ? 's' : ''} à traiter${overdue ? `, dont ${overdue} en retard` : ''}.`
+            ? t('myTasks.none')
+            : overdue
+              ? t('myTasks.openWithOverdue', { count: open.length, overdue })
+              : t('myTasks.open', { count: open.length })
         }
       />
 
@@ -58,8 +61,8 @@ export default function MyTasksPage() {
       {tasks.length === 0 ? (
         <EmptyState
           icon={ListTodo}
-          title="Aucune tâche ne vous est confiée"
-          description="Les tâches qui vous sont assignées dans les projets apparaîtront ici."
+          title={t('myTasks.emptyTitle')}
+          description={t('myTasks.emptyDescription')}
         />
       ) : (
         <>
@@ -71,12 +74,12 @@ export default function MyTasksPage() {
                 checked={showDone}
                 onChange={(event) => setShowDone(event.target.checked)}
               />
-              Afficher les tâches terminées ({done.length})
+              {t('myTasks.showDone', { count: done.length })}
             </label>
           )}
 
           {visible.length === 0 ? (
-            <EmptyState icon={CheckCircle2} title="Tout est terminé, bravo !" />
+            <EmptyState icon={CheckCircle2} title={t('myTasks.allDone')} />
           ) : (
             <Card>
               <ul className="divide-y divide-slate-100">
@@ -101,7 +104,7 @@ export default function MyTasksPage() {
                             <span className={`flex items-center gap-1 ${task.overdue ? 'font-medium text-red-700' : ''}`}>
                               <CalendarDays className="size-3.5" aria-hidden />
                               {formatDate(task.dueDate)}
-                              {task.overdue && ' (en retard)'}
+                              {task.overdue && ` ${t('tasks.overdue')}`}
                             </span>
                           )}
                         </div>
@@ -109,10 +112,10 @@ export default function MyTasksPage() {
                       <select
                         value={task.status}
                         onChange={(event) => changeStatus(task, event.target.value)}
-                        aria-label={`Statut de la tâche ${task.title}`}
+                        aria-label={t('myTasks.statusOf', { title: task.title })}
                         className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 sm:w-36"
                       >
-                        {STATUS_OPTIONS.map(({ value, label }) => (
+                        {statusOptions.map(({ value, label }) => (
                           <option key={value} value={value}>
                             {label}
                           </option>

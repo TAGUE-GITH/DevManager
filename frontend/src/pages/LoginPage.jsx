@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { getErrorMessage, getFieldErrors } from '../api/client'
 import AuthLayout from '../components/AuthLayout'
@@ -9,6 +10,7 @@ import Input from '../components/ui/Input'
 import { useAuth } from '../context/useAuth'
 
 export default function LoginPage() {
+  const { t } = useTranslation()
   const { login } = useAuth()
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
@@ -34,15 +36,15 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthLayout title="Connexion" subtitle="Heureux de vous revoir ! Connectez-vous à votre espace.">
+    <AuthLayout title={t('auth.login.title')} subtitle={t('auth.login.subtitle')}>
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <Alert>{error}</Alert>
         <Input
-          label="Email"
+          label={t('fields.email')}
           name="email"
           type="email"
           autoComplete="email"
-          placeholder="vous@entreprise.com"
+          placeholder={t('fields.emailPlaceholder')}
           value={form.email}
           onChange={handleChange}
           error={fieldErrors.email}
@@ -50,7 +52,7 @@ export default function LoginPage() {
         />
         <div>
           <Input
-            label="Mot de passe"
+            label={t('fields.password')}
             name="password"
             type="password"
             autoComplete="current-password"
@@ -63,18 +65,18 @@ export default function LoginPage() {
             to="/forgot-password"
             className="mt-2 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-500"
           >
-            Mot de passe oublié ?
+            {t('auth.login.forgot')}
           </Link>
         </div>
         <Button type="submit" loading={submitting} className="w-full">
-          Se connecter
+          {t('auth.login.submit')}
         </Button>
       </form>
       <DemoDivider />
       <p className="mt-8 text-center text-sm text-slate-600">
-        Pas encore de compte ?{' '}
+        {t('auth.login.noAccount')}{' '}
         <Link to="/register" className="font-semibold text-indigo-600 hover:text-indigo-500">
-          Créer un compte
+          {t('auth.login.createAccount')}
         </Link>
       </p>
     </AuthLayout>

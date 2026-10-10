@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { authApi } from '../api/auth'
 import { getErrorMessage, getFieldErrors } from '../api/client'
@@ -9,6 +10,7 @@ import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const [error, setError] = useState('')
@@ -32,28 +34,25 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <AuthLayout
-      title="Mot de passe oublié"
-      subtitle="Saisissez votre email : nous vous enverrons un lien pour choisir un nouveau mot de passe."
-    >
+    <AuthLayout title={t('auth.forgot.title')} subtitle={t('auth.forgot.subtitle')}>
       {successMessage ? (
         <Alert type="success">{successMessage}</Alert>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-5" noValidate>
           <Alert>{error}</Alert>
           <Input
-            label="Email"
+            label={t('fields.email')}
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="vous@entreprise.com"
+            placeholder={t('fields.emailPlaceholder')}
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             error={fieldErrors.email}
             required
           />
           <Button type="submit" loading={submitting} className="w-full">
-            Envoyer le lien
+            {t('auth.forgot.submit')}
           </Button>
         </form>
       )}
@@ -62,7 +61,7 @@ export default function ForgotPasswordPage() {
         className="mt-8 flex items-center justify-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900"
       >
         <ArrowLeft className="size-4" aria-hidden />
-        Retour à la connexion
+        {t('auth.forgot.back')}
       </Link>
     </AuthLayout>
   )
