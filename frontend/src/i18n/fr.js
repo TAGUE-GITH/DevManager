@@ -32,6 +32,7 @@ export default {
     company: 'Entreprise',
     support: 'Support',
     help: 'Aide',
+    home: 'Page d’accueil',
     unread: 'non lus',
     closeMenu: 'Fermer le menu',
     openMenu: 'Ouvrir le menu',
