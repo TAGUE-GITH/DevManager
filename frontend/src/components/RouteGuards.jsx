@@ -1,0 +1,30 @@
+import { Loader2 } from 'lucide-react'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { useAuth } from '../context/useAuth'
+
+function FullPageLoader() {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <Loader2 className="size-8 animate-spin text-indigo-600" aria-label="Chargement" />
+    </div>
+  )
+}
+
+// Pages reservees aux utilisateurs connectes : sinon, redirection vers la connexion
+export function ProtectedRoute() {
+  const { isAuthenticated, loading } = useAuth()
+  const location = useLocation()
+
+  if (loading) return <FullPageLoader />
+  if (!isAuthenticated) return <Navigate to="/login" replace state={{ from: location }} />
+  return <Outlet />
+}
+
+// Pages de connexion/inscription : inutiles si l'utilisateur est deja connecte
+export function PublicOnlyRoute() {
+  const { isAuthenticated, loading } = useAuth()
+
+  if (loading) return <FullPageLoader />
+  if (isAuthenticated) return <Navigate to="/" replace />
+  return <Outlet />
+}
