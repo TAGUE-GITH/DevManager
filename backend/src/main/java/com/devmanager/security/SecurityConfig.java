@@ -39,7 +39,7 @@ public class SecurityConfig {
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/api/auth/**").permitAll()
+						.requestMatchers("/api/auth/**", "/api/health").permitAll()
 						.requestMatchers("/h2-console/**").permitAll()
 						.anyRequest().authenticated())
 				// Sans jeton valide : 401 au lieu d'une page de connexion
