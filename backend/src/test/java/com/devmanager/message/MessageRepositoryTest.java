@@ -1,5 +1,7 @@
 package com.devmanager.message;
 
+import com.devmanager.organization.Organization;
+import com.devmanager.organization.OrganizationRepository;
 import com.devmanager.user.Role;
 import com.devmanager.user.User;
 import com.devmanager.user.UserRepository;
@@ -11,6 +13,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 class MessageRepositoryTest {
+
+	@Autowired
+	private OrganizationRepository organizationRepository;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -33,8 +38,9 @@ class MessageRepositoryTest {
 	}
 
 	private User saveUser(String email) {
+		Organization organization = organizationRepository.save(Organization.builder().name("Entreprise").build());
 		return userRepository.save(User.builder()
 				.firstName("Test").lastName("User").email(email)
-				.password("secret").role(Role.EMPLOYEE).build());
+				.password("secret").role(Role.EMPLOYEE).organization(organization).build());
 	}
 }

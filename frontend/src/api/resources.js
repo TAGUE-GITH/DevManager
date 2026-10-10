@@ -33,3 +33,9 @@ export const usersApi = {
 export const dashboardApi = {
   get: () => api.get('/dashboard').then(data),
 }
+
+export const invitationsApi = {
+  list: () => api.get('/invitations').then(data),
+  create: (invitation) => api.post('/invitations', invitation).then(data),
+  revoke: (id) => api.delete(`/invitations/${id}`),
+}

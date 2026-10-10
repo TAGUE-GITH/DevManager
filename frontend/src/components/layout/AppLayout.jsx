@@ -13,7 +13,7 @@ function Navigation({ unread, isAdmin, onNavigate }) {
     { to: '/app', label: 'Tableau de bord', Icon: LayoutDashboard, end: true },
     { to: '/app/projects', label: 'Projets', Icon: FolderKanban },
     { to: '/app/messages', label: 'Messagerie', Icon: MessageSquare, count: unread },
-    ...(isAdmin ? [{ to: '/app/users', label: 'Utilisateurs', Icon: Users }] : []),
+    ...(isAdmin ? [{ to: '/app/users', label: 'Équipe', Icon: Users }] : []),
   ]
 
   return (
@@ -86,6 +86,9 @@ export default function AppLayout() {
       <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white p-4 lg:flex lg:fixed lg:inset-y-0">
         <div className="mb-8 px-2 pt-2">
           <Logo to="/app" />
+          <p className="mt-3 truncate rounded-md bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-600" title={user.organizationName}>
+            {user.organizationName}
+          </p>
         </div>
         <div className="flex-1">
           <Navigation unread={unread} isAdmin={isAdmin} />

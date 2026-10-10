@@ -7,7 +7,7 @@ import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import { useAuth } from '../context/useAuth'
 
-const EMPTY_FORM = { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' }
+const EMPTY_FORM = { companyName: '', firstName: '', lastName: '', email: '', password: '', confirmPassword: '' }
 
 export default function RegisterPage() {
   const { register } = useAuth()
@@ -44,9 +44,22 @@ export default function RegisterPage() {
   }
 
   return (
-    <AuthLayout title="Créer un compte" subtitle="Rejoignez l'espace de travail de votre équipe.">
+    <AuthLayout
+      title="Créer votre espace"
+      subtitle="Créez l'espace de votre entreprise : vous en serez l'administrateur et pourrez inviter votre équipe."
+    >
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <Alert>{error}</Alert>
+        <Input
+          label="Nom de l'entreprise"
+          name="companyName"
+          autoComplete="organization"
+          placeholder="Ex. Kamga Services SARL"
+          value={form.companyName}
+          onChange={handleChange}
+          error={fieldErrors.companyName}
+          required
+        />
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Input
             label="Prénom"
@@ -100,7 +113,7 @@ export default function RegisterPage() {
           required
         />
         <Button type="submit" loading={submitting} className="w-full">
-          Créer mon compte
+          Créer mon espace
         </Button>
       </form>
       <p className="mt-8 text-center text-sm text-slate-600">

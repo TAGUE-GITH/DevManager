@@ -53,7 +53,8 @@ public class MessageService {
 		if (sender.getId().equals(request.recipientId())) {
 			throw ApiException.badRequest("Vous ne pouvez pas vous envoyer un message");
 		}
-		User recipient = userRepository.findById(request.recipientId())
+		// Le destinataire doit appartenir a la meme entreprise
+		User recipient = userRepository.findByIdAndOrganizationId(request.recipientId(), sender.getOrganization().getId())
 				.orElseThrow(() -> ApiException.notFound("Destinataire introuvable"));
 
 		Message message = messageRepository.save(Message.builder()

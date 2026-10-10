@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { authApi } from '../api/auth'
+import { authApi, invitationsPublicApi } from '../api/auth'
 import { tokenStorage } from '../api/client'
 import { AuthContext } from './useAuth'
 
@@ -44,9 +44,14 @@ export function AuthProvider({ children }) {
     [saveSession],
   )
 
+  const acceptInvitation = useCallback(
+    async (data) => saveSession(await invitationsPublicApi.accept(data)),
+    [saveSession],
+  )
+
   const value = useMemo(
-    () => ({ user, loading, isAuthenticated: Boolean(user), login, register, logout }),
-    [user, loading, login, register, logout],
+    () => ({ user, loading, isAuthenticated: Boolean(user), login, register, acceptInvitation, logout }),
+    [user, loading, login, register, acceptInvitation, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

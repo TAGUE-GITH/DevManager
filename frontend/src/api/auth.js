@@ -8,3 +8,8 @@ export const authApi = {
     api.post('/auth/reset-password', { token, newPassword }).then((res) => res.data),
   me: () => api.get('/users/me').then((res) => res.data),
 }
+
+export const invitationsPublicApi = {
+  get: (token) => api.get(`/auth/invitations/${token}`).then((res) => res.data),
+  accept: (data) => api.post('/auth/accept-invitation', data).then((res) => res.data),
+}

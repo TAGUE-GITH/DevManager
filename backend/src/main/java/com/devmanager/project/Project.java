@@ -1,5 +1,6 @@
 package com.devmanager.project;
 
+import com.devmanager.organization.Organization;
 import com.devmanager.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -45,6 +46,10 @@ public class Project {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "owner_id")
 	private User owner;
+
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "organization_id")
+	private Organization organization;
 
 	@ManyToMany
 	@JoinTable(

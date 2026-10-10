@@ -19,6 +19,12 @@ public class AuthController {
 		return authService.register(request);
 	}
 
+	@PostMapping("/accept-invitation")
+	@ResponseStatus(HttpStatus.CREATED)
+	public AuthResponse acceptInvitation(@Valid @RequestBody AcceptInvitationRequest request) {
+		return authService.acceptInvitation(request);
+	}
+
 	@PostMapping("/login")
 	public AuthResponse login(@Valid @RequestBody LoginRequest request) {
 		return authService.login(request);

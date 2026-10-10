@@ -1,5 +1,6 @@
 package com.devmanager.user;
 
+import com.devmanager.organization.Organization;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,4 +37,8 @@ public class User {
 
 	@Builder.Default
 	private LocalDateTime createdAt = LocalDateTime.now();
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "organization_id")
+	private Organization organization;
 }

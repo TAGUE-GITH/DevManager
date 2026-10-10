@@ -2,6 +2,11 @@ package com.devmanager.auth;
 
 import com.devmanager.auth.dto.AuthDtos.*;
 import com.devmanager.common.ApiException;
+import com.devmanager.invitation.Invitation;
+import com.devmanager.invitation.InvitationService;
+import com.devmanager.mail.EmailService;
+import com.devmanager.organization.Organization;
+import com.devmanager.organization.OrganizationRepository;
 import com.devmanager.security.JwtService;
 import com.devmanager.user.Role;
 import com.devmanager.user.User;
@@ -23,11 +28,13 @@ import java.util.UUID;
 public class AuthService {
 
 	private final UserRepository userRepository;
+	private final OrganizationRepository organizationRepository;
 	private final PasswordResetTokenRepository resetTokenRepository;
+	private final InvitationService invitationService;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
-	private final PasswordResetNotifier resetNotifier;
+	private final EmailService emailService;
 
 	@Value("${app.frontend-url}")
 	private String frontendUrl;
@@ -35,24 +42,29 @@ public class AuthService {
 	@Value("${app.password-reset.expiration-minutes}")
 	private long resetExpirationMinutes;
 
+	// Cree une nouvelle entreprise et son premier administrateur
 	@Transactional
 	public AuthResponse register(RegisterRequest request) {
 		String email = normalize(request.email());
-		if (userRepository.existsByEmail(email)) {
-			throw ApiException.conflict("Un compte existe déjà avec cet email");
-		}
+		ensureEmailAvailable(email);
 
-		// Le tout premier compte devient administrateur, les suivants sont employés
-		Role role = userRepository.count() == 0 ? Role.ADMIN : Role.EMPLOYEE;
-
-		User user = userRepository.save(User.builder()
-				.firstName(request.firstName().trim())
-				.lastName(request.lastName().trim())
-				.email(email)
-				.password(passwordEncoder.encode(request.password()))
-				.role(role)
+		Organization organization = organizationRepository.save(Organization.builder()
+				.name(request.companyName().trim())
 				.build());
 
+		User user = createUser(request.firstName(), request.lastName(), email, request.password(), Role.ADMIN, organization);
+		return toAuthResponse(user);
+	}
+
+	// Cree le compte d'une personne invitee, dans l'entreprise et avec le role de l'invitation
+	@Transactional
+	public AuthResponse acceptInvitation(AcceptInvitationRequest request) {
+		Invitation invitation = invitationService.getPending(request.token());
+		ensureEmailAvailable(invitation.getEmail());
+
+		User user = createUser(request.firstName(), request.lastName(), invitation.getEmail(), request.password(),
+				invitation.getRole(), invitation.getOrganization());
+		invitation.setAccepted(true);
 		return toAuthResponse(user);
 	}
 
@@ -75,7 +87,7 @@ public class AuthService {
 					.expiresAt(LocalDateTime.now().plusMinutes(resetExpirationMinutes))
 					.build());
 			String link = frontendUrl + "/reset-password?token=" + resetToken.getToken();
-			resetNotifier.sendResetLink(user.getEmail(), user.getFirstName(), link);
+			emailService.sendPasswordReset(user.getEmail(), user.getFirstName(), link);
 		});
 	}
 
@@ -88,6 +100,24 @@ public class AuthService {
 		User user = resetToken.getUser();
 		user.setPassword(passwordEncoder.encode(request.newPassword()));
 		resetToken.setUsed(true);
+	}
+
+	private void ensureEmailAvailable(String email) {
+		if (userRepository.existsByEmail(email)) {
+			throw ApiException.conflict("Un compte existe déjà avec cet email");
+		}
+	}
+
+	private User createUser(String firstName, String lastName, String email, String password, Role role,
+							Organization organization) {
+		return userRepository.save(User.builder()
+				.firstName(firstName.trim())
+				.lastName(lastName.trim())
+				.email(email)
+				.password(passwordEncoder.encode(password))
+				.role(role)
+				.organization(organization)
+				.build());
 	}
 
 	private AuthResponse toAuthResponse(User user) {

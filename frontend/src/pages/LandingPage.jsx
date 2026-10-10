@@ -59,8 +59,8 @@ const FEATURES = [
 ]
 
 const STEPS = [
-  { title: 'Créez votre compte', text: 'Inscription gratuite en moins d’une minute. Le premier compte administre l’espace.' },
-  { title: 'Réunissez votre équipe', text: 'Vos collègues s’inscrivent, vous leur attribuez un rôle et les ajoutez aux projets.' },
+  { title: 'Créez l’espace de votre entreprise', text: 'Inscription gratuite en moins d’une minute : vous devenez l’administrateur de votre espace.' },
+  { title: 'Invitez votre équipe', text: 'Envoyez une invitation par email à chaque collègue, avec le rôle de votre choix.' },
   { title: 'Pilotez votre activité', text: 'Suivez l’avancement, les dépenses et les échanges depuis un seul tableau de bord.' },
 ]
 
@@ -257,7 +257,7 @@ function CallToAction() {
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 to-violet-700 px-6 py-14 text-center sm:px-12">
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Prêt à simplifier votre gestion ?</h2>
           <p className="mx-auto mt-4 max-w-xl text-lg text-indigo-100">
-            Créez votre espace en quelques secondes et invitez votre équipe.
+            Chaque entreprise dispose de son propre espace, isolé et sécurisé. Créez le vôtre en quelques secondes.
           </p>
           <Link
             to="/register"

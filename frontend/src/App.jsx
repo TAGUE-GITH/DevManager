@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import AppLayout from './components/layout/AppLayout'
+import AcceptInvitationPage from './pages/AcceptInvitationPage'
 import { AdminRoute, ProtectedRoute, PublicOnlyRoute } from './components/RouteGuards'
 import DashboardPage from './pages/DashboardPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
@@ -24,8 +25,9 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       </Route>
 
-      {/* Accessible connecte ou non : on arrive ici depuis le lien recu par email */}
+      {/* Accessibles connecte ou non : on arrive ici depuis un lien recu par email */}
       <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/invitation" element={<AcceptInvitationPage />} />
 
       {/* Application, reservee aux utilisateurs connectes */}
       <Route path="/app" element={<ProtectedRoute />}>
