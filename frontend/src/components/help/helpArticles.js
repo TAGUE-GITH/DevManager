@@ -1,5 +1,5 @@
-// Contenu du centre d'aide : un article par sujet, regroupes par categorie
-export const HELP_CATEGORIES = [
+// Contenu du centre d'aide, en francais et en anglais : un article par sujet, regroupes par categorie
+const FR = [
   {
     id: 'demarrer',
     title: 'Premiers pas',
@@ -136,6 +136,166 @@ export const HELP_CATEGORIES = [
           'En bas du menu de l’application, choisissez le thème clair, sombre ou celui de votre système (icônes soleil, lune et écran).',
         ],
       },
+      {
+        id: 'langue',
+        question: 'Comment changer la langue de l’application ?',
+        answer: [
+          'Utilisez les boutons FR et EN en bas du menu, sur les pages de connexion ou dans « Mon profil ». Votre choix est mémorisé sur cet appareil.',
+          'Les dates, les montants, les messages d’erreur et la réunion vidéo s’affichent aussi dans la langue choisie.',
+        ],
+      },
     ],
   },
 ]
+
+const EN = [
+  {
+    id: 'demarrer',
+    title: 'Getting started',
+    articles: [
+      {
+        id: 'creer-espace',
+        question: 'How do I create my company’s workspace?',
+        answer: [
+          'Click “Get started” on the home page, then enter your company name, your name, your email and a password.',
+          'You automatically become the administrator of this workspace. Your company’s data is isolated: no other company can see it.',
+        ],
+      },
+      {
+        id: 'demo',
+        question: 'Can I try it without creating an account?',
+        answer: [
+          'Yes: the “Try the demo” button on the home page opens a fictitious company already filled with data (projects, tasks, expenses, messages).',
+          'Demo data is shared between visitors and reset regularly. Invitations are disabled there.',
+        ],
+      },
+      {
+        id: 'inviter',
+        question: 'How do I invite my team?',
+        answer: [
+          'In the Team menu (administrators), enter your colleague’s email, choose their role, then click “Invite”.',
+          'They receive an email with a link valid for 7 days. If the email does not arrive, use “Copy link” to send it another way (WhatsApp, SMS…).',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'projets',
+    title: 'Projects and tasks',
+    articles: [
+      {
+        id: 'creer-projet',
+        question: 'How do I create a project?',
+        answer: [
+          'In Projects, click “New project”. Enter its name, its budget in XAF, its dates and the team members.',
+          'Only administrators and managers can create projects. The creator becomes the project owner.',
+        ],
+      },
+      {
+        id: 'kanban',
+        question: 'How do I use the Kanban board?',
+        answer: [
+          'In a project, the Tasks tab shows four columns: To do, In progress, In review and Done.',
+          'Drag a card to another column to change its status, or within the same column to change its order. On a phone, hold the card for a split second before moving it.',
+          'With the keyboard: reach a card with Tab, press Space to pick it up, move it with the arrow keys, then press Space to drop it.',
+        ],
+      },
+      {
+        id: 'reunion',
+        question: 'How do I start a video meeting with my team?',
+        answer: [
+          'In a project, click “Meeting”. The project’s meeting room opens inside the app: video, microphone, chat and screen sharing, with several participants.',
+          'Each project has its own room, reserved for people who have access to it. Use “Copy link” to invite someone, or “Open in a tab” if your browser blocks the video.',
+          'Video conferencing is provided by Jitsi Meet: the first person to open the room may need to sign in (Google, GitHub or Facebook) to start it.',
+        ],
+      },
+      {
+        id: 'mes-taches',
+        question: 'Where can I see the tasks assigned to me?',
+        answer: [
+          'The “My tasks” page gathers all the tasks assigned to you, across all projects, with overdue ones highlighted.',
+          'You can change a task’s status there without opening the project.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'budget',
+    title: 'Budget and dashboard',
+    articles: [
+      {
+        id: 'depenses',
+        question: 'How do I track a project’s budget?',
+        answer: [
+          'In a project, the “Budget and team” tab shows the allocated budget, the amount spent, what remains and the percentage used.',
+          'Add each expense with its amount, category and date. If the budget is exceeded, the gauge turns red with an alert.',
+        ],
+      },
+      {
+        id: 'graphiques',
+        question: 'How do I read the dashboard charts?',
+        answer: [
+          'Hover over a bar to see its exact value. The “Table” button at the top of each chart shows the same data as a table.',
+          'Statistics only cover the projects you are allowed to see.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'compte',
+    title: 'Account, roles and plans',
+    articles: [
+      {
+        id: 'roles',
+        question: 'What is the difference between the roles?',
+        answer: [
+          'Administrator: manages the team, the company and the subscription, and has access to all projects.',
+          'Manager: sees all projects, creates projects and manages the ones they own.',
+          'Employee: sees the projects they are a member of and works on their tasks.',
+        ],
+      },
+      {
+        id: 'offres',
+        question: 'What are the limits of the Free plan?',
+        answer: [
+          'The Free plan allows 3 projects and 5 members (pending invitations included). The Pro plan, at 15,000 XAF per month, is unlimited.',
+          'This demo project simulates payment: no money is charged and no bank details are requested.',
+        ],
+      },
+      {
+        id: 'mot-de-passe',
+        question: 'I forgot my password, what should I do?',
+        answer: [
+          'On the login page, click “Forgot your password?” and enter your email. You will receive a link valid for 30 minutes that can be used only once.',
+          'Remember to check your spam folder.',
+        ],
+      },
+      {
+        id: 'profil',
+        question: 'How do I add my photo or my company’s logo?',
+        answer: [
+          'Click your name at the bottom of the menu to open “My profile”. There you can change your photo, name, job title and password.',
+          'Administrators add the company logo from the Company menu. Images are automatically cropped to a square.',
+        ],
+      },
+      {
+        id: 'theme',
+        question: 'How do I turn on dark mode?',
+        answer: [
+          'At the bottom of the app menu, choose the light theme, the dark theme or your system’s theme (sun, moon and screen icons).',
+        ],
+      },
+      {
+        id: 'langue',
+        question: 'How do I change the app’s language?',
+        answer: [
+          'Use the FR and EN buttons at the bottom of the menu, on the login pages or in “My profile”. Your choice is remembered on this device.',
+          'Dates, amounts, error messages and the video meeting also follow the chosen language.',
+        ],
+      },
+    ],
+  },
+]
+
+// Articles dans la langue de l'interface (francais par defaut)
+export const helpCategories = (language) => (language === 'en' ? EN : FR)

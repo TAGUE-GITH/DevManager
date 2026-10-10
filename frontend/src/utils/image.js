@@ -1,13 +1,15 @@
+import i18n from '../i18n'
+
 // Prepare une image avant envoi : recadrage carre centre, 256 x 256 pixels, format WebP (JPEG si non pris en charge).
 // Une photo de plusieurs Mo devient ainsi un fichier d'environ 20 a 40 Ko.
 const MAX_FILE_SIZE = 10 * 1024 * 1024
 
 export async function resizeImage(file, size = 256) {
   if (!file.type.startsWith('image/')) {
-    throw new Error('Choisissez une image (JPEG, PNG ou WebP).')
+    throw new Error(i18n.t('image.errorType'))
   }
   if (file.size > MAX_FILE_SIZE) {
-    throw new Error('Image trop lourde (10 Mo maximum).')
+    throw new Error(i18n.t('image.errorSize'))
   }
 
   const bitmap = await createImageBitmap(file)

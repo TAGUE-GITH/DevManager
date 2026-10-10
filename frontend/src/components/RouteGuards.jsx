@@ -1,11 +1,13 @@
 import { Loader2 } from 'lucide-react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
+import { useTranslation } from 'react-i18next'
 
 function FullPageLoader() {
+  const { t } = useTranslation()
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <Loader2 className="size-8 animate-spin text-indigo-600" aria-label="Chargement" />
+      <Loader2 className="size-8 animate-spin text-indigo-600" aria-label={t('common.loading')} />
     </div>
   )
 }

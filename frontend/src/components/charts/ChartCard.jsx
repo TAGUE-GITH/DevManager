@@ -1,12 +1,14 @@
 import { BarChart3, Table2 } from 'lucide-react'
 import { useState } from 'react'
 import Card from '../ui/Card'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Cadre commun des graphiques : titre, sous-titre et bascule Graphique / Tableau.
  * La vue tableau donne acces aux valeurs exactes (lecteurs d'ecran, impression, daltonisme).
  */
 export default function ChartCard({ title, subtitle, table, className = '', children }) {
+  const { t } = useTranslation()
   const [view, setView] = useState('chart')
 
   return (
@@ -17,10 +19,10 @@ export default function ChartCard({ title, subtitle, table, className = '', chil
           {subtitle && <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>}
         </div>
         {table && (
-          <div className="flex shrink-0 rounded-lg bg-slate-100 p-0.5" role="group" aria-label={`Affichage : ${title}`}>
+          <div className="flex shrink-0 rounded-lg bg-slate-100 p-0.5" role="group" aria-label={t('charts.display', { title })}>
             {[
-              { value: 'chart', label: 'Graphique', Icon: BarChart3 },
-              { value: 'table', label: 'Tableau', Icon: Table2 },
+              { value: 'chart', label: t('charts.chart'), Icon: BarChart3 },
+              { value: 'table', label: t('charts.table'), Icon: Table2 },
             ].map(({ value, label, Icon }) => (
               <button
                 key={value}

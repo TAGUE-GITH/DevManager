@@ -9,15 +9,14 @@ import Input from '../ui/Input'
 import Modal from '../ui/Modal'
 import Select from '../ui/Select'
 import Textarea from '../ui/Textarea'
-
-const PRIORITY_OPTIONS = Object.entries(TASK_PRIORITY).map(([value, { label }]) => ({ value, label }))
-const STATUS_OPTIONS = Object.entries(TASK_STATUS).map(([value, { label }]) => ({ value, label }))
+import { useTranslation } from 'react-i18next'
 
 /**
  * Creation (task absente) ou modification d'une tache.
  * Le choix du statut offre une alternative au glisser-deposer.
  */
 export default function TaskFormModal({ project, task, canEdit, canMove, onClose, onSaved }) {
+  const { t } = useTranslation()
   const [form, setForm] = useState({
     title: task?.title ?? '',
     description: task?.description ?? '',
@@ -30,6 +29,8 @@ export default function TaskFormModal({ project, task, canEdit, canMove, onClose
   const [fieldErrors, setFieldErrors] = useState({})
   const [saving, setSaving] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const priorityOptions = Object.entries(TASK_PRIORITY).map(([value, { label }]) => ({ value, label }))
+  const statusOptions = Object.entries(TASK_STATUS).map(([value, { label }]) => ({ value, label }))
 
   const handleChange = (event) => setForm({ ...form, [event.target.name]: event.target.value })
 
@@ -69,17 +70,17 @@ export default function TaskFormModal({ project, task, canEdit, canMove, onClose
   }
 
   const assigneeOptions = [
-    { value: '', label: 'Non assignée' },
+    { value: '', label: t('tasks.unassigned') },
     ...projectTeam(project).map((member) => ({ value: member.id, label: fullName(member) })),
   ]
   const readOnly = Boolean(task) && !canEdit
 
   return (
-    <Modal open title={task ? 'Tâche' : 'Nouvelle tâche'} onClose={onClose} size="lg">
+    <Modal open title={task ? t('tasks.task') : t('tasks.new')} onClose={onClose} size="lg">
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <Alert>{error}</Alert>
         <Input
-          label="Titre"
+          label={t('tasks.form.title')}
           name="title"
           value={form.title}
           onChange={handleChange}
@@ -88,7 +89,7 @@ export default function TaskFormModal({ project, task, canEdit, canMove, onClose
           required
         />
         <Textarea
-          label="Description"
+          label={t('projects.form.description')}
           name="description"
           value={form.description ?? ''}
           onChange={handleChange}
@@ -97,15 +98,15 @@ export default function TaskFormModal({ project, task, canEdit, canMove, onClose
         />
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Select
-            label="Priorité"
+            label={t('tasks.form.priority')}
             name="priority"
             value={form.priority}
             onChange={handleChange}
-            options={PRIORITY_OPTIONS}
+            options={priorityOptions}
             disabled={readOnly}
           />
           <Input
-            label="Échéance"
+            label={t('tasks.form.dueDate')}
             name="dueDate"
             type="date"
             value={form.dueDate}
@@ -113,7 +114,7 @@ export default function TaskFormModal({ project, task, canEdit, canMove, onClose
             disabled={readOnly}
           />
           <Select
-            label="Assignée à"
+            label={t('tasks.form.assignee')}
             name="assigneeId"
             value={form.assigneeId}
             onChange={handleChange}
@@ -122,13 +123,13 @@ export default function TaskFormModal({ project, task, canEdit, canMove, onClose
             disabled={readOnly}
           />
           {task && canMove && (
-            <Select label="Statut" name="status" value={form.status} onChange={handleChange} options={STATUS_OPTIONS} />
+            <Select label={t('dashboard.col.status')} name="status" value={form.status} onChange={handleChange} options={statusOptions} />
           )}
         </div>
         {task && (
           <p className="text-xs text-slate-500">
-            Créée par {fullName(task.createdBy)}
-            {readOnly && ' · seuls son auteur et le responsable du projet peuvent la modifier'}
+            {t('tasks.createdBy', { name: fullName(task.createdBy) })}
+            {readOnly && ` · ${t('tasks.readOnly')}`}
           </p>
         )}
 
@@ -136,18 +137,18 @@ export default function TaskFormModal({ project, task, canEdit, canMove, onClose
           {task && canEdit ? (
             confirmDelete ? (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-600">Supprimer ?</span>
+                <span className="text-sm text-slate-600">{t('tasks.confirmDelete')}</span>
                 <Button type="button" variant="danger" loading={saving} onClick={() => run(() => tasksApi.remove(task.id))}>
-                  Oui, supprimer
+                  {t('tasks.yesDelete')}
                 </Button>
                 <Button type="button" variant="ghost" onClick={() => setConfirmDelete(false)}>
-                  Non
+                  {t('common.no')}
                 </Button>
               </div>
             ) : (
               <Button type="button" variant="ghost" onClick={() => setConfirmDelete(true)}>
                 <Trash2 className="size-4 text-red-600" aria-hidden />
-                Supprimer
+                {t('common.delete')}
               </Button>
             )
           ) : (
@@ -155,10 +156,10 @@ export default function TaskFormModal({ project, task, canEdit, canMove, onClose
           )}
           <div className="flex gap-3">
             <Button type="button" variant="secondary" onClick={onClose}>
-              Annuler
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={saving}>
-              {task ? 'Enregistrer' : 'Créer la tâche'}
+              {task ? t('common.save') : t('tasks.form.create')}
             </Button>
           </div>
         </div>

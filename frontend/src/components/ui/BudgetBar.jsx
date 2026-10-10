@@ -1,7 +1,9 @@
 import { AlertTriangle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 // Jauge de consommation du budget ; au-dela de 100 % : barre rouge + icone + texte (jamais la couleur seule)
 export default function BudgetBar({ percent, showLabel = true }) {
+  const { t } = useTranslation()
   const over = percent > 100
   return (
     <div>
@@ -11,7 +13,7 @@ export default function BudgetBar({ percent, showLabel = true }) {
         aria-valuenow={percent}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-label="Budget consommé"
+        aria-label={t('budget.consumedLabel')}
       >
         <div
           className={`h-full rounded-full transition-all ${over ? 'bg-red-500' : 'bg-indigo-500'}`}
@@ -21,7 +23,8 @@ export default function BudgetBar({ percent, showLabel = true }) {
       {showLabel && (
         <p className={`mt-1.5 flex items-center gap-1 text-xs ${over ? 'font-medium text-red-700' : 'text-slate-500'}`}>
           {over && <AlertTriangle className="size-3.5" aria-hidden />}
-          {percent} % du budget consommé{over && ' (dépassement)'}
+          {t('budget.consumed', { percent })}
+          {over && ` ${t('budget.overrun')}`}
         </p>
       )}
     </div>

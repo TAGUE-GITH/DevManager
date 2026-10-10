@@ -13,7 +13,8 @@ import PageHeader from '../components/ui/PageHeader'
 import { ErrorState, PageLoader } from '../components/ui/States'
 import { useAuth } from '../context/useAuth'
 import { useFetch } from '../hooks/useFetch'
-import { formatCurrency } from '../utils/format'
+import { formatCurrency, formatPercent } from '../utils/format'
+import { useTranslation } from 'react-i18next'
 
 function StatTile({ Icon, label, value, hint, to }) {
   const content = (
@@ -38,6 +39,7 @@ function StatTile({ Icon, label, value, hint, to }) {
 }
 
 export default function DashboardPage() {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const loadData = useCallback(() => Promise.all([dashboardApi.get(), projectsApi.list()]), [])
   const { data, loading, error } = useFetch(loadData)
@@ -51,39 +53,39 @@ export default function DashboardPage() {
 
   return (
     <>
-      <PageHeader title={`Bonjour ${user.firstName} 👋`} description={`Voici l'activité de ${user.organizationName}.`} />
+      <PageHeader title={t('dashboard.greeting', { name: user.firstName })} description={t('dashboard.intro', { company: user.organizationName })} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatTile
           Icon={FolderKanban}
-          label="Projets"
+          label={t('nav.projects')}
           value={stats.totalProjects}
-          hint={`${activeProjects} en cours ou à démarrer`}
+          hint={t('dashboard.activeProjects', { count: activeProjects })}
           to="/app/projects"
         />
         <StatTile
           Icon={Wallet}
-          label="Budget consommé"
-          value={`${consumed} %`}
-          hint={`${formatCurrency(stats.totalSpent)} sur ${formatCurrency(stats.totalBudget)}`}
+          label={t('budget.consumedLabel')}
+          value={formatPercent(consumed)}
+          hint={t('dashboard.spentOf', { spent: formatCurrency(stats.totalSpent), budget: formatCurrency(stats.totalBudget) })}
         />
         <StatTile
           Icon={ListTodo}
-          label="Mes tâches à traiter"
+          label={t('dashboard.myOpenTasks')}
           value={stats.myOpenTasks}
           to="/app/tasks"
           hint={
             stats.overdueTasks > 0 ? (
               <span className="flex items-center gap-1 font-medium text-red-700">
                 <AlertTriangle className="size-3.5" aria-hidden />
-                {stats.overdueTasks} en retard dans vos projets
+                {t('dashboard.overdueInProjects', { count: stats.overdueTasks })}
               </span>
             ) : (
-              'Aucune tâche en retard'
+              t('dashboard.noOverdue')
             )
           }
         />
-        <StatTile Icon={MessageSquare} label="Messages non lus" value={stats.unreadMessages} to="/app/messages" />
+        <StatTile Icon={MessageSquare} label={t('dashboard.unreadMessages')} value={stats.unreadMessages} to="/app/messages" />
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-3">

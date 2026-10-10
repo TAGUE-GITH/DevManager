@@ -1,7 +1,9 @@
 import { X } from 'lucide-react'
 import { useEffect, useId } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export default function Modal({ open, title, onClose, children, size = 'md' }) {
+  const { t } = useTranslation()
   const titleId = useId()
 
   // Fermeture avec la touche Echap
@@ -28,7 +30,7 @@ export default function Modal({ open, title, onClose, children, size = 'md' }) {
           <h2 id={titleId} className="text-lg font-semibold text-slate-900">
             {title}
           </h2>
-          <button onClick={onClose} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600" aria-label="Fermer">
+          <button onClick={onClose} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600" aria-label={t('common.close')}>
             <X className="size-5" />
           </button>
         </div>

@@ -1,25 +1,32 @@
 import { Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import { invitationsPublicApi } from '../api/auth'
 import { getErrorMessage, getFieldErrors } from '../api/client'
 import AuthLayout from '../components/AuthLayout'
 import Alert from '../components/ui/Alert'
 import Button from '../components/ui/Button'
-import Input from '../components/ui/Input'
 import { buttonClasses } from '../components/ui/buttonStyles'
+import Input from '../components/ui/Input'
 import { useAuth } from '../context/useAuth'
 import { ROLE } from '../utils/format'
 
 // Page ouverte depuis le lien d'invitation recu par email : /invitation?token=...
 export default function AcceptInvitationPage() {
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
   const { acceptInvitation } = useAuth()
 
   const [invitation, setInvitation] = useState(null)
-  const [loadError, setLoadError] = useState(token ? '' : "Ce lien d'invitation est incomplet.")
-  const [form, setForm] = useState({ firstName: '', lastName: '', password: '', confirmPassword: '' })
+  const [loadError, setLoadError] = useState(token ? '' : t('auth.invitation.incomplete'))
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    password: '',
+    confirmPassword: '',
+  })
   const [error, setError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
@@ -43,7 +50,7 @@ export default function AcceptInvitationPage() {
     setError('')
     setFieldErrors({})
     if (form.password !== form.confirmPassword) {
-      setFieldErrors({ confirmPassword: 'Les mots de passe ne correspondent pas' })
+      setFieldErrors({ confirmPassword: t('fields.passwordMismatch') })
       return
     }
     setSubmitting(true)
@@ -61,10 +68,12 @@ export default function AcceptInvitationPage() {
 
   if (loadError) {
     return (
-      <AuthLayout title="Invitation invalide">
-        <Alert>{loadError} Demandez à votre administrateur de vous envoyer une nouvelle invitation.</Alert>
+      <AuthLayout title={t('auth.invitation.invalidTitle')}>
+        <Alert>
+          {loadError} {t('auth.invitation.askAgain')}
+        </Alert>
         <Link to="/" className={buttonClasses('secondary', 'mt-6 w-full')}>
-          Retour à l'accueil
+          {t('common.backHome')}
         </Link>
       </AuthLayout>
     )
@@ -72,9 +81,9 @@ export default function AcceptInvitationPage() {
 
   if (!invitation) {
     return (
-      <AuthLayout title="Invitation">
+      <AuthLayout title={t('auth.invitation.loadingTitle')}>
         <div className="flex justify-center py-10">
-          <Loader2 className="size-8 animate-spin text-indigo-600" aria-label="Chargement" />
+          <Loader2 className="size-8 animate-spin text-indigo-600" aria-label={t('common.loading')} />
         </div>
       </AuthLayout>
     )
@@ -82,15 +91,20 @@ export default function AcceptInvitationPage() {
 
   return (
     <AuthLayout
-      title={`Rejoindre ${invitation.organizationName}`}
-      subtitle={`${invitation.invitedBy} vous invite à rejoindre l'équipe en tant que ${ROLE[invitation.role].toLowerCase()}.`}
+      title={t('auth.invitation.title', {
+        company: invitation.organizationName,
+      })}
+      subtitle={t('auth.invitation.subtitle', {
+        name: invitation.invitedBy,
+        role: ROLE[invitation.role].toLowerCase(),
+      })}
     >
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <Alert>{error}</Alert>
-        <Input label="Email" value={invitation.email} disabled readOnly />
+        <Input label={t('fields.email')} value={invitation.email} disabled readOnly />
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Input
-            label="Prénom"
+            label={t('fields.firstName')}
             name="firstName"
             autoComplete="given-name"
             value={form.firstName}
@@ -99,7 +113,7 @@ export default function AcceptInvitationPage() {
             required
           />
           <Input
-            label="Nom"
+            label={t('fields.lastName')}
             name="lastName"
             autoComplete="family-name"
             value={form.lastName}
@@ -109,18 +123,18 @@ export default function AcceptInvitationPage() {
           />
         </div>
         <Input
-          label="Mot de passe"
+          label={t('fields.password')}
           name="password"
           type="password"
           autoComplete="new-password"
-          placeholder="8 caractères minimum"
+          placeholder={t('fields.passwordPlaceholder')}
           value={form.password}
           onChange={handleChange}
           error={fieldErrors.password}
           required
         />
         <Input
-          label="Confirmer le mot de passe"
+          label={t('fields.confirmPassword')}
           name="confirmPassword"
           type="password"
           autoComplete="new-password"
@@ -130,7 +144,7 @@ export default function AcceptInvitationPage() {
           required
         />
         <Button type="submit" loading={submitting} className="w-full">
-          Rejoindre l'équipe
+          {t('auth.invitation.submit')}
         </Button>
       </form>
     </AuthLayout>

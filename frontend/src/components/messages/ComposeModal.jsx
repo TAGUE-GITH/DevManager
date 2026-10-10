@@ -9,9 +9,11 @@ import Input from '../ui/Input'
 import Modal from '../ui/Modal'
 import Select from '../ui/Select'
 import Textarea from '../ui/Textarea'
+import { useTranslation } from 'react-i18next'
 
 // Nouveau message ; "initial" permet de pre-remplir une reponse
 export default function ComposeModal({ initial, onClose, onSent }) {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [recipients, setRecipients] = useState([])
   const [form, setForm] = useState({ recipientId: '', subject: '', content: '', ...initial })
@@ -45,25 +47,25 @@ export default function ComposeModal({ initial, onClose, onSent }) {
   }
 
   const options = [
-    { value: '', label: 'Choisir un destinataire' },
+    { value: '', label: t('messages.chooseRecipient') },
     ...recipients.map((recipient) => ({ value: recipient.id, label: fullName(recipient) })),
   ]
 
   return (
-    <Modal open title="Nouveau message" onClose={onClose} size="lg">
+    <Modal open title={t('messages.new')} onClose={onClose} size="lg">
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <Alert>{error}</Alert>
         <Select
-          label="Destinataire"
+          label={t('messages.recipient')}
           name="recipientId"
           value={form.recipientId}
           onChange={handleChange}
           options={options}
           error={fieldErrors.recipientId}
         />
-        <Input label="Sujet" name="subject" value={form.subject} onChange={handleChange} error={fieldErrors.subject} required />
+        <Input label={t('messages.subject')} name="subject" value={form.subject} onChange={handleChange} error={fieldErrors.subject} required />
         <Textarea
-          label="Message"
+          label={t('messages.message')}
           name="content"
           rows={6}
           value={form.content}
@@ -73,10 +75,10 @@ export default function ComposeModal({ initial, onClose, onSent }) {
         />
         <div className="flex justify-end gap-3 pt-2">
           <Button type="button" variant="secondary" onClick={onClose}>
-            Annuler
+            {t('common.cancel')}
           </Button>
           <Button type="submit" loading={sending}>
-            Envoyer
+            {t('messages.send')}
           </Button>
         </div>
       </form>

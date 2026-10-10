@@ -1,16 +1,15 @@
 import { CheckCircle2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import LanguageSwitcher from './LanguageSwitcher'
 import Logo from './Logo'
 
-const FEATURES = [
-  'Projets et tâches en Kanban',
-  'Budgets suivis en temps réel',
-  'Messagerie et tableau de bord',
-]
+const FEATURES = ['auth.panel.feature1', 'auth.panel.feature2', 'auth.panel.feature3']
 
 const YEAR = new Date().getFullYear()
 
 // Panneau de presentation : identique en theme clair et sombre (couleurs fixes, hors palette du theme)
 function ShowcasePanel() {
+  const { t } = useTranslation()
   return (
     <aside
       className="relative hidden w-[46%] flex-col overflow-hidden bg-[#0b1020] p-12 lg:flex"
@@ -22,14 +21,16 @@ function ShowcasePanel() {
       <Logo light />
       <div className="mt-16 max-w-md">
         <h2 className="text-4xl leading-tight font-bold tracking-tight text-on-accent">
-          Pilotez votre entreprise{' '}
-          <span className="bg-gradient-to-r from-[#a5b4fc] to-[#c4b5fd] bg-clip-text text-transparent">en toute clarté</span>
+          {t('auth.panel.title')}{' '}
+          <span className="bg-gradient-to-r from-[#a5b4fc] to-[#c4b5fd] bg-clip-text text-transparent">
+            {t('auth.panel.highlight')}
+          </span>
         </h2>
         <ul className="mt-8 space-y-3">
           {FEATURES.map((feature) => (
             <li key={feature} className="flex items-center gap-3 text-[#cbd5e1]">
               <CheckCircle2 className="size-5 shrink-0 text-[#a5b4fc]" aria-hidden />
-              {feature}
+              {t(feature)}
             </li>
           ))}
         </ul>
@@ -45,7 +46,7 @@ function ShowcasePanel() {
           </div>
           <img
             src="/screens/02-tableau-de-bord.webp"
-            alt="Tableau de bord de DevManager : chiffres clés, budgets par projet et avancement des tâches"
+            alt={t('auth.panel.screenshotAlt')}
             className="block w-full"
             width="1440"
             height="1000"
@@ -63,7 +64,8 @@ export default function AuthLayout({ title, subtitle, children }) {
   return (
     <div className="themed flex min-h-screen bg-slate-50">
       <ShowcasePanel />
-      <main className="flex flex-1 items-center justify-center px-4 py-12 sm:px-6">
+      <main className="relative flex flex-1 items-center justify-center px-4 py-12 sm:px-6">
+        <LanguageSwitcher className="absolute top-5 right-5 w-24" />
         <div className="w-full max-w-sm">
           <div className="mb-10 lg:hidden">
             <Logo />

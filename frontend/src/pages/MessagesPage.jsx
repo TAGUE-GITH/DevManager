@@ -10,26 +10,28 @@ import { EmptyState, ErrorState, PageLoader } from '../components/ui/States'
 import { useFetch } from '../hooks/useFetch'
 import { notifyMessagesChanged } from '../utils/events'
 import { formatDateTime, fullName } from '../utils/format'
+import { useTranslation } from 'react-i18next'
 
 const FOLDERS = {
-  inbox: { label: 'Reçus', Icon: Inbox, load: messagesApi.inbox },
-  sent: { label: 'Envoyés', Icon: Send, load: messagesApi.sent },
+  inbox: { labelKey: 'messages.inbox', Icon: Inbox, load: messagesApi.inbox },
+  sent: { labelKey: 'messages.sent', Icon: Send, load: messagesApi.sent },
 }
 
 function MessageDetail({ message, folder, onBack, onReply }) {
+  const { t } = useTranslation()
   const other = folder === 'inbox' ? message.sender : message.recipient
   return (
     <Card className="p-6">
       <button onClick={onBack} className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-900 lg:hidden">
         <ArrowLeft className="size-4" aria-hidden />
-        Retour
+        {t('common.back')}
       </button>
       <h2 className="text-lg font-semibold text-slate-900">{message.subject}</h2>
       <div className="mt-4 flex items-center gap-3 border-b border-slate-100 pb-4">
         <Avatar user={other} />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-slate-900">
-            {folder === 'inbox' ? 'De' : 'À'} {fullName(other)}
+            {folder === 'inbox' ? t('messages.from', { name: fullName(other) }) : t('messages.to', { name: fullName(other) })}
           </p>
           <p className="text-xs text-slate-500">{formatDateTime(message.sentAt)}</p>
         </div>
@@ -38,7 +40,7 @@ function MessageDetail({ message, folder, onBack, onReply }) {
       {folder === 'inbox' && (
         <Button variant="secondary" className="mt-6" onClick={onReply}>
           <Reply className="size-4" aria-hidden />
-          Répondre
+          {t('messages.reply')}
         </Button>
       )}
     </Card>
@@ -46,6 +48,7 @@ function MessageDetail({ message, folder, onBack, onReply }) {
 }
 
 export default function MessagesPage() {
+  const { t } = useTranslation()
   const [folder, setFolder] = useState('inbox')
   const { data: messages, loading, error, reload, setData } = useFetch(useCallback(() => FOLDERS[folder].load(), [folder]))
   const [selectedId, setSelectedId] = useState(null)
@@ -77,18 +80,18 @@ export default function MessagesPage() {
   return (
     <>
       <PageHeader
-        title="Messagerie"
-        description="Échangez avec les membres de votre entreprise."
+        title={t('nav.messages')}
+        description={t('messages.description')}
         actions={
           <Button onClick={() => setCompose({})}>
             <PenSquare className="size-4" aria-hidden />
-            Nouveau message
+            {t('messages.new')}
           </Button>
         }
       />
 
-      <div className="mb-6 flex w-fit gap-1 rounded-lg bg-slate-100 p-1" role="tablist" aria-label="Dossiers">
-        {Object.entries(FOLDERS).map(([key, { label, Icon }]) => (
+      <div className="mb-6 flex w-fit gap-1 rounded-lg bg-slate-100 p-1" role="tablist" aria-label={t('messages.folders')}>
+        {Object.entries(FOLDERS).map(([key, { labelKey, Icon }]) => (
           <button
             key={key}
             role="tab"
@@ -99,7 +102,7 @@ export default function MessagesPage() {
             }`}
           >
             <Icon className="size-4" aria-hidden />
-            {label}
+            {t(labelKey)}
           </button>
         ))}
       </div>
@@ -110,7 +113,7 @@ export default function MessagesPage() {
       {messages && messages.length === 0 && (
         <EmptyState
           icon={FOLDERS[folder].Icon}
-          title={folder === 'inbox' ? 'Aucun message reçu' : 'Aucun message envoyé'}
+          title={folder === 'inbox' ? t('messages.emptyInbox') : t('messages.emptySent')}
         />
       )}
 
@@ -138,7 +141,7 @@ export default function MessagesPage() {
                           <span className="shrink-0 text-xs text-slate-400">{formatDateTime(message.sentAt)}</span>
                         </div>
                         <p className={`truncate text-sm ${unread ? 'font-medium text-slate-900' : 'text-slate-500'}`}>
-                          {unread && <span className="mr-1.5 inline-block size-2 rounded-full bg-indigo-600" aria-label="Non lu" />}
+                          {unread && <span className="mr-1.5 inline-block size-2 rounded-full bg-indigo-600" aria-label={t('messages.unread')} />}
                           {message.subject}
                         </p>
                       </div>
@@ -154,7 +157,7 @@ export default function MessagesPage() {
               <MessageDetail message={selected} folder={folder} onBack={() => setSelectedId(null)} onReply={reply} />
             ) : (
               <div className="flex h-full min-h-48 items-center justify-center rounded-xl border-2 border-dashed border-slate-200 text-sm text-slate-400">
-                Sélectionnez un message pour le lire
+                {t('messages.select')}
               </div>
             )}
           </div>

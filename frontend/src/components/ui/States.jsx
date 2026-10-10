@@ -1,9 +1,11 @@
 import { AlertCircle, Loader2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function PageLoader() {
+  const { t } = useTranslation()
   return (
     <div className="flex justify-center py-20">
-      <Loader2 className="size-8 animate-spin text-indigo-600" aria-label="Chargement" />
+      <Loader2 className="size-8 animate-spin text-indigo-600" aria-label={t('common.loading')} />
     </div>
   )
 }

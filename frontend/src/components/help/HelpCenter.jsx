@@ -1,6 +1,7 @@
 import { ChevronDown, Search } from 'lucide-react'
 import { useState } from 'react'
-import { HELP_CATEGORIES } from './helpArticles'
+import { useTranslation } from 'react-i18next'
+import { helpCategories } from './helpArticles'
 
 // Ignore majuscules et accents dans la recherche ("creer" trouve "créer")
 const normalize = (text) =>
@@ -27,10 +28,11 @@ function Article({ article }) {
 
 // Centre d'aide : recherche et articles par categorie (utilise dans l'application et sur la page publique /aide)
 export default function HelpCenter() {
+  const { t, i18n } = useTranslation()
   const [query, setQuery] = useState('')
   const terms = normalize(query.trim())
 
-  const categories = HELP_CATEGORIES.map((category) => ({
+  const categories = helpCategories(i18n.language).map((category) => ({
     ...category,
     articles: category.articles.filter((article) =>
       normalize([article.question, ...article.answer].join(' ')).includes(terms),
@@ -45,14 +47,14 @@ export default function HelpCenter() {
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Rechercher : Kanban, invitation, mot de passe…"
-          aria-label="Rechercher dans l'aide"
+          placeholder={t('help.searchPlaceholder')}
+          aria-label={t('help.searchLabel')}
           className="w-full rounded-xl border border-slate-300 bg-white py-3.5 pr-4 pl-12 text-sm shadow-xs outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
         />
       </div>
 
       {categories.length === 0 ? (
-        <p className="py-12 text-center text-sm text-slate-500">Aucun article ne correspond à « {query} ».</p>
+        <p className="py-12 text-center text-sm text-slate-500">{t('help.noMatch', { query })}</p>
       ) : (
         <div className="mt-8 space-y-10">
           {categories.map((category) => (

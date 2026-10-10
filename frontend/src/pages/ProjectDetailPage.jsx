@@ -30,18 +30,18 @@ import {
   formatDate,
   fullName,
 } from '../utils/format'
-
-const STATUS_OPTIONS = Object.entries(PROJECT_STATUS).map(([value, { label }]) => ({ value, label }))
+import { useTranslation } from 'react-i18next'
 
 function BudgetSummary({ project }) {
+  const { t } = useTranslation()
   const items = [
-    { label: 'Budget alloué', value: project.budget },
-    { label: 'Dépensé', value: project.spent },
-    { label: 'Reste', value: project.remaining, negative: project.remaining < 0 },
+    { label: t('project.allocated'), value: project.budget },
+    { label: t('dashboard.col.spent'), value: project.spent },
+    { label: t('project.remaining'), value: project.remaining, negative: project.remaining < 0 },
   ]
   return (
     <Card className="p-6">
-      <h2 className="font-semibold text-slate-900">Budget</h2>
+      <h2 className="font-semibold text-slate-900">{t('dashboard.col.budget')}</h2>
       <dl className="mt-5 grid grid-cols-3 gap-4">
         {items.map(({ label, value, negative }) => (
           <div key={label}>
@@ -60,14 +60,15 @@ function BudgetSummary({ project }) {
 }
 
 function Team({ project }) {
+  const { t } = useTranslation()
   return (
     <Card className="p-6">
-      <h2 className="font-semibold text-slate-900">Équipe</h2>
+      <h2 className="font-semibold text-slate-900">{t('nav.team')}</h2>
       <ul className="mt-4 space-y-3">
         <li className="flex items-center gap-3">
           <Avatar user={project.owner} size="sm" />
           <span className="flex-1 truncate text-sm text-slate-900">{fullName(project.owner)}</span>
-          <span className="text-xs font-medium text-indigo-600">Responsable</span>
+          <span className="text-xs font-medium text-indigo-600">{t('project.owner')}</span>
         </li>
         {project.members.map((member) => (
           <li key={member.id} className="flex items-center gap-3">
@@ -81,6 +82,7 @@ function Team({ project }) {
 }
 
 export default function ProjectDetailPage() {
+  const { t } = useTranslation()
   const { id } = useParams()
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -102,6 +104,7 @@ export default function ProjectDetailPage() {
   const [deleteProjectOpen, setDeleteProjectOpen] = useState(false)
   const [expenseToDelete, setExpenseToDelete] = useState(null)
   const [actionError, setActionError] = useState('')
+  const statusOptions = Object.entries(PROJECT_STATUS).map(([value, { label }]) => ({ value, label }))
 
   if (loading) return <PageLoader />
   if (error) return <ErrorState message={error} />
@@ -152,7 +155,7 @@ export default function ProjectDetailPage() {
     <>
       <Link to="/app/projects" className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-900">
         <ArrowLeft className="size-4" aria-hidden />
-        Projets
+        {t('nav.projects')}
       </Link>
 
       <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -162,11 +165,11 @@ export default function ProjectDetailPage() {
             <StatusBadge status={project.status} />
           </div>
           <p className="mt-2 max-w-2xl text-sm whitespace-pre-line text-slate-600">
-            {project.description || 'Aucune description'}
+            {project.description || t('projects.noDescription')}
           </p>
           {(project.startDate || project.endDate) && (
             <p className="mt-2 text-xs text-slate-500">
-              Du {formatDate(project.startDate)} au {formatDate(project.endDate)}
+              {t('project.dates', { start: formatDate(project.startDate), end: formatDate(project.endDate) })}
             </p>
           )}
           {project.taskCount > 0 && (
@@ -177,12 +180,12 @@ export default function ProjectDetailPage() {
                 aria-valuenow={progress}
                 aria-valuemin={0}
                 aria-valuemax={100}
-                aria-label="Avancement des tâches"
+                aria-label={t('dashboard.tasksChart.title')}
               >
                 <div className="h-full rounded-full bg-emerald-500" style={{ width: `${progress}%` }} />
               </div>
               <span className="text-xs whitespace-nowrap text-slate-600">
-                {project.completedTaskCount}/{project.taskCount} tâches terminées
+                {t('project.tasksCompleted', { done: project.completedTaskCount, total: project.taskCount })}
               </span>
             </div>
           )}
@@ -190,14 +193,14 @@ export default function ProjectDetailPage() {
         <div className="flex shrink-0 flex-wrap items-end gap-3">
           <Button onClick={() => setMeetingOpen(true)}>
             <Video className="size-4" aria-hidden />
-            Réunion
+            {t('project.meeting')}
           </Button>
           {canChangeStatus(user, project) && (
             <Select
-              label="Statut"
+              label={t('dashboard.col.status')}
               value={project.status}
               onChange={handleStatusChange}
-              options={STATUS_OPTIONS}
+              options={statusOptions}
               className="w-40"
             />
           )}
@@ -205,9 +208,9 @@ export default function ProjectDetailPage() {
             <>
               <Button variant="secondary" onClick={() => setEditOpen(true)}>
                 <Pencil className="size-4" aria-hidden />
-                Modifier
+                {t('common.edit')}
               </Button>
-              <Button variant="secondary" onClick={() => setDeleteProjectOpen(true)} aria-label="Supprimer le projet">
+              <Button variant="secondary" onClick={() => setDeleteProjectOpen(true)} aria-label={t('project.delete')}>
                 <Trash2 className="size-4 text-red-600" aria-hidden />
               </Button>
             </>
@@ -221,10 +224,10 @@ export default function ProjectDetailPage() {
         </div>
       )}
 
-      <div className="mb-6 flex w-fit gap-1 rounded-lg bg-slate-100 p-1" role="tablist" aria-label="Sections du projet">
+      <div className="mb-6 flex w-fit gap-1 rounded-lg bg-slate-100 p-1" role="tablist" aria-label={t('project.sections')}>
         {[
-          { value: 'tasks', label: `Tâches (${tasks.length})`, Icon: ListTodo },
-          { value: 'budget', label: 'Budget et équipe', Icon: Wallet },
+          { value: 'tasks', label: t('project.tasksTab', { count: tasks.length }), Icon: ListTodo },
+          { value: 'budget', label: t('project.budgetTab'), Icon: Wallet },
         ].map(({ value, label, Icon }) => (
           <button
             key={value}
@@ -247,7 +250,7 @@ export default function ProjectDetailPage() {
             <div className="mb-4 flex justify-end">
               <Button onClick={() => setTaskModal({})}>
                 <Plus className="size-4" aria-hidden />
-                Nouvelle tâche
+                {t('tasks.new')}
               </Button>
             </div>
           )}
@@ -272,28 +275,28 @@ export default function ProjectDetailPage() {
 
           <Card className="mt-6">
             <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-              <h2 className="font-semibold text-slate-900">Dépenses</h2>
+              <h2 className="font-semibold text-slate-900">{t('dashboard.col.expenses')}</h2>
               {canManage && (
                 <Button onClick={() => setExpenseOpen(true)}>
                   <Plus className="size-4" aria-hidden />
-                  Ajouter
+                  {t('common.add')}
                 </Button>
               )}
             </div>
             {expenses.length === 0 ? (
               <div className="p-6">
-                <EmptyState icon={Receipt} title="Aucune dépense enregistrée" />
+                <EmptyState icon={Receipt} title={t('project.noExpenses')} />
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead className="bg-slate-50 text-xs font-medium text-slate-500 uppercase">
                     <tr>
-                      <th scope="col" className="px-6 py-3">Libellé</th>
-                      <th scope="col" className="px-6 py-3">Catégorie</th>
-                      <th scope="col" className="px-6 py-3">Date</th>
-                      <th scope="col" className="px-6 py-3 text-right">Montant</th>
-                      {canManage && <th scope="col" className="w-12 px-6 py-3"><span className="sr-only">Actions</span></th>}
+                      <th scope="col" className="px-6 py-3">{t('expenses.label')}</th>
+                      <th scope="col" className="px-6 py-3">{t('expenses.category')}</th>
+                      <th scope="col" className="px-6 py-3">{t('expenses.date')}</th>
+                      <th scope="col" className="px-6 py-3 text-right">{t('dashboard.col.amount')}</th>
+                      {canManage && <th scope="col" className="w-12 px-6 py-3"><span className="sr-only">{t('common.actions')}</span></th>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -310,7 +313,7 @@ export default function ProjectDetailPage() {
                             <button
                               onClick={() => setExpenseToDelete(expense)}
                               className="rounded-md p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
-                              aria-label={`Supprimer la dépense ${expense.label}`}
+                              aria-label={t('project.deleteExpenseNamed', { label: expense.label })}
                             >
                               <Trash2 className="size-4" />
                             </button>
@@ -363,15 +366,15 @@ export default function ProjectDetailPage() {
       )}
       <ConfirmDialog
         open={deleteProjectOpen}
-        title="Supprimer le projet ?"
-        message={`Le projet « ${project.name} », ses tâches et ses dépenses seront définitivement supprimés.`}
+        title={t('project.deleteTitle')}
+        message={t('project.deleteMessage', { name: project.name })}
         onConfirm={deleteProject}
         onClose={() => setDeleteProjectOpen(false)}
       />
       <ConfirmDialog
         open={Boolean(expenseToDelete)}
-        title="Supprimer la dépense ?"
-        message={expenseToDelete && `La dépense « ${expenseToDelete.label} » sera définitivement supprimée.`}
+        title={t('project.deleteExpenseTitle')}
+        message={expenseToDelete && t('project.deleteExpenseMessage', { label: expenseToDelete.label })}
         onConfirm={deleteExpense}
         onClose={() => setExpenseToDelete(null)}
       />

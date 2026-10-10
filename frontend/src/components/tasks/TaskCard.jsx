@@ -4,9 +4,11 @@ import { CalendarDays } from 'lucide-react'
 import { TASK_PRIORITY, formatDate } from '../../utils/format'
 import Avatar from '../ui/Avatar'
 import Badge from '../ui/Badge'
+import { useTranslation } from 'react-i18next'
 
 // Contenu d'une carte, partage entre la carte deplacable et l'apercu pendant le glisser-deposer
 export function TaskCardContent({ task, onOpen, dragging = false }) {
+  const { t } = useTranslation()
   const priority = TASK_PRIORITY[task.priority]
   return (
     <div
@@ -29,14 +31,14 @@ export function TaskCardContent({ task, onOpen, dragging = false }) {
           >
             <CalendarDays className="size-3.5" aria-hidden />
             {formatDate(task.dueDate)}
-            {task.overdue && ' (en retard)'}
+            {task.overdue && ` ${t('tasks.overdue')}`}
           </span>
         )}
         <span className="ml-auto">
           {task.assignee ? (
             <Avatar user={task.assignee} size="sm" />
           ) : (
-            <span className="text-xs text-slate-400">Non assignée</span>
+            <span className="text-xs text-slate-400">{t('tasks.unassigned')}</span>
           )}
         </span>
       </div>
@@ -45,6 +47,7 @@ export function TaskCardContent({ task, onOpen, dragging = false }) {
 }
 
 export default function TaskCard({ task, onOpen, disabled }) {
+  const { t } = useTranslation()
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
     disabled,
@@ -55,7 +58,7 @@ export default function TaskCard({ task, onOpen, disabled }) {
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={`touch-manipulation ${isDragging ? 'opacity-40' : ''} ${disabled ? '' : 'cursor-grab active:cursor-grabbing'}`}
-      aria-label={`Tâche : ${task.title}`}
+      aria-label={t('tasks.cardLabel', { title: task.title })}
       {...attributes}
       {...listeners}
     >
