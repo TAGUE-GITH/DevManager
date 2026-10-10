@@ -44,11 +44,12 @@ export const canChangeStatus = (user, project) =>
   canManageProject(user, project) || project.members.some((member) => member.id === user.id)
 
 // Colonnes du tableau Kanban, dans l'ordre d'affichage
+// La couleur de chaque statut est la meme partout (colonnes Kanban et graphiques)
 export const TASK_STATUS = {
-  TODO: { label: 'À faire', dot: 'bg-slate-400' },
-  IN_PROGRESS: { label: 'En cours', dot: 'bg-indigo-500' },
-  REVIEW: { label: 'En revue', dot: 'bg-amber-500' },
-  DONE: { label: 'Terminé', dot: 'bg-emerald-500' },
+  TODO: { label: 'À faire', color: '#2a78d6' },
+  IN_PROGRESS: { label: 'En cours', color: '#eb6834' },
+  REVIEW: { label: 'En revue', color: '#1baf7a' },
+  DONE: { label: 'Terminé', color: '#eda100' },
 }
 
 export const TASK_PRIORITY = {
@@ -65,3 +66,14 @@ export const canWorkOnTasks = (user, project) =>
 
 export const canEditTask = (user, task, project) =>
   canManageProject(user, project) || task.createdBy.id === user.id
+
+// Montants abreges pour les axes et etiquettes de graphiques, ex. "2,5 M"
+const compactFormatter = new Intl.NumberFormat('fr-FR', { notation: 'compact', maximumFractionDigits: 1 })
+export const formatCompact = (amount) => compactFormatter.format(Number(amount ?? 0))
+
+// "2026-10" -> "oct." (court) ou "octobre 2026" (long)
+export const formatMonth = (month, long = false) =>
+  new Date(`${month}-01T00:00:00`).toLocaleDateString(
+    'fr-FR',
+    long ? { month: 'long', year: 'numeric' } : { month: 'short' },
+  )

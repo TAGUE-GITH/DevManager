@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
@@ -13,6 +14,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	List<Task> findByProjectIdAndStatusOrderByPositionAsc(Long projectId, TaskStatus status);
 
 	List<Task> findByAssigneeId(Long assigneeId);
+
+	List<Task> findByProjectIdIn(Collection<Long> projectIds);
 
 	long countByProjectId(Long projectId);
 

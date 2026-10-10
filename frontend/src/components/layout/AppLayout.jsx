@@ -1,5 +1,5 @@
 import { FolderKanban, LayoutDashboard, ListTodo, LogOut, Menu, MessageSquare, Users, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { messagesApi } from '../../api/resources'
 import { useAuth } from '../../context/useAuth'
@@ -7,6 +7,7 @@ import { MESSAGES_CHANGED } from '../../utils/events'
 import { ROLE, fullName } from '../../utils/format'
 import Logo from '../Logo'
 import Avatar from '../ui/Avatar'
+import { PageLoader } from '../ui/States'
 
 function Navigation({ unread, isAdmin, onNavigate }) {
   const items = [
@@ -135,7 +136,10 @@ export default function AppLayout() {
       {/* min-w-0 : autorise le contenu large (tableau Kanban) a defiler dans sa zone au lieu d'elargir la page */}
       <main className="min-w-0 flex-1 lg:pl-64">
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-          <Outlet />
+          {/* Indicateur affiche le temps de telecharger une page chargee a la demande */}
+          <Suspense fallback={<PageLoader />}>
+            <Outlet />
+          </Suspense>
         </div>
       </main>
     </div>

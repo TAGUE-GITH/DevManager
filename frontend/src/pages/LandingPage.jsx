@@ -28,8 +28,8 @@ const NAV_LINKS = [
 const FEATURES = [
   {
     Icon: FolderKanban,
-    title: 'Gestion de projets',
-    text: 'Créez vos projets, suivez leur statut et constituez une équipe pour chacun.',
+    title: 'Projets et tâches Kanban',
+    text: 'Répartissez le travail en tâches sur un tableau Kanban : glissez-déposez, assignez, suivez les échéances.',
   },
   {
     Icon: Wallet,
@@ -43,8 +43,8 @@ const FEATURES = [
   },
   {
     Icon: BarChart3,
-    title: 'Tableau de bord',
-    text: 'Les chiffres clés de votre activité et les projets à surveiller, en un coup d’œil.',
+    title: 'Tableau de bord visuel',
+    text: 'Graphiques des budgets, des dépenses par mois et par catégorie, et de l’avancement des tâches.',
   },
   {
     Icon: UserCog,
