@@ -14,7 +14,7 @@ export default function Modal({ open, title, onClose, children, size = 'md' }) {
 
   if (!open) return null
 
-  const widths = { md: 'max-w-lg', lg: 'max-w-2xl' }
+  const widths = { md: 'max-w-lg', lg: 'max-w-2xl', xl: 'max-w-4xl' }
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden />

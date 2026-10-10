@@ -19,6 +19,7 @@ import {
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import DemoButton from '../components/DemoButton'
+import VideoButton from '../components/landing/VideoButton'
 import Logo from '../components/Logo'
 import { buttonClasses } from '../components/ui/buttonStyles'
 import { useAuth } from '../context/useAuth'
@@ -229,7 +230,10 @@ function Hero() {
             </>
           )}
         </div>
-        <p className="mt-4 text-sm text-slate-500">Démo instantanée, sans inscription · Gratuit, sans carte bancaire</p>
+        <div className="mt-5 flex flex-col items-center gap-3">
+          <VideoButton />
+          <p className="text-sm text-slate-500">Démo instantanée, sans inscription · Gratuit, sans carte bancaire</p>
+        </div>
       </div>
 
       {/* Captures reelles : ordinateur et mobile */}

@@ -1,8 +1,10 @@
-# DevManager
+<p align="center"><img src="docs/brand/logo-mark.svg" alt="Logo DevManager" width="88"></p>
+
+<h1 align="center">DevManager</h1>
 
 **Application SaaS de gestion d'entreprise** : projets et tâches en Kanban, suivi budgétaire, messagerie interne et tableau de bord visuel. Chaque entreprise dispose de son propre espace isolé, avec une offre Gratuite et une offre Pro.
 
-**🔗 Démo en ligne : [devmanager-five.vercel.app](https://devmanager-five.vercel.app)**
+**🔗 Démo en ligne : [devmanager-five.vercel.app](https://devmanager-five.vercel.app)** · cliquez sur **« Essayer la démo »** pour explorer une entreprise déjà remplie, sans inscription.
 
 ![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4-6DB33F?logo=springboot&logoColor=white)
@@ -11,9 +13,15 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
 ![Flyway](https://img.shields.io/badge/Flyway-migrations-CC0200?logo=flyway&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-compose-2496ED?logo=docker&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-56%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-61%20passing-brightgreen)
 
 ![Tableau de bord](docs/screenshots/02-tableau-de-bord.png)
+
+### 🎬 Vidéo de présentation (37 s)
+
+[![Voir la vidéo de présentation](docs/screenshots/video-poster.jpg)](https://devmanager-five.vercel.app/demo/devmanager-demo.mp4)
+
+*Cliquez sur l'image pour lancer la vidéo : compte de démonstration, tableau de bord, Kanban, messagerie et mode sombre.*
 
 ---
 
@@ -56,10 +64,20 @@ L'application est pensée comme un **SaaS multi-entreprise** : chaque entreprise
 |---|---|
 | ![Projets](docs/screenshots/04-projets.png) | ![Abonnement](docs/screenshots/05-abonnement.png) |
 
+| Mode sombre |
+|---|
+| ![Tableau de bord en mode sombre](docs/screenshots/tableau-de-bord-sombre.png) |
+
 <p align="center"><img src="docs/screenshots/06-mobile.png" alt="Version mobile" width="280"></p>
 <p align="center"><em>Version mobile : le tableau Kanban défile horizontalement</em></p>
 
 ## Fonctionnalités
+
+### 🚀 Compte de démonstration
+- Bouton **« Essayer la démo »** : connexion en un clic à une entreprise fictive déjà remplie (5 projets, 18 tâches, 6 mois de dépenses, messages)
+- Dates calculées par rapport à aujourd'hui : les graphiques sont toujours à jour
+- Données **recréées automatiquement toutes les 6 heures**
+- Sécurisé : adresses en `.example` (aucun email envoyé), invitations désactivées
 
 ### 🏢 Multi-entreprise
 - Inscription d'une **entreprise** : son créateur en devient l'administrateur
@@ -91,6 +109,11 @@ L'application est pensée comme un **SaaS multi-entreprise** : chaque entreprise
 ### 💬 Messagerie interne
 - Boîte de réception, messages envoyés, compteur de non lus, réponse rapide
 
+### 🎨 Interface
+- **Mode sombre** (clair, sombre ou réglage du système), graphiques adaptés
+- **Centre d'aide** avec recherche, accessible sans compte ([/aide](https://devmanager-five.vercel.app/aide))
+- Responsive, accessible au clavier, respect du réglage « réduire les animations »
+
 ### 💳 Offres Gratuit et Pro
 - **Gratuit** : 3 projets et 5 membres ; **Pro** : illimité, 15 000 FCFA par mois
 - Blocage clair des limites (réponse HTTP 402) avec proposition de passer en Pro
@@ -107,6 +130,7 @@ L'application est pensée comme un **SaaS multi-entreprise** : chaque entreprise
 | **Frontend** | React 19, Vite, React Router, Axios, Tailwind CSS 4, Recharts, dnd-kit, Lucide |
 | **Emails** | API Brevo |
 | **Tests** | JUnit 5, MockMvc, AssertJ, `@DataJpaTest`, MockRestServiceServer |
+| **Médias** | Captures et vidéo générées automatiquement (Puppeteer, Edge) |
 | **DevOps** | Docker (builds multi-étapes), Docker Compose, Nginx, Render, Vercel, Git |
 
 ## Architecture
@@ -244,7 +268,7 @@ Aucun secret n'est écrit dans le code.
 
 ## Tests
 
-Le backend compte **56 tests automatisés** :
+Le backend compte **61 tests automatisés** :
 
 ```bash
 cd backend
@@ -259,6 +283,7 @@ cd backend
 | **Projets, budget, tâches** | Droits par rôle, calculs budgétaires, assignation, réorganisation du Kanban, suppression en cascade |
 | **Tableau de bord** | Regroupement des dépenses par mois et par catégorie, tâches en retard |
 | **Offres** | Limites de l'offre Gratuite, passage en Pro, résiliation |
+| **Démonstration** | Données pré-remplies, recréation après 6 heures, invitations bloquées, isolation |
 | **Emails** | Contenu des emails, échappement HTML, appel à Brevo simulé |
 
 Les tests tournent sur H2 avec les **mêmes migrations Flyway** qu'en production, et Hibernate vérifie que le schéma correspond aux entités. Côté frontend, le code est vérifié par **oxlint** (`npm run lint`).
@@ -303,9 +328,10 @@ DevManager/
 │       │   ├── budget/            Dépenses
 │       │   ├── message/           Messagerie
 │       │   ├── dashboard/         Statistiques
+│       │   ├── demo/              Compte de démonstration
 │       │   ├── mail/              Envoi d'emails (Brevo ou logs)
 │       │   └── common/            Erreurs, santé de l'API
-│       └── resources/db/migration Migrations Flyway (V1, V2, V3)
+│       └── resources/db/migration Migrations Flyway (V1 à V4)
 ├── frontend/                      Application React
 │   └── src/
 │       ├── api/                   Client Axios et appels à l'API
