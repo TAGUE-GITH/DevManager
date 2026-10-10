@@ -32,6 +32,7 @@ export default {
     company: 'Company',
     support: 'Support',
     help: 'Help',
+    home: 'Home page',
     unread: 'unread',
     closeMenu: 'Close menu',
     openMenu: 'Open menu',

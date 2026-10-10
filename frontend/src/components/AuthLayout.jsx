@@ -1,5 +1,6 @@
-import { CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import LanguageSwitcher from './LanguageSwitcher'
 import Logo from './Logo'
 
@@ -61,10 +62,18 @@ function ShowcasePanel() {
 
 // Mise en page commune aux pages de connexion, inscription, mot de passe oublie et invitation
 export default function AuthLayout({ title, subtitle, children }) {
+  const { t } = useTranslation()
   return (
     <div className="themed flex min-h-screen bg-slate-50">
       <ShowcasePanel />
-      <main className="relative flex flex-1 items-center justify-center px-4 py-12 sm:px-6">
+      <main className="relative flex flex-1 items-center justify-center px-4 pt-20 pb-12 sm:px-6">
+        <Link
+          to="/"
+          className="absolute top-5 left-5 flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 sm:left-6"
+        >
+          <ArrowLeft className="size-4" aria-hidden />
+          {t('common.backHome')}
+        </Link>
         <LanguageSwitcher className="absolute top-5 right-5 w-24" />
         <div className="w-full max-w-sm">
           <div className="mb-10 lg:hidden">

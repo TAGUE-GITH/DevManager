@@ -1,6 +1,7 @@
 import {
   Building2,
   FolderKanban,
+  Home,
   LayoutDashboard,
   LifeBuoy,
   ListTodo,
@@ -48,7 +49,13 @@ function Navigation({ unread, isAdmin, onNavigate }) {
           },
         ]
       : []),
-    { title: t('nav.support'), items: [{ to: '/app/help', label: t('nav.help'), Icon: LifeBuoy }] },
+    {
+      title: t('nav.support'),
+      items: [
+        { to: '/app/help', label: t('nav.help'), Icon: LifeBuoy },
+        { to: '/', label: t('nav.home'), Icon: Home, end: true },
+      ],
+    },
   ]
 
   return (
