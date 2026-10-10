@@ -1,4 +1,4 @@
-import { CalendarDays, FolderKanban, Plus, Search, Users } from 'lucide-react'
+import { CalendarDays, FolderKanban, ListTodo, Plus, Search, Users } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { projectsApi } from '../api/resources'
@@ -36,6 +36,12 @@ function ProjectCard({ project }) {
             <Users className="size-4" aria-hidden />
             {project.members.length + 1} personne{project.members.length > 0 && 's'}
           </span>
+          {project.taskCount > 0 && (
+            <span className="flex items-center gap-1.5">
+              <ListTodo className="size-4" aria-hidden />
+              {project.completedTaskCount}/{project.taskCount} tâches
+            </span>
+          )}
           {project.endDate && (
             <span className="flex items-center gap-1.5">
               <CalendarDays className="size-4" aria-hidden />

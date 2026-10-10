@@ -40,6 +40,9 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/auth/**", "/api/health").permitAll()
+						// Page d'erreur interne de Spring : publique, sinon une erreur 400 ou 500 serait masquee en 401
+						// (et le frontend deconnecterait l'utilisateur a tort)
+						.requestMatchers("/error").permitAll()
 						.requestMatchers("/h2-console/**").permitAll()
 						.anyRequest().authenticated())
 				// Sans jeton valide : 401 au lieu d'une page de connexion
