@@ -19,6 +19,7 @@ const MyTasksPage = lazy(() => import('./pages/MyTasksPage'))
 const MessagesPage = lazy(() => import('./pages/MessagesPage'))
 const UsersPage = lazy(() => import('./pages/UsersPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const ProfilePage = lazy(() => import('./pages/ProfilePage'))
 const HelpPage = lazy(() => import('./pages/HelpPage'))
 const AppHelpPage = lazy(() => import('./pages/HelpPage').then((module) => ({ default: module.AppHelpPage })))
 
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="tasks" element={<MyTasksPage />} />
           <Route path="messages" element={<MessagesPage />} />
           <Route path="help" element={<AppHelpPage />} />
+          <Route path="profile" element={<ProfilePage />} />
           <Route element={<AdminRoute />}>
             <Route path="users" element={<UsersPage />} />
             <Route path="settings" element={<SettingsPage />} />

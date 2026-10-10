@@ -113,6 +113,14 @@ export const HELP_CATEGORIES = [
         ],
       },
       {
+        id: 'profil',
+        question: 'Comment ajouter ma photo ou le logo de mon entreprise ?',
+        answer: [
+          'Cliquez sur votre nom en bas du menu pour ouvrir « Mon profil ». Vous pouvez y changer votre photo, votre nom, votre poste et votre mot de passe.',
+          'Les administrateurs ajoutent le logo de l’entreprise depuis le menu Entreprise. Les images sont recadrées automatiquement en carré.',
+        ],
+      },
+      {
         id: 'theme',
         question: 'Comment activer le mode sombre ?',
         answer: [

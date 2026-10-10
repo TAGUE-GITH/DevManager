@@ -27,6 +27,16 @@ public class OrganizationController {
 		return organizationService.rename(request);
 	}
 
+	@PutMapping("/logo")
+	public OrganizationResponse updateLogo(@Valid @RequestBody OrganizationDtos.LogoRequest request) {
+		return organizationService.updateLogo(request.dataUrl());
+	}
+
+	@DeleteMapping("/logo")
+	public OrganizationResponse removeLogo() {
+		return organizationService.removeLogo();
+	}
+
 	@PostMapping("/subscription")
 	public OrganizationResponse subscribe(@Valid @RequestBody SubscribeRequest request) {
 		return organizationService.subscribe(request);

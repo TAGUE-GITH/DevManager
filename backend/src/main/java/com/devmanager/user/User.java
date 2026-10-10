@@ -1,5 +1,6 @@
 package com.devmanager.user;
 
+import com.devmanager.image.Image;
 import com.devmanager.organization.Organization;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,4 +42,13 @@ public class User {
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "organization_id")
 	private Organization organization;
+
+	// Poste occupe, ex. "Chef de projet" (facultatif)
+	@Column(length = 100)
+	private String jobTitle;
+
+	// Photo de profil (facultative)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "avatar_id")
+	private Image avatar;
 }

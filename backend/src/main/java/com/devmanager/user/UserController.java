@@ -4,6 +4,7 @@ import com.devmanager.common.ApiException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ public class UserController {
 
 	private final UserRepository userRepository;
 	private final CurrentUser currentUser;
+	private final ProfileService profileService;
 
 	public record UpdateRoleRequest(@NotNull(message = "Le rôle est obligatoire") Role role) {
 	}
@@ -25,6 +27,27 @@ public class UserController {
 	@GetMapping("/me")
 	public UserResponse me() {
 		return UserResponse.from(currentUser.get());
+	}
+
+	@PutMapping("/me")
+	public UserResponse updateProfile(@Valid @RequestBody ProfileService.UpdateProfileRequest request) {
+		return profileService.update(request);
+	}
+
+	@PutMapping("/me/avatar")
+	public UserResponse updateAvatar(@Valid @RequestBody ProfileService.ImageRequest request) {
+		return profileService.updateAvatar(request);
+	}
+
+	@DeleteMapping("/me/avatar")
+	public UserResponse removeAvatar() {
+		return profileService.removeAvatar();
+	}
+
+	@PutMapping("/me/password")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void changePassword(@Valid @RequestBody ProfileService.ChangePasswordRequest request) {
+		profileService.changePassword(request);
 	}
 
 	// Liste des utilisateurs : sert a choisir les membres d'un projet ou le destinataire d'un message

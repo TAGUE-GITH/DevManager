@@ -1,7 +1,8 @@
 import { Check, CreditCard, Info, Smartphone, Sparkles } from 'lucide-react'
 import { useCallback, useState } from 'react'
-import { getErrorMessage, getFieldErrors } from '../api/client'
+import { apiUrl, getErrorMessage, getFieldErrors } from '../api/client'
 import { organizationApi } from '../api/resources'
+import ImageUploader from '../components/ImageUploader'
 import Alert from '../components/ui/Alert'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
@@ -17,7 +18,7 @@ import { PAYMENT_METHOD, PLAN, formatCurrency, formatDate } from '../utils/forma
 
 const PRO_FEATURES = ['Projets illimités', 'Membres illimités', 'Toutes les fonctionnalités', 'Support prioritaire']
 
-function CompanyForm({ organization, onSaved }) {
+function CompanyForm({ organization, demo, onSaved }) {
   const [name, setName] = useState(organization.name)
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -38,7 +39,26 @@ function CompanyForm({ organization, onSaved }) {
   return (
     <Card className="p-6">
       <h2 className="font-semibold text-slate-900">Entreprise</h2>
-      <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-start" noValidate>
+      <div className="mt-5">
+        <ImageUploader
+          preview={
+            organization.logoUrl ? (
+              <img src={apiUrl(organization.logoUrl)} alt="Logo de l'entreprise" className="size-24 rounded-2xl object-cover ring-1 ring-slate-200" />
+            ) : (
+              <span className="flex size-24 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 text-3xl font-bold text-on-accent">
+                {organization.name[0]?.toUpperCase()}
+              </span>
+            )
+          }
+          label="Logo de l'entreprise"
+          hint="Il remplace l'initiale dans le menu de tous les membres. Format carré conseillé."
+          hasImage={Boolean(organization.logoUrl)}
+          disabledReason={demo ? 'Le logo ne peut pas être modifié dans le compte de démonstration.' : undefined}
+          onUpload={async (dataUrl) => onSaved(await organizationApi.updateLogo(dataUrl), 'Le logo a été mis à jour.')}
+          onRemove={async () => onSaved(await organizationApi.removeLogo(), 'Le logo a été supprimé.')}
+        />
+      </div>
+      <form onSubmit={handleSubmit} className="mt-6 flex border-t border-slate-100 pt-6 flex-col gap-4 sm:flex-row sm:items-start" noValidate>
         <Input
           label="Nom de l'entreprise"
           value={name}
@@ -165,7 +185,7 @@ function CheckoutModal({ price, onClose, onPaid }) {
 
 // Page reservee aux administrateurs : entreprise, offre, utilisation et paiements
 export default function SettingsPage() {
-  const { refreshUser } = useAuth()
+  const { user, refreshUser } = useAuth()
   const { data: organization, loading, error, setData } = useFetch(useCallback(() => organizationApi.get(), []))
   const [checkoutOpen, setCheckoutOpen] = useState(false)
   const [cancelOpen, setCancelOpen] = useState(false)
@@ -206,7 +226,7 @@ export default function SettingsPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <CompanyForm organization={organization} onSaved={applyUpdate} />
+          <CompanyForm organization={organization} demo={user.demo} onSaved={applyUpdate} />
 
           <Card className="p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">

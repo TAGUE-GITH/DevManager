@@ -1,6 +1,8 @@
 package com.devmanager.organization;
 
 import com.devmanager.common.ApiException;
+import com.devmanager.image.Image;
+import com.devmanager.image.ImageService;
 import com.devmanager.invitation.InvitationRepository;
 import com.devmanager.invitation.Invitation;
 import com.devmanager.organization.OrganizationDtos.*;
@@ -31,6 +33,7 @@ public class OrganizationService {
 	private final UserRepository userRepository;
 	private final InvitationRepository invitationRepository;
 	private final CurrentUser currentUser;
+	private final ImageService imageService;
 
 	public OrganizationResponse getCurrent() {
 		return toResponse(currentOrganization());
@@ -40,6 +43,28 @@ public class OrganizationService {
 	public OrganizationResponse rename(UpdateOrganizationRequest request) {
 		Organization organization = currentOrganization();
 		organization.setName(request.name().trim());
+		return toResponse(organization);
+	}
+
+	// Logo de l'entreprise (image deja redimensionnee par le navigateur)
+	@Transactional
+	public OrganizationResponse updateLogo(String dataUrl) {
+		Organization organization = currentOrganization();
+		if (organization.isDemo()) {
+			throw ApiException.forbidden("Le logo ne peut pas être modifié dans le compte de démonstration.");
+		}
+		Image previous = organization.getLogo();
+		organization.setLogo(imageService.save(dataUrl));
+		imageService.delete(previous);
+		return toResponse(organization);
+	}
+
+	@Transactional
+	public OrganizationResponse removeLogo() {
+		Organization organization = currentOrganization();
+		Image previous = organization.getLogo();
+		organization.setLogo(null);
+		imageService.delete(previous);
 		return toResponse(organization);
 	}
 
@@ -114,7 +139,7 @@ public class OrganizationService {
 				projectRepository.countByOrganizationId(organization.getId()), plan.getMaxProjects(),
 				userRepository.countByOrganizationId(organization.getId()) + pendingInvitations(organization),
 				plan.getMaxMembers());
-		return new OrganizationResponse(organization.getId(), organization.getName(), plan,
+		return new OrganizationResponse(organization.getId(), organization.getName(), ImageService.url(organization.getLogo()), plan,
 				Plan.PRO.getMonthlyPrice(), organization.getCurrentPeriodEnd(), usage,
 				paymentRepository.findByOrganizationIdOrderByCreatedAtDesc(organization.getId()).stream()
 						.map(PaymentResponse::from)

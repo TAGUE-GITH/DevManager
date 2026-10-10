@@ -12,7 +12,8 @@ import {
   X,
 } from 'lucide-react'
 import { Suspense, useEffect, useState } from 'react'
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { apiUrl } from '../../api/client'
 import { messagesApi } from '../../api/resources'
 import { useAuth } from '../../context/useAuth'
 import { MESSAGES_CHANGED } from '../../utils/events'
@@ -98,9 +99,17 @@ function Sidebar({ user, unread, onNavigate, onLogout, onClose }) {
 
       {/* Entreprise et offre */}
       <div className="mb-6 flex items-center gap-2.5 rounded-xl bg-slate-50 p-2.5 ring-1 ring-slate-200">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-sm font-bold text-on-accent">
-          {user.organizationName[0]?.toUpperCase()}
-        </span>
+        {user.organizationLogoUrl ? (
+          <img
+            src={apiUrl(user.organizationLogoUrl)}
+            alt=""
+            className="size-8 shrink-0 rounded-lg object-cover ring-1 ring-slate-200"
+          />
+        ) : (
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-sm font-bold text-on-accent">
+            {user.organizationName[0]?.toUpperCase()}
+          </span>
+        )}
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-slate-900" title={user.organizationName}>
             {user.organizationName}
@@ -120,12 +129,19 @@ function Sidebar({ user, unread, onNavigate, onLogout, onClose }) {
 
       <div className="mt-4 space-y-3 border-t border-slate-200 pt-4">
         <ThemeToggle />
-        <div className="flex items-center gap-3">
-          <Avatar user={user} />
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-slate-900">{fullName(user)}</p>
-            <p className="truncate text-xs text-slate-500">{ROLE[user.role]}</p>
-          </div>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/app/profile"
+            onClick={onNavigate}
+            className="-m-1.5 flex min-w-0 flex-1 items-center gap-3 rounded-lg p-1.5 hover:bg-slate-100"
+            title="Mon profil"
+          >
+            <Avatar user={user} />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-slate-900">{fullName(user)}</p>
+              <p className="truncate text-xs text-slate-500">{user.jobTitle || ROLE[user.role]}</p>
+            </div>
+          </Link>
           <button
             onClick={onLogout}
             className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700"

@@ -200,10 +200,13 @@ export default function UsersPage() {
                 <td className="px-6 py-3.5">
                   <div className="flex items-center gap-3">
                     <Avatar user={user} size="sm" />
-                    <span className="font-medium whitespace-nowrap text-slate-900">
-                      {fullName(user)}
-                      {user.id === currentUser.id && <span className="ml-1.5 text-xs font-normal text-slate-500">(vous)</span>}
-                    </span>
+                    <div>
+                      <span className="font-medium whitespace-nowrap text-slate-900">
+                        {fullName(user)}
+                        {user.id === currentUser.id && <span className="ml-1.5 text-xs font-normal text-slate-500">(vous)</span>}
+                      </span>
+                      {user.jobTitle && <p className="text-xs text-slate-500">{user.jobTitle}</p>}
+                    </div>
                   </div>
                 </td>
                 <td className="px-6 py-3.5 text-slate-600">{user.email}</td>
