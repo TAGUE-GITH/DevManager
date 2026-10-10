@@ -5,6 +5,7 @@ import com.devmanager.invitation.InvitationDtos.InvitationInfoResponse;
 import com.devmanager.invitation.InvitationDtos.InvitationRequest;
 import com.devmanager.invitation.InvitationDtos.InvitationResponse;
 import com.devmanager.mail.EmailService;
+import com.devmanager.organization.OrganizationService;
 import com.devmanager.user.CurrentUser;
 import com.devmanager.user.User;
 import com.devmanager.user.UserRepository;
@@ -26,6 +27,7 @@ public class InvitationService {
 	private final UserRepository userRepository;
 	private final CurrentUser currentUser;
 	private final EmailService emailService;
+	private final OrganizationService organizationService;
 
 	@Value("${app.frontend-url}")
 	private String frontendUrl;
@@ -47,6 +49,8 @@ public class InvitationService {
 				.stream()
 				.filter(invitation -> invitation.getEmail().equals(email))
 				.forEach(invitationRepository::delete);
+
+		organizationService.checkCanAddMember(admin.getOrganization(), true);
 
 		Invitation invitation = invitationRepository.save(Invitation.builder()
 				.token(UUID.randomUUID().toString())

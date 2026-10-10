@@ -77,3 +77,13 @@ export const formatMonth = (month, long = false) =>
     'fr-FR',
     long ? { month: 'long', year: 'numeric' } : { month: 'short' },
   )
+
+export const PLAN = {
+  FREE: { label: 'Gratuit' },
+  PRO: { label: 'Pro' },
+}
+
+export const PAYMENT_METHOD = {
+  MOBILE_MONEY: 'Mobile Money',
+  CARD: 'Carte bancaire',
+}

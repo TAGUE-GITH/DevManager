@@ -7,6 +7,7 @@ import com.devmanager.invitation.InvitationService;
 import com.devmanager.mail.EmailService;
 import com.devmanager.organization.Organization;
 import com.devmanager.organization.OrganizationRepository;
+import com.devmanager.organization.OrganizationService;
 import com.devmanager.security.JwtService;
 import com.devmanager.user.Role;
 import com.devmanager.user.User;
@@ -35,6 +36,7 @@ public class AuthService {
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
 	private final EmailService emailService;
+	private final OrganizationService organizationService;
 
 	@Value("${app.frontend-url}")
 	private String frontendUrl;
@@ -61,6 +63,7 @@ public class AuthService {
 	public AuthResponse acceptInvitation(AcceptInvitationRequest request) {
 		Invitation invitation = invitationService.getPending(request.token());
 		ensureEmailAvailable(invitation.getEmail());
+		organizationService.checkCanAddMember(invitation.getOrganization(), false);
 
 		User user = createUser(request.firstName(), request.lastName(), invitation.getEmail(), request.password(),
 				invitation.getRole(), invitation.getOrganization());

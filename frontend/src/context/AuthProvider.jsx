@@ -44,14 +44,17 @@ export function AuthProvider({ children }) {
     [saveSession],
   )
 
+  // Recharge l'utilisateur (ex. apres un changement d'offre ou de nom d'entreprise)
+  const refreshUser = useCallback(() => authApi.me().then(setUser), [])
+
   const acceptInvitation = useCallback(
     async (data) => saveSession(await invitationsPublicApi.accept(data)),
     [saveSession],
   )
 
   const value = useMemo(
-    () => ({ user, loading, isAuthenticated: Boolean(user), login, register, acceptInvitation, logout }),
-    [user, loading, login, register, acceptInvitation, logout],
+    () => ({ user, loading, isAuthenticated: Boolean(user), login, register, acceptInvitation, refreshUser, logout }),
+    [user, loading, login, register, acceptInvitation, refreshUser, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -6,6 +6,7 @@ import com.devmanager.invitation.InvitationRepository;
 import com.devmanager.message.MessageRepository;
 import com.devmanager.organization.Organization;
 import com.devmanager.organization.OrganizationRepository;
+import com.devmanager.organization.PaymentRepository;
 import com.devmanager.project.ProjectRepository;
 import com.devmanager.task.TaskRepository;
 import com.devmanager.user.Role;
@@ -61,6 +62,9 @@ public abstract class IntegrationTest {
 	protected TaskRepository taskRepository;
 
 	@Autowired
+	protected PaymentRepository paymentRepository;
+
+	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	// Entreprise dans laquelle createUser() ajoute les utilisateurs
@@ -75,6 +79,7 @@ public abstract class IntegrationTest {
 		invitationRepository.deleteAll();
 		projectRepository.deleteAll();
 		userRepository.deleteAll();
+		paymentRepository.deleteAll();
 		organizationRepository.deleteAll();
 
 		organization = organizationRepository.save(Organization.builder().name("Entreprise de test").build());

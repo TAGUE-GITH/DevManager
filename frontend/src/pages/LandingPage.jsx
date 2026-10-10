@@ -18,11 +18,13 @@ import AppPreview from '../components/landing/AppPreview'
 import Logo from '../components/Logo'
 import { buttonClasses } from '../components/ui/buttonStyles'
 import { useAuth } from '../context/useAuth'
+import { formatCurrency } from '../utils/format'
 
 const NAV_LINKS = [
   { href: '#fonctionnalites', label: 'Fonctionnalités' },
   { href: '#fonctionnement', label: 'Comment ça marche' },
   { href: '#securite', label: 'Sécurité' },
+  { href: '#tarifs', label: 'Tarifs' },
 ]
 
 const FEATURES = [
@@ -62,6 +64,22 @@ const STEPS = [
   { title: 'Créez l’espace de votre entreprise', text: 'Inscription gratuite en moins d’une minute : vous devenez l’administrateur de votre espace.' },
   { title: 'Invitez votre équipe', text: 'Envoyez une invitation par email à chaque collègue, avec le rôle de votre choix.' },
   { title: 'Pilotez votre activité', text: 'Suivez l’avancement, les dépenses et les échanges depuis un seul tableau de bord.' },
+]
+
+const PLANS = [
+  {
+    name: 'Gratuit',
+    price: 0,
+    description: 'Pour découvrir DevManager avec une petite équipe.',
+    features: ['3 projets', '5 membres', 'Tâches Kanban et tableau de bord', 'Messagerie interne'],
+  },
+  {
+    name: 'Pro',
+    price: 15000,
+    description: 'Pour les entreprises qui grandissent, sans limite.',
+    features: ['Projets illimités', 'Membres illimités', 'Toutes les fonctionnalités', 'Support prioritaire'],
+    highlighted: true,
+  },
 ]
 
 const SECURITY = [
@@ -250,6 +268,57 @@ function Security() {
   )
 }
 
+function Pricing() {
+  return (
+    <section id="tarifs" className="scroll-mt-20 bg-white py-20 sm:py-24">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-sm font-semibold text-indigo-600">Tarifs</p>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Une offre simple, sans engagement</h2>
+          <p className="mt-4 text-lg text-slate-600">Commencez gratuitement, passez à l’offre Pro quand votre équipe grandit.</p>
+        </div>
+        <div className="mx-auto mt-14 grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2">
+          {PLANS.map(({ name, price, description, features, highlighted }) => (
+            <div
+              key={name}
+              className={`flex flex-col rounded-2xl p-8 ${
+                highlighted ? 'bg-slate-900 text-white ring-2 ring-indigo-500' : 'bg-white ring-1 ring-slate-200'
+              }`}
+            >
+              <h3 className={`text-lg font-semibold ${highlighted ? 'text-white' : 'text-slate-900'}`}>{name}</h3>
+              <p className={`mt-2 text-sm ${highlighted ? 'text-slate-300' : 'text-slate-600'}`}>{description}</p>
+              <p className="mt-6">
+                <span className="text-4xl font-bold tracking-tight">{price === 0 ? 'Gratuit' : formatCurrency(price)}</span>
+                {price > 0 && <span className={highlighted ? 'text-slate-300' : 'text-slate-500'}> / mois</span>}
+              </p>
+              <ul className="mt-8 flex-1 space-y-3">
+                {features.map((feature) => (
+                  <li key={feature} className="flex items-center gap-3 text-sm">
+                    <CheckCircle2
+                      className={`size-5 shrink-0 ${highlighted ? 'text-indigo-300' : 'text-indigo-600'}`}
+                      aria-hidden
+                    />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to="/register"
+                className={buttonClasses(highlighted ? 'primary' : 'secondary', 'mt-8 w-full py-3')}
+              >
+                {highlighted ? 'Essayer, puis passer en Pro' : 'Commencer gratuitement'}
+              </Link>
+            </div>
+          ))}
+        </div>
+        <p className="mt-8 text-center text-sm text-slate-500">
+          Projet de démonstration : le paiement de l’offre Pro est simulé, aucun montant n’est prélevé.
+        </p>
+      </div>
+    </section>
+  )
+}
+
 function CallToAction() {
   return (
     <section className="py-20 sm:py-24">
@@ -302,6 +371,7 @@ export default function LandingPage() {
         <Features />
         <HowItWorks />
         <Security />
+        <Pricing />
         <CallToAction />
       </main>
       <Footer />

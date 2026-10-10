@@ -47,3 +47,6 @@ export function getErrorMessage(error, fallback = 'Une erreur est survenue. Veui
 export function getFieldErrors(error) {
   return error.response?.data?.errors ?? {}
 }
+
+// 402 : limite de l'offre Gratuite atteinte
+export const isPlanLimitError = (error) => error.response?.status === 402

@@ -17,6 +17,7 @@ const ProjectDetailPage = lazy(() => import('./pages/ProjectDetailPage'))
 const MyTasksPage = lazy(() => import('./pages/MyTasksPage'))
 const MessagesPage = lazy(() => import('./pages/MessagesPage'))
 const UsersPage = lazy(() => import('./pages/UsersPage'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 
 export default function App() {
   return (
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="messages" element={<MessagesPage />} />
           <Route element={<AdminRoute />}>
             <Route path="users" element={<UsersPage />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
         </Route>
       </Route>

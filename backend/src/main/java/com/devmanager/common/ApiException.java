@@ -29,4 +29,9 @@ public class ApiException extends RuntimeException {
 	public static ApiException forbidden(String message) {
 		return new ApiException(HttpStatus.FORBIDDEN, message);
 	}
+
+	// 402 : limite de l'offre atteinte, le client propose de passer a l'offre superieure
+	public static ApiException paymentRequired(String message) {
+		return new ApiException(HttpStatus.PAYMENT_REQUIRED, message);
+	}
 }

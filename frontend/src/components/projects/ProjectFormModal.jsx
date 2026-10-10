@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { getErrorMessage, getFieldErrors } from '../../api/client'
+import { getErrorMessage, getFieldErrors, isPlanLimitError } from '../../api/client'
 import { projectsApi, usersApi } from '../../api/resources'
 import { useAuth } from '../../context/useAuth'
 import { fullName } from '../../utils/format'
+import PlanLimitAlert from '../PlanLimitAlert'
 import Alert from '../ui/Alert'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
@@ -24,6 +25,7 @@ export default function ProjectFormModal({ open, project, onClose, onSaved }) {
   const [form, setForm] = useState(() => toForm(project))
   const [users, setUsers] = useState([])
   const [error, setError] = useState('')
+  const [limitError, setLimitError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
   const [saving, setSaving] = useState(false)
 
@@ -42,6 +44,7 @@ export default function ProjectFormModal({ open, project, onClose, onSaved }) {
   const handleSubmit = async (event) => {
     event.preventDefault()
     setError('')
+    setLimitError('')
     setFieldErrors({})
     setSaving(true)
     const payload = {
@@ -54,6 +57,10 @@ export default function ProjectFormModal({ open, project, onClose, onSaved }) {
       const saved = project ? await projectsApi.update(project.id, payload) : await projectsApi.create(payload)
       onSaved(saved)
     } catch (err) {
+      if (isPlanLimitError(err)) {
+        setLimitError(getErrorMessage(err))
+        return
+      }
       setError(getErrorMessage(err))
       setFieldErrors(getFieldErrors(err))
     } finally {
@@ -69,6 +76,7 @@ export default function ProjectFormModal({ open, project, onClose, onSaved }) {
     <Modal open={open} onClose={onClose} title={project ? 'Modifier le projet' : 'Nouveau projet'} size="lg">
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <Alert>{error}</Alert>
+        {limitError && <PlanLimitAlert message={limitError} />}
         <Input label="Nom du projet" name="name" value={form.name} onChange={handleChange} error={fieldErrors.name} required />
         <Textarea
           label="Description"
