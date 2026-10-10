@@ -1,22 +1,26 @@
 # DevManager
 
-**Application web de gestion d'entreprise** : gestion des projets, suivi budgétaire et messagerie interne, réunis dans un seul outil.
+**Application SaaS de gestion d'entreprise** : projets et tâches en Kanban, suivi budgétaire, messagerie interne et tableau de bord visuel. Chaque entreprise dispose de son propre espace isolé, avec une offre Gratuite et une offre Pro.
+
+**🔗 Démo en ligne : [devmanager-five.vercel.app](https://devmanager-five.vercel.app)**
 
 ![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4-6DB33F?logo=springboot&logoColor=white)
 ![Spring Security](https://img.shields.io/badge/Spring%20Security-JWT-6DB33F?logo=springsecurity&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
+![Flyway](https://img.shields.io/badge/Flyway-migrations-CC0200?logo=flyway&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-compose-2496ED?logo=docker&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-34%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-56%20passing-brightgreen)
 
-<!-- Après le déploiement : ajouter ici le lien de la démo en ligne et les captures d'écran -->
+![Tableau de bord](docs/screenshots/02-tableau-de-bord.png)
 
 ---
 
 ## Sommaire
 
 - [Contexte](#contexte)
+- [Captures d'écran](#captures-décran)
 - [Fonctionnalités](#fonctionnalités)
 - [Stack technique](#stack-technique)
 - [Architecture](#architecture)
@@ -26,6 +30,7 @@
 - [Variables d'environnement](#variables-denvironnement)
 - [Tests](#tests)
 - [Docker](#docker)
+- [Déploiement](#déploiement)
 - [Structure du projet](#structure-du-projet)
 - [Choix techniques](#choix-techniques)
 
@@ -33,64 +38,84 @@
 
 ## Contexte
 
-Dans beaucoup d'entreprises, le suivi des projets se fait sur des tableurs, les budgets dans un autre fichier et la communication par emails dispersés. **DevManager centralise ces trois besoins** :
+Dans beaucoup d'entreprises, le suivi des projets se fait sur des tableurs, les budgets dans un autre fichier et la communication par emails dispersés. **DevManager centralise ces besoins** dans une seule application :
 
-- savoir où en est chaque projet et qui y travaille ;
+- savoir où en est chaque projet, qui fait quoi, et quelles tâches sont en retard ;
 - suivre en temps réel le budget consommé et détecter les dépassements ;
 - échanger avec les membres de l'équipe sans quitter l'application.
 
+L'application est pensée comme un **SaaS multi-entreprise** : chaque entreprise s'inscrit, invite son équipe et travaille dans un espace dont les données sont strictement isolées des autres.
+
+## Captures d'écran
+
+| Page d'accueil | Tâches en Kanban |
+|---|---|
+| ![Page d'accueil](docs/screenshots/01-accueil.png) | ![Kanban](docs/screenshots/03-kanban.png) |
+
+| Projets | Entreprise et abonnement |
+|---|---|
+| ![Projets](docs/screenshots/04-projets.png) | ![Abonnement](docs/screenshots/05-abonnement.png) |
+
+<p align="center"><img src="docs/screenshots/06-mobile.png" alt="Version mobile" width="280"></p>
+<p align="center"><em>Version mobile : le tableau Kanban défile horizontalement</em></p>
+
 ## Fonctionnalités
 
-### 🔐 Authentification et sécurité
-- Inscription et connexion avec **jeton JWT**
-- **Mot de passe oublié** : lien unique envoyé par email, valable 30 minutes et utilisable une seule fois
-- Trois rôles (**Administrateur, Manager, Employé**) avec des droits différents
-- Mots de passe hachés avec **BCrypt**, jamais renvoyés par l'API
+### 🏢 Multi-entreprise
+- Inscription d'une **entreprise** : son créateur en devient l'administrateur
+- **Invitations par email** avec un rôle choisi (lien unique valable 7 jours), ou lien à copier
+- **Données isolées** : une entreprise ne voit jamais les projets, membres ou messages d'une autre
 
-### 📁 Gestion de projets
-- Création, modification et suppression de projets
-- Statut (À faire, En cours, Terminé), dates, description
-- Constitution de l'équipe (responsable et membres)
-- Filtre par statut et recherche par nom
+### 🔐 Authentification et sécurité
+- Connexion par **jeton JWT**, mots de passe hachés avec **BCrypt**
+- **Mot de passe oublié** : lien unique par email, valable 30 minutes et utilisable une seule fois
+- Trois rôles (**Administrateur, Manager, Employé**), et plusieurs administrateurs possibles
+
+### 📋 Projets et tâches Kanban
+- Projets avec statut, dates, équipe (responsable et membres) et budget
+- **Tableau Kanban** : À faire, En cours, En revue, Terminé
+- **Glisser-déposer** à la souris, au doigt ou **au clavier**
+- Tâches avec priorité, échéance (alerte si en retard) et personne assignée
+- Page **« Mes tâches »** et barre d'avancement de chaque projet
 
 ### 💰 Suivi budgétaire
-- Budget alloué par projet, en francs CFA
-- Saisie des dépenses par catégorie (salaires, matériel, logiciels, déplacements…)
-- Calcul automatique du montant dépensé, du reste et du **pourcentage consommé**
-- **Alerte visuelle en cas de dépassement** de budget
+- Budget en francs CFA, dépenses par catégorie
+- Calcul automatique du dépensé, du reste et du pourcentage consommé
+- **Alerte en cas de dépassement**
+
+### 📊 Tableau de bord visuel
+- Chiffres clés : projets, budget consommé, tâches à traiter, messages non lus
+- Graphiques : **budget et dépenses par projet**, **évolution mensuelle**, **répartition par catégorie**, **avancement des tâches**
+- Infobulles au survol et **vue tableau** de chaque graphique (accessibilité)
 
 ### 💬 Messagerie interne
-- Boîte de réception et messages envoyés
-- Compteur de **messages non lus** dans le menu
-- Réponse rapide avec destinataire et sujet pré-remplis
+- Boîte de réception, messages envoyés, compteur de non lus, réponse rapide
 
-### 📊 Tableau de bord
-- Chiffres clés : nombre de projets, budget total, montant dépensé, messages non lus
-- Répartition des projets par statut
-- Projets qui consomment le plus leur budget
-
-### 👥 Administration
-- Liste des utilisateurs et **changement de rôle** (réservé à l'administrateur)
+### 💳 Offres Gratuit et Pro
+- **Gratuit** : 3 projets et 5 membres ; **Pro** : illimité, 15 000 FCFA par mois
+- Blocage clair des limites (réponse HTTP 402) avec proposition de passer en Pro
+- Page **Entreprise et abonnement** : utilisation, paiement, historique, résiliation
+- **Paiement en mode démonstration** : aucun prélèvement réel, aucune coordonnée bancaire demandée
 
 ## Stack technique
 
 | Couche | Technologies |
 |---|---|
 | **Backend** | Java 21, Spring Boot 4, Spring Security, Spring Data JPA, Bean Validation, Lombok |
-| **Authentification** | JWT (bibliothèque jjwt), BCrypt |
-| **Base de données** | PostgreSQL (production), H2 en mémoire (développement et tests) |
-| **Frontend** | React 19, Vite, React Router, Axios, Tailwind CSS 4, Lucide (icônes) |
+| **Base de données** | PostgreSQL (production, Neon), H2 en mode PostgreSQL (développement et tests), **Flyway** (migrations versionnées) |
+| **Authentification** | JWT (jjwt), BCrypt |
+| **Frontend** | React 19, Vite, React Router, Axios, Tailwind CSS 4, Recharts, dnd-kit, Lucide |
 | **Emails** | API Brevo |
-| **Tests** | JUnit 5, MockMvc, AssertJ, `@DataJpaTest` (approche TDD) |
-| **DevOps** | Docker (builds multi-étapes), Docker Compose, Nginx, Git |
+| **Tests** | JUnit 5, MockMvc, AssertJ, `@DataJpaTest`, MockRestServiceServer |
+| **DevOps** | Docker (builds multi-étapes), Docker Compose, Nginx, Render, Vercel, Git |
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    U[Navigateur] -->|HTTPS| F[Frontend React<br/>Vite + Tailwind]
-    F -->|API REST + JWT| B[Backend Spring Boot]
-    B -->|JPA| D[(PostgreSQL)]
+    U[Navigateur] -->|HTTPS| F[Frontend React<br/>Vercel]
+    F -->|API REST + JWT| B[Backend Spring Boot<br/>Render · Docker]
+    B -->|JPA · Flyway| D[(PostgreSQL<br/>Neon)]
     B -->|API HTTP| M[Brevo<br/>emails]
 ```
 
@@ -98,13 +123,12 @@ Le backend suit une **architecture en couches**, organisée **par fonctionnalit�
 
 ```
 Controller  →  Service  →  Repository  →  Base de données
-(routes HTTP)  (règles métier) (accès aux données)
+(routes HTTP)  (règles métier, droits)  (accès aux données)
 ```
 
-- Les **controllers** reçoivent les requêtes et valident les données (`@Valid`).
-- Les **services** appliquent les règles métier et les droits d'accès.
 - Les **DTO** (records Java) définissent ce que l'API expose : les entités ne sont jamais renvoyées directement.
-- Un **gestionnaire global d'erreurs** renvoie des réponses JSON claires avec le bon code HTTP.
+- **Toutes les requêtes sont filtrées par entreprise** dans les services : c'est la base du multi-entreprise.
+- Un **gestionnaire global d'erreurs** renvoie des réponses JSON claires avec le bon code HTTP (400, 401, 402, 403, 404, 409).
 
 ## Rôles et permissions
 
@@ -112,13 +136,12 @@ Controller  →  Service  →  Repository  →  Base de données
 |---|:---:|:---:|:---:|
 | Voir les projets | Tous | Tous | Ceux dont il est membre |
 | Créer un projet | ✅ | ✅ | ❌ |
-| Modifier ou supprimer un projet | Tous | Les siens | ❌ |
-| Ajouter ou supprimer des dépenses | Tous | Les siens | ❌ |
-| Changer le statut d'un projet | ✅ | Les siens | Ceux dont il est membre |
-| Envoyer et lire ses messages | ✅ | ✅ | ✅ |
-| Changer le rôle d'un utilisateur | ✅ | ❌ | ❌ |
-
-Le premier compte créé devient automatiquement **administrateur**.
+| Modifier ou supprimer un projet, gérer les dépenses | Tous | Les siens | ❌ |
+| Créer et déplacer des tâches | ✅ | Projets dont il fait partie | Projets dont il est membre |
+| Modifier ou supprimer une tâche | ✅ | Ses projets et ses tâches | Ses tâches |
+| Messagerie | ✅ | ✅ | ✅ |
+| Inviter des membres, changer les rôles | ✅ | ❌ | ❌ |
+| Gérer l'entreprise et l'abonnement | ✅ | ❌ | ❌ |
 
 ## API REST
 
@@ -129,38 +152,38 @@ Toutes les routes, sauf `/api/auth/**` et `/api/health`, nécessitent l'en-tête
 
 | Méthode | Route | Description |
 |---|---|---|
-| POST | `/api/auth/register` | Créer un compte |
-| POST | `/api/auth/login` | Se connecter et recevoir un jeton JWT |
+| POST | `/api/auth/register` | Créer une entreprise et son administrateur |
+| POST | `/api/auth/login` | Se connecter |
 | POST | `/api/auth/forgot-password` | Demander un lien de réinitialisation |
 | POST | `/api/auth/reset-password` | Choisir un nouveau mot de passe |
+| GET | `/api/auth/invitations/{token}` | Informations d'une invitation (public) |
+| POST | `/api/auth/accept-invitation` | Créer son compte à partir d'une invitation |
 | GET | `/api/users/me` | Profil de l'utilisateur connecté |
-| GET | `/api/users` | Liste des utilisateurs |
+| GET | `/api/users` | Membres de l'entreprise |
 | PATCH | `/api/users/{id}/role` | Changer un rôle (administrateur) |
-| GET | `/api/projects` | Projets visibles par l'utilisateur |
-| GET | `/api/projects/{id}` | Détail d'un projet et résumé budgétaire |
-| POST | `/api/projects` | Créer un projet |
-| PUT | `/api/projects/{id}` | Modifier un projet |
+| GET / POST / DELETE | `/api/invitations` | Invitations (administrateur) |
+| GET / POST | `/api/projects` | Projets visibles, création |
+| GET / PUT / DELETE | `/api/projects/{id}` | Détail, modification, suppression |
 | PATCH | `/api/projects/{id}/status` | Changer le statut |
-| DELETE | `/api/projects/{id}` | Supprimer un projet et ses dépenses |
-| GET | `/api/projects/{id}/expenses` | Dépenses d'un projet |
-| POST | `/api/projects/{id}/expenses` | Ajouter une dépense |
+| GET / POST | `/api/projects/{id}/expenses` | Dépenses d'un projet |
 | DELETE | `/api/expenses/{id}` | Supprimer une dépense |
-| GET | `/api/messages/inbox` | Messages reçus |
-| GET | `/api/messages/sent` | Messages envoyés |
-| GET | `/api/messages/unread-count` | Nombre de messages non lus |
-| GET | `/api/messages/{id}` | Lire un message |
-| POST | `/api/messages` | Envoyer un message |
-| PATCH | `/api/messages/{id}/read` | Marquer un message comme lu |
-| GET | `/api/dashboard` | Statistiques du tableau de bord |
+| GET / POST | `/api/projects/{id}/tasks` | Tâches d'un projet |
+| GET | `/api/tasks/mine` | Mes tâches |
+| PUT / DELETE | `/api/tasks/{id}` | Modifier, supprimer une tâche |
+| PATCH | `/api/tasks/{id}/move` | Déplacer une tâche (colonne et position) |
+| GET / POST | `/api/messages` | Messages reçus (`/inbox`), envoyés (`/sent`), envoi |
+| PATCH | `/api/messages/{id}/read` | Marquer comme lu |
+| GET | `/api/dashboard` | Statistiques et données des graphiques |
+| GET / PUT | `/api/organization` | Entreprise et utilisation (administrateur) |
+| POST / DELETE | `/api/organization/subscription` | Passer en Pro, revenir en Gratuit |
 | GET | `/api/health` | État de l'API (public) |
 
-Exemple d'erreur de validation :
+Exemple de limite d'offre atteinte :
 
 ```json
 {
-  "status": 400,
-  "message": "Données invalides",
-  "errors": { "email": "Email invalide", "password": "Le mot de passe doit contenir au moins 8 caractères" }
+  "status": 402,
+  "message": "L'offre Gratuite est limitée à 3 projets. Passez à l'offre Pro pour en créer davantage."
 }
 ```
 
@@ -168,7 +191,7 @@ Exemple d'erreur de validation :
 
 ## Installation en local
 
-**Prérequis :** Java 21 et Node.js 20 ou plus récent. Maven et PostgreSQL ne sont pas nécessaires : le projet inclut le Maven Wrapper et utilise une base H2 en mémoire en développement.
+**Prérequis :** Java 21 et Node.js 20 ou plus récent. Maven et PostgreSQL ne sont pas nécessaires : le projet inclut le Maven Wrapper et utilise une base H2 en mémoire en développement. Flyway crée les tables au démarrage.
 
 ```bash
 git clone https://github.com/TAGUE-GITH/DevManager.git
@@ -182,7 +205,7 @@ cd backend
 ./mvnw spring-boot:run
 ```
 
-Sous Windows, utilisez `mvnw.cmd spring-boot:run`.
+Sous Windows : `mvnw.cmd spring-boot:run`.
 
 **2. Frontend** (http://localhost:5173), dans un second terminal :
 
@@ -192,55 +215,55 @@ npm install
 npm run dev
 ```
 
-Ouvrez http://localhost:5173 et créez un compte : le premier sera administrateur.
+Ouvrez http://localhost:5173 et créez votre entreprise.
 
-> En développement, le lien « mot de passe oublié » s'affiche dans la console du backend si aucune clé Brevo n'est configurée.
+> En développement, sans clé Brevo, les emails (invitations, mot de passe oublié) s'affichent dans la console du backend.
 
 ## Variables d'environnement
 
-Aucun secret n'est écrit dans le code : tout passe par des variables d'environnement.
+Aucun secret n'est écrit dans le code.
 
 **Backend**
 
 | Variable | Description | Valeur par défaut |
 |---|---|---|
 | `SPRING_PROFILES_ACTIVE` | `dev` (H2) ou `prod` (PostgreSQL) | `dev` |
-| `DATABASE_URL` | URL JDBC PostgreSQL, ex. `jdbc:postgresql://hote:5432/base` | (profil prod) |
-| `DATABASE_USERNAME` | Utilisateur PostgreSQL | (profil prod) |
-| `DATABASE_PASSWORD` | Mot de passe PostgreSQL | (profil prod) |
+| `DATABASE_URL` | URL JDBC, ex. `jdbc:postgresql://hote/base?sslmode=require` | (profil prod) |
+| `DATABASE_USERNAME` / `DATABASE_PASSWORD` | Identifiants PostgreSQL | (profil prod) |
 | `JWT_SECRET` | Clé de signature des jetons (32 caractères minimum) | clé de développement |
 | `JWT_EXPIRATION_MS` | Durée de validité d'un jeton | `86400000` (24 h) |
-| `FRONTEND_URL` | URL du frontend (CORS et liens envoyés par email) | `http://localhost:5173` |
-| `BREVO_API_KEY` | Clé API Brevo pour l'envoi d'emails | vide (lien dans les logs) |
-| `MAIL_SENDER_EMAIL` | Adresse d'expédition, vérifiée dans Brevo | `no-reply@devmanager.local` |
-| `PORT` | Port HTTP | `8080` |
+| `FRONTEND_URL` | URL du frontend (CORS et liens des emails) | `http://localhost:5173` |
+| `BREVO_API_KEY` | Clé API Brevo | vide (emails dans les logs) |
+| `MAIL_SENDER_EMAIL` | Adresse d'expédition vérifiée dans Brevo | `no-reply@devmanager.local` |
 
 **Frontend**
 
 | Variable | Description |
 |---|---|
-| `VITE_API_URL` | URL du backend en production. Laisser vide en développement : Vite redirige `/api` vers le backend. |
+| `VITE_API_URL` | URL du backend en production. Vide en développement : Vite redirige `/api` vers le backend. |
 
 ## Tests
 
-Le backend compte **34 tests automatisés** :
+Le backend compte **56 tests automatisés** :
 
 ```bash
 cd backend
 ./mvnw test
 ```
 
-| Type | Ce qui est testé |
+| Domaine | Ce qui est testé |
 |---|---|
-| **Intégration** (MockMvc) | Inscription, connexion, routes protégées, réinitialisation du mot de passe, droits par rôle sur les projets et les dépenses, confidentialité des messages, tableau de bord |
-| **Repository** (`@DataJpaTest`) | Requêtes personnalisées : total des dépenses, messages non lus |
-| **Unitaires** | Génération et validation des jetons JWT (valide, expiré, mauvaise signature), envoi d'emails avec un faux serveur Brevo |
+| **Authentification** | Inscription d'entreprise, connexion, routes protégées, mot de passe oublié, jetons JWT |
+| **Multi-entreprise** | Isolation stricte des projets, membres et messages entre deux entreprises |
+| **Invitations** | Rôle attribué, invitation à usage unique, annulation, réservée aux administrateurs |
+| **Projets, budget, tâches** | Droits par rôle, calculs budgétaires, assignation, réorganisation du Kanban, suppression en cascade |
+| **Tableau de bord** | Regroupement des dépenses par mois et par catégorie, tâches en retard |
+| **Offres** | Limites de l'offre Gratuite, passage en Pro, résiliation |
+| **Emails** | Contenu des emails, échappement HTML, appel à Brevo simulé |
 
-Côté frontend, le code est vérifié avec le linter **oxlint** (`npm run lint`).
+Les tests tournent sur H2 avec les **mêmes migrations Flyway** qu'en production, et Hibernate vérifie que le schéma correspond aux entités. Côté frontend, le code est vérifié par **oxlint** (`npm run lint`).
 
 ## Docker
-
-Toute l'application (PostgreSQL, backend, frontend) démarre avec une seule commande :
 
 ```bash
 docker compose up --build
@@ -248,44 +271,65 @@ docker compose up --build
 
 Puis ouvrez http://localhost:3000. Pour personnaliser les secrets, copiez `.env.example` en `.env`.
 
-- **Backend** : build multi-étapes (JDK pour compiler, JRE seul dans l'image finale), exécuté avec un utilisateur non-root.
-- **Frontend** : application React compilée puis servie par **Nginx**, qui transmet aussi les appels `/api` au backend.
-- **Base de données** : le backend attend que PostgreSQL soit prêt grâce à un healthcheck.
+- **Backend** : build multi-étapes (JDK pour compiler, JRE seul dans l'image finale), utilisateur non-root.
+- **Frontend** : application compilée et servie par **Nginx**, qui transmet aussi les appels `/api` au backend.
+- **PostgreSQL** : le backend attend que la base soit prête grâce à un healthcheck.
+
+## Déploiement
+
+| Service | Rôle | Configuration |
+|---|---|---|
+| **Vercel** | Frontend | [`frontend/vercel.json`](frontend/vercel.json) |
+| **Render** | Backend (image Docker) | [`render.yaml`](render.yaml) (Blueprint) |
+| **Neon** | PostgreSQL | Connexion SSL |
+| **Brevo** | Emails transactionnels | API HTTP |
+
+Chaque `git push` sur `main` redéploie automatiquement le frontend et le backend. Les évolutions de la base sont appliquées par Flyway au démarrage, sans perte de données.
 
 ## Structure du projet
 
 ```
 DevManager/
-├── backend/                     API REST Spring Boot
-│   └── src/main/java/com/devmanager/
-│       ├── auth/                Inscription, connexion, mot de passe oublié, emails
-│       ├── security/            JWT, filtre d'authentification, configuration Spring Security
-│       ├── user/                Utilisateurs et rôles
-│       ├── project/             Projets
-│       ├── budget/              Dépenses
-│       ├── message/             Messagerie
-│       ├── dashboard/           Statistiques
-│       └── common/              Gestion des erreurs, santé de l'API
-├── frontend/                    Application React
+├── backend/                       API REST Spring Boot
+│   └── src/main/
+│       ├── java/com/devmanager/
+│       │   ├── auth/              Inscription, connexion, mot de passe oublié
+│       │   ├── organization/      Entreprises, offres, paiements
+│       │   ├── invitation/        Invitations par email
+│       │   ├── security/          JWT, filtre d'authentification, configuration
+│       │   ├── user/              Utilisateurs et rôles
+│       │   ├── project/           Projets
+│       │   ├── task/              Tâches Kanban
+│       │   ├── budget/            Dépenses
+│       │   ├── message/           Messagerie
+│       │   ├── dashboard/         Statistiques
+│       │   ├── mail/              Envoi d'emails (Brevo ou logs)
+│       │   └── common/            Erreurs, santé de l'API
+│       └── resources/db/migration Migrations Flyway (V1, V2, V3)
+├── frontend/                      Application React
 │   └── src/
-│       ├── api/                 Client Axios et appels à l'API
-│       ├── context/             État d'authentification
-│       ├── hooks/               Hooks personnalisés (chargement des données)
-│       ├── components/          Composants réutilisables (UI, mise en page, formulaires)
-│       ├── pages/               Pages de l'application
-│       └── utils/               Formatage (FCFA, dates) et règles d'affichage
-└── docker-compose.yml
+│       ├── api/                   Client Axios et appels à l'API
+│       ├── components/            UI, mise en page, Kanban, graphiques, formulaires
+│       ├── context/               État d'authentification
+│       ├── hooks/                 Chargement des données
+│       ├── pages/                 Pages (chargées à la demande)
+│       └── utils/                 Formatage (FCFA, dates), couleurs, règles d'affichage
+├── docs/screenshots/              Captures d'écran
+├── docker-compose.yml
+└── render.yaml
 ```
 
 ## Choix techniques
 
-- **JWT sans session** : l'API est sans état (*stateless*), ce qui facilite le déploiement et la montée en charge.
-- **`BigDecimal` pour les montants** : aucune erreur d'arrondi, contrairement à `double`.
-- **Réinitialisation de mot de passe sécurisée** : la réponse est identique que l'email existe ou non, ce qui empêche de deviner les comptes existants. Le jeton expire et ne sert qu'une fois.
-- **Envoi d'emails derrière une interface** (`PasswordResetNotifier`) : on change de fournisseur sans toucher à la logique métier. Brevo passe par une API HTTP, car beaucoup d'hébergeurs gratuits bloquent le SMTP.
+- **Multi-entreprise par filtrage applicatif** : chaque requête est limitée à l'entreprise de l'utilisateur, et une ressource d'une autre entreprise répond « introuvable » (404) pour ne rien révéler. Des tests vérifient cette isolation.
+- **Flyway plutôt que `ddl-auto=update`** : le schéma est versionné dans Git, identique en test et en production, et Hibernate ne fait que le valider.
+- **JWT sans session** : API sans état, simple à déployer et à faire monter en charge.
+- **`BigDecimal` pour les montants** : aucune erreur d'arrondi.
+- **Emails derrière une interface** (`Mailer`) : on change de fournisseur sans toucher au métier. Brevo passe par une API HTTP, car les hébergeurs gratuits bloquent souvent le SMTP.
+- **Paiement prêt pour un vrai prestataire** : le paiement simulé peut être remplacé par NotchPay, CinetPay ou Flutterwave (Mobile Money), sans changer les limites ni l'historique.
 - **Droits vérifiés côté serveur** : l'interface masque les actions interdites, mais c'est le backend qui fait foi.
-- **Profils Spring** : H2 en développement (aucune installation), PostgreSQL en production.
-- **Accessibilité** : champs étiquetés, erreurs reliées aux champs, dépassement de budget signalé par une icône et un texte, et pas seulement par la couleur.
+- **Performance** : pages chargées à la demande (*code splitting*). La page d'accueil ne télécharge pas les graphiques.
+- **Accessibilité** : glisser-déposer au clavier, vue tableau des graphiques, palette validée pour les daltoniens, alertes avec icône et texte, respect du réglage « réduire les animations ».
 
 ## Auteur
 
