@@ -14,16 +14,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AuthControllerTest extends IntegrationTest {
 
 	@Test
-	void register_createsAccount_andFirstUserIsAdmin() throws Exception {
+	void register_createsCompany_withCreatorAsAdmin() throws Exception {
 		register("alice@devmanager.com", "password123")
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.token").isNotEmpty())
 				.andExpect(jsonPath("$.user.email").value("alice@devmanager.com"))
 				.andExpect(jsonPath("$.user.role").value("ADMIN"))
+				.andExpect(jsonPath("$.user.organizationName").value("Martin SARL"))
 				.andExpect(jsonPath("$.user.password").doesNotExist());
 
+		// Chaque inscription cree une nouvelle entreprise, dont le createur est administrateur
 		register("bob@devmanager.com", "password123")
-				.andExpect(jsonPath("$.user.role").value("EMPLOYEE"));
+				.andExpect(jsonPath("$.user.role").value("ADMIN"));
 	}
 
 	@Test
@@ -111,7 +113,7 @@ class AuthControllerTest extends IntegrationTest {
 		return mockMvc.perform(post("/api/auth/register")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("""
-						{"firstName":"Alice","lastName":"Martin","email":"%s","password":"%s"}
+						{"companyName":"Martin SARL","firstName":"Alice","lastName":"Martin","email":"%s","password":"%s"}
 						""".formatted(email, password)));
 	}
 

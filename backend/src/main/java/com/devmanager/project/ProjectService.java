@@ -35,8 +35,8 @@ public class ProjectService {
 	public List<ProjectResponse> findVisible() {
 		User user = currentUser.get();
 		List<Project> projects = canSeeAll(user)
-				? projectRepository.findAllByOrderByIdDesc()
-				: projectRepository.findVisibleBy(user.getId());
+				? projectRepository.findByOrganizationIdOrderByIdDesc(organizationId(user))
+				: projectRepository.findVisibleBy(organizationId(user), user.getId());
 		return projects.stream().map(this::toResponse).toList();
 	}
 
@@ -46,15 +46,16 @@ public class ProjectService {
 
 	@Transactional
 	public ProjectResponse create(ProjectRequest request) {
-		Project project = Project.builder().owner(currentUser.get()).build();
-		apply(project, request);
+		User user = currentUser.get();
+		Project project = Project.builder().owner(user).organization(user.getOrganization()).build();
+		apply(project, request, user);
 		return toResponse(projectRepository.save(project));
 	}
 
 	@Transactional
 	public ProjectResponse update(Long id, ProjectRequest request) {
 		Project project = getManageableProject(id);
-		apply(project, request);
+		apply(project, request, currentUser.get());
 		return toResponse(project);
 	}
 
@@ -77,9 +78,10 @@ public class ProjectService {
 	}
 
 	public Project getVisibleProject(Long id) {
-		Project project = projectRepository.findById(id)
-				.orElseThrow(() -> ApiException.notFound("Projet introuvable"));
 		User user = currentUser.get();
+		// Un projet d'une autre entreprise est introuvable, comme s'il n'existait pas
+		Project project = projectRepository.findByIdAndOrganizationId(id, organizationId(user))
+				.orElseThrow(() -> ApiException.notFound("Projet introuvable"));
 		if (!canSeeAll(user) && !isOwner(user, project) && !isMember(user, project)) {
 			throw ApiException.forbidden("Vous n'avez pas accès à ce projet");
 		}
@@ -94,7 +96,7 @@ public class ProjectService {
 		return project;
 	}
 
-	private void apply(Project project, ProjectRequest request) {
+	private void apply(Project project, ProjectRequest request, User user) {
 		if (request.startDate() != null && request.endDate() != null
 				&& request.endDate().isBefore(request.startDate())) {
 			throw ApiException.badRequest("La date de fin doit être après la date de début");
@@ -104,14 +106,17 @@ public class ProjectService {
 		project.setBudget(request.budget());
 		project.setStartDate(request.startDate());
 		project.setEndDate(request.endDate());
-		project.setMembers(findMembers(request.memberIds()));
+		project.setMembers(findMembers(request.memberIds(), organizationId(user)));
 	}
 
-	private Set<User> findMembers(Set<Long> memberIds) {
+	private Set<User> findMembers(Set<Long> memberIds, Long organizationId) {
 		if (memberIds == null || memberIds.isEmpty()) {
 			return new HashSet<>();
 		}
-		List<User> members = userRepository.findAllById(memberIds);
+		// Seuls les utilisateurs de la meme entreprise peuvent etre membres
+		List<User> members = userRepository.findAllById(memberIds).stream()
+				.filter(member -> member.getOrganization().getId().equals(organizationId))
+				.toList();
 		if (members.size() != memberIds.size()) {
 			throw ApiException.badRequest("Un ou plusieurs membres sont introuvables");
 		}
@@ -146,6 +151,10 @@ public class ProjectService {
 			return spent.signum() > 0 ? 100 : 0;
 		}
 		return spent.multiply(BigDecimal.valueOf(100)).divide(budget, 0, RoundingMode.HALF_UP).intValue();
+	}
+
+	private Long organizationId(User user) {
+		return user.getOrganization().getId();
 	}
 
 	private boolean canSeeAll(User user) {

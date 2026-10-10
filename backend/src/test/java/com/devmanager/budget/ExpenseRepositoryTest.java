@@ -1,5 +1,7 @@
 package com.devmanager.budget;
 
+import com.devmanager.organization.Organization;
+import com.devmanager.organization.OrganizationRepository;
 import com.devmanager.project.Project;
 import com.devmanager.project.ProjectRepository;
 import com.devmanager.user.Role;
@@ -19,6 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ExpenseRepositoryTest {
 
 	@Autowired
+	private OrganizationRepository organizationRepository;
+
+	@Autowired
 	private UserRepository userRepository;
 
 	@Autowired
@@ -31,13 +36,14 @@ class ExpenseRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
+		Organization organization = organizationRepository.save(Organization.builder().name("Entreprise").build());
 		User owner = userRepository.save(User.builder()
 				.firstName("Alice").lastName("Martin")
 				.email("alice@devmanager.com").password("secret")
-				.role(Role.MANAGER).build());
+				.role(Role.MANAGER).organization(organization).build());
 		project = projectRepository.save(Project.builder()
 				.name("Site vitrine").budget(new BigDecimal("10000"))
-				.owner(owner).build());
+				.owner(owner).organization(organization).build());
 	}
 
 	@Test
