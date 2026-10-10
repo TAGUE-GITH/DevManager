@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.util.List;
 import java.util.Map;
@@ -41,9 +42,13 @@ public class BrevoMailer implements Mailer {
 					.retrieve()
 					.toBodilessEntity();
 			log.info("Email « {} » envoyé à {}", subject, to);
+		} catch (RestClientResponseException e) {
+			// Brevo a repondu par une erreur : on journalise son code et son message, sans trace technique
+			log.error("Échec de l'envoi de l'email « {} » à {} : Brevo a répondu {} {}",
+					subject, to, e.getStatusCode().value(), e.getResponseBodyAsString());
 		} catch (RestClientException e) {
-			// Un echec d'envoi ne doit pas faire echouer la requete de l'utilisateur
-			log.error("Échec de l'envoi de l'email « {} » à {}", subject, to, e);
+			// Brevo injoignable (reseau...). Un echec d'envoi ne doit pas faire echouer la requete de l'utilisateur
+			log.error("Échec de l'envoi de l'email « {} » à {} : {}", subject, to, e.getMessage());
 		}
 	}
 }
