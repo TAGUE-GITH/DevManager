@@ -1,0 +1,33 @@
+# Configuration Render (Blueprint) : deploie le backend a partir de son Dockerfile
+services:
+  - type: web
+    name: devmanager-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    healthCheckPath: /api/health
+    # Ne redeploie que si le backend change
+    buildFilter:
+      paths:
+        - backend/**
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      # Cle JWT aleatoire generee par Render
+      - key: JWT_SECRET
+        generateValue: true
+      # Valeurs secretes : saisies dans le tableau de bord Render, jamais dans Git
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_USERNAME
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: MAIL_SENDER_EMAIL
+        sync: false
