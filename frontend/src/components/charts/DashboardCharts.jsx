@@ -1,10 +1,14 @@
 import { AlertTriangle } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, LabelList, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { CHROME, SERIES } from '../../utils/chartColors'
+import { prefersReducedMotion } from '../../utils/motion'
 import { EXPENSE_CATEGORY, TASK_STATUS, formatCompact, formatCurrency, formatMonth } from '../../utils/format'
 import ChartCard from './ChartCard'
 
 const AXIS_TICK = { fill: CHROME.muted, fontSize: 12 }
+
+// Pas d'animation d'entree des barres si l'utilisateur a demande a reduire les animations
+const ANIMATE = !prefersReducedMotion()
 
 // Infobulle commune : textes en encre neutre, la pastille de couleur porte l'identite de la serie
 function ChartTooltip({ active, payload, label, labelFormatter = (value) => value }) {
@@ -74,10 +78,10 @@ export function BudgetByProjectChart({ projects, className }) {
             />
             <Tooltip content={<ChartTooltip />} cursor={{ fill: '#f1f5f9' }} />
             <Legend verticalAlign="top" align="left" iconType="square" iconSize={10} wrapperStyle={{ fontSize: 13, paddingBottom: 12 }} />
-            <Bar dataKey="budget" name="Budget" fill={SERIES[0]} barSize={12} radius={[0, 4, 4, 0]}>
+            <Bar dataKey="budget" name="Budget" fill={SERIES[0]} isAnimationActive={ANIMATE} barSize={12} radius={[0, 4, 4, 0]}>
               <LabelList dataKey="budget" position="right" formatter={formatCompact} style={{ fill: CHROME.text, fontSize: 11 }} />
             </Bar>
-            <Bar dataKey="spent" name="Dépensé" fill={SERIES[1]} barSize={12} radius={[0, 4, 4, 0]}>
+            <Bar dataKey="spent" name="Dépensé" fill={SERIES[1]} isAnimationActive={ANIMATE} barSize={12} radius={[0, 4, 4, 0]}>
               <LabelList dataKey="spent" position="right" formatter={formatCompact} style={{ fill: CHROME.text, fontSize: 11 }} />
             </Bar>
           </BarChart>
@@ -172,7 +176,7 @@ export function MonthlyExpensesChart({ monthlyExpenses, className }) {
               content={<ChartTooltip labelFormatter={(month) => formatMonth(month, true)} />}
               cursor={{ fill: '#f1f5f9' }}
             />
-            <Bar dataKey="amount" name="Dépenses" fill={SERIES[0]} maxBarSize={40} radius={[4, 4, 0, 0]}>
+            <Bar dataKey="amount" name="Dépenses" fill={SERIES[0]} isAnimationActive={ANIMATE} maxBarSize={40} radius={[4, 4, 0, 0]}>
               <LabelList
                 dataKey="amount"
                 position="top"
