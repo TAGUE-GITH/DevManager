@@ -1,7 +1,8 @@
 import { Check, Copy, Mail, Trash2, UserPlus } from 'lucide-react'
 import { useCallback, useState } from 'react'
-import { getErrorMessage, getFieldErrors } from '../api/client'
+import { getErrorMessage, getFieldErrors, isPlanLimitError } from '../api/client'
 import { invitationsApi, usersApi } from '../api/resources'
+import PlanLimitAlert from '../components/PlanLimitAlert'
 import Alert from '../components/ui/Alert'
 import Avatar from '../components/ui/Avatar'
 import Button from '../components/ui/Button'
@@ -19,6 +20,7 @@ const ROLE_OPTIONS = Object.entries(ROLE).map(([value, label]) => ({ value, labe
 function InviteForm({ onInvited }) {
   const [form, setForm] = useState({ email: '', role: 'EMPLOYEE' })
   const [error, setError] = useState('')
+  const [limitError, setLimitError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
   const [sending, setSending] = useState(false)
 
@@ -27,6 +29,7 @@ function InviteForm({ onInvited }) {
   const handleSubmit = async (event) => {
     event.preventDefault()
     setError('')
+    setLimitError('')
     setFieldErrors({})
     setSending(true)
     try {
@@ -34,6 +37,10 @@ function InviteForm({ onInvited }) {
       setForm({ email: '', role: form.role })
       onInvited(invitation)
     } catch (err) {
+      if (isPlanLimitError(err)) {
+        setLimitError(getErrorMessage(err))
+        return
+      }
       setError(getErrorMessage(err))
       setFieldErrors(getFieldErrors(err))
     } finally {
@@ -50,6 +57,7 @@ function InviteForm({ onInvited }) {
       <p className="mt-1 text-sm text-slate-500">La personne reçoit un email avec un lien pour créer son compte.</p>
       <form onSubmit={handleSubmit} className="mt-5 space-y-4" noValidate>
         <Alert>{error}</Alert>
+        {limitError && <PlanLimitAlert message={limitError} />}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_12rem_auto] sm:items-start">
           <Input
             label="Email"

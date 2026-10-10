@@ -48,3 +48,10 @@ export const tasksApi = {
   move: (id, status, position) => api.patch(`/tasks/${id}/move`, { status, position }).then(data),
   remove: (id) => api.delete(`/tasks/${id}`),
 }
+
+export const organizationApi = {
+  get: () => api.get('/organization').then(data),
+  rename: (name) => api.put('/organization', { name }).then(data),
+  subscribe: (method) => api.post('/organization/subscription', { method }).then(data),
+  cancel: () => api.delete('/organization/subscription').then(data),
+}

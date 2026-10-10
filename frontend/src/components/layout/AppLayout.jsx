@@ -1,4 +1,4 @@
-import { FolderKanban, LayoutDashboard, ListTodo, LogOut, Menu, MessageSquare, Users, X } from 'lucide-react'
+import { Building2, FolderKanban, LayoutDashboard, ListTodo, LogOut, Menu, MessageSquare, Users, X } from 'lucide-react'
 import { Suspense, useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { messagesApi } from '../../api/resources'
@@ -15,7 +15,12 @@ function Navigation({ unread, isAdmin, onNavigate }) {
     { to: '/app/projects', label: 'Projets', Icon: FolderKanban },
     { to: '/app/tasks', label: 'Mes tâches', Icon: ListTodo },
     { to: '/app/messages', label: 'Messagerie', Icon: MessageSquare, count: unread },
-    ...(isAdmin ? [{ to: '/app/users', label: 'Équipe', Icon: Users }] : []),
+    ...(isAdmin
+      ? [
+          { to: '/app/users', label: 'Équipe', Icon: Users },
+          { to: '/app/settings', label: 'Entreprise', Icon: Building2 },
+        ]
+      : []),
   ]
 
   return (
@@ -88,8 +93,13 @@ export default function AppLayout() {
       <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white p-4 lg:flex lg:fixed lg:inset-y-0">
         <div className="mb-8 px-2 pt-2">
           <Logo to="/app" />
-          <p className="mt-3 truncate rounded-md bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-600" title={user.organizationName}>
-            {user.organizationName}
+          <p className="mt-3 flex items-center gap-2 rounded-md bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-600">
+            <span className="truncate" title={user.organizationName}>
+              {user.organizationName}
+            </span>
+            {user.organizationPlan === 'PRO' && (
+              <span className="ml-auto rounded bg-indigo-600 px-1.5 py-0.5 text-[10px] font-bold text-white">PRO</span>
+            )}
           </p>
         </div>
         <div className="flex-1">

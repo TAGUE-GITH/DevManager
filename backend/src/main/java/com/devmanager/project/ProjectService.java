@@ -2,6 +2,7 @@ package com.devmanager.project;
 
 import com.devmanager.budget.ExpenseRepository;
 import com.devmanager.common.ApiException;
+import com.devmanager.organization.OrganizationService;
 import com.devmanager.project.ProjectDtos.ProjectRequest;
 import com.devmanager.project.ProjectDtos.ProjectResponse;
 import com.devmanager.task.TaskRepository;
@@ -34,6 +35,7 @@ public class ProjectService {
 	private final TaskRepository taskRepository;
 	private final UserRepository userRepository;
 	private final CurrentUser currentUser;
+	private final OrganizationService organizationService;
 
 	public List<ProjectResponse> findVisible() {
 		User user = currentUser.get();
@@ -50,6 +52,7 @@ public class ProjectService {
 	@Transactional
 	public ProjectResponse create(ProjectRequest request) {
 		User user = currentUser.get();
+		organizationService.checkCanCreateProject(user.getOrganization());
 		Project project = Project.builder().owner(user).organization(user.getOrganization()).build();
 		apply(project, request, user);
 		return toResponse(projectRepository.save(project));

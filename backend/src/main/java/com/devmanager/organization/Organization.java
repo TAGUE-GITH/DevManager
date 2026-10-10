@@ -25,4 +25,12 @@ public class Organization {
 	@Column(nullable = false)
 	@Builder.Default
 	private LocalDateTime createdAt = LocalDateTime.now();
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	@Builder.Default
+	private Plan plan = Plan.FREE;
+
+	// Fin de la periode payee en cours (offre Pro)
+	private LocalDateTime currentPeriodEnd;
 }
