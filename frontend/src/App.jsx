@@ -1,18 +1,22 @@
+import { lazy } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import AppLayout from './components/layout/AppLayout'
-import AcceptInvitationPage from './pages/AcceptInvitationPage'
 import { AdminRoute, ProtectedRoute, PublicOnlyRoute } from './components/RouteGuards'
-import DashboardPage from './pages/DashboardPage'
+import AcceptInvitationPage from './pages/AcceptInvitationPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
-import MessagesPage from './pages/MessagesPage'
-import MyTasksPage from './pages/MyTasksPage'
-import ProjectDetailPage from './pages/ProjectDetailPage'
-import ProjectsPage from './pages/ProjectsPage'
 import RegisterPage from './pages/RegisterPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
-import UsersPage from './pages/UsersPage'
+
+// Pages de l'application chargees a la demande (code splitting) : la page d'accueil publique reste legere,
+// les graphiques et le Kanban ne sont telecharges qu'une fois connecte (voir le Suspense dans AppLayout)
+const DashboardPage = lazy(() => import('./pages/DashboardPage'))
+const ProjectsPage = lazy(() => import('./pages/ProjectsPage'))
+const ProjectDetailPage = lazy(() => import('./pages/ProjectDetailPage'))
+const MyTasksPage = lazy(() => import('./pages/MyTasksPage'))
+const MessagesPage = lazy(() => import('./pages/MessagesPage'))
+const UsersPage = lazy(() => import('./pages/UsersPage'))
 
 export default function App() {
   return (

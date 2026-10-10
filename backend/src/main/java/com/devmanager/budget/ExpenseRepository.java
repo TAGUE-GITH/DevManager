@@ -5,11 +5,14 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
 	List<Expense> findByProjectIdOrderByDateDesc(Long projectId);
+
+	List<Expense> findByProjectIdIn(Collection<Long> projectIds);
 
 	// Total des depenses d'un projet (0 s'il n'y en a aucune)
 	@Query("select coalesce(sum(e.amount), 0) from Expense e where e.project.id = :projectId")

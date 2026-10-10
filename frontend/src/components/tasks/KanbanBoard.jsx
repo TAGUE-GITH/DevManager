@@ -29,12 +29,12 @@ function groupByStatus(tasks) {
 function Column({ status, tasks, canEdit, onOpen, onAdd }) {
   // La colonne entiere accepte les depots, meme vide
   const { setNodeRef, isOver } = useDroppable({ id: status })
-  const { label, dot } = TASK_STATUS[status]
+  const { label, color } = TASK_STATUS[status]
 
   return (
     <section className="flex w-72 shrink-0 flex-col rounded-xl bg-slate-100/80 p-3 xl:w-auto" aria-label={label}>
       <header className="mb-3 flex items-center gap-2 px-1">
-        <span className={`size-2 rounded-full ${dot}`} aria-hidden />
+        <span className="size-2 rounded-full" style={{ backgroundColor: color }} aria-hidden />
         <h3 className="text-sm font-semibold text-slate-700">{label}</h3>
         <span className="rounded-full bg-white px-2 py-0.5 text-xs font-medium text-slate-500">{tasks.length}</span>
         {canEdit && status === 'TODO' && (
