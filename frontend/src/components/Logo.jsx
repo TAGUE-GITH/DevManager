@@ -1,0 +1,10 @@
+export default function Logo({ light = false }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <img src="/favicon.svg" alt="" className="size-8" />
+      <span className={`text-lg font-bold tracking-tight ${light ? 'text-white' : 'text-slate-900'}`}>
+        DevManager
+      </span>
+    </div>
+  )
+}
