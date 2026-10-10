@@ -4,5 +4,5 @@ package com.devmanager.auth;
 // Une interface permet de remplacer facilement l'envoi (log, email, SMS...) sans toucher a AuthService.
 public interface PasswordResetNotifier {
 
-	void sendResetLink(String email, String resetLink);
+	void sendResetLink(String email, String firstName, String resetLink);
 }

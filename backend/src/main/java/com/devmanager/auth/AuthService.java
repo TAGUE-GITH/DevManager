@@ -75,7 +75,7 @@ public class AuthService {
 					.expiresAt(LocalDateTime.now().plusMinutes(resetExpirationMinutes))
 					.build());
 			String link = frontendUrl + "/reset-password?token=" + resetToken.getToken();
-			resetNotifier.sendResetLink(user.getEmail(), link);
+			resetNotifier.sendResetLink(user.getEmail(), user.getFirstName(), link);
 		});
 	}
 
