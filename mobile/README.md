@@ -33,6 +33,8 @@ npx expo start
 
 Scannez le QR code avec l'application **Expo Go** (Android) ou l'appareil photo (iOS). Par défaut, l'application utilise l'API de production : https://devmanager-api.onrender.com.
 
+Pour créer le fichier Android (APK) et publier l'application, suivez le guide [PUBLICATION.md](PUBLICATION.md).
+
 Pour utiliser un backend local, copiez `.env.example` en `.env.local` et indiquez l'adresse IP de votre ordinateur.
 
 ## Structure
