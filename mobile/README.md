@@ -2,6 +2,8 @@
 
 Application Android et iOS de DevManager, construite avec **React Native** et **Expo**. Elle utilise **la même API Spring Boot** que le site web : mêmes comptes, mêmes données, même compte de démonstration.
 
+**📱 Télécharger : [DevManager.apk](https://github.com/TAGUE-GITH/DevManager/releases/latest/download/DevManager.apk)** (Android, version 1.0.0)
+
 ## Fonctionnalités
 
 - Connexion, inscription d'une entreprise, mot de passe oublié et bouton **« Essayer la démo »**

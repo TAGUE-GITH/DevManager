@@ -551,6 +551,10 @@ export default {
       title: 'Voyez par vous-même',
       text: 'Explorez une entreprise fictive déjà remplie : projets, tâches, budgets et messages. Aucune inscription nécessaire.',
     },
+    android: {
+      button: 'Télécharger l’application Android',
+      footer: 'Application Android',
+    },
     footer: {
       author: 'Projet réalisé par TAGUE.',
       links: 'Liens utiles',
