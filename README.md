@@ -6,6 +6,8 @@
 
 **🔗 Démo en ligne : [devmanager-five.vercel.app](https://devmanager-five.vercel.app)** · cliquez sur **« Essayer la démo »** pour explorer une entreprise déjà remplie, sans inscription.
 
+**📱 Application Android : [télécharger DevManager.apk](https://github.com/TAGUE-GITH/DevManager/releases/latest/download/DevManager.apk)** · même compte et mêmes données que le site ([toutes les versions](https://github.com/TAGUE-GITH/DevManager/releases)).
+
 ![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4-6DB33F?logo=springboot&logoColor=white)
 ![Spring Security](https://img.shields.io/badge/Spring%20Security-JWT-6DB33F?logo=springsecurity&logoColor=white)
@@ -13,6 +15,7 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
 ![Flyway](https://img.shields.io/badge/Flyway-migrations-CC0200?logo=flyway&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-compose-2496ED?logo=docker&logoColor=white)
+![React Native](https://img.shields.io/badge/React%20Native-Expo%2057-000020?logo=expo&logoColor=white)
 ![Tests](https://img.shields.io/badge/tests-72%20passing-brightgreen)
 
 ![Tableau de bord](docs/screenshots/02-tableau-de-bord.png)
@@ -312,6 +315,10 @@ Les tests tournent sur H2 avec les **mêmes migrations Flyway** qu'en production
 ## Application mobile
 
 Une application **Android / iOS** en **React Native (Expo)** se trouve dans [`mobile/`](mobile/README.md). Elle utilise **la même API** que le site web (mêmes comptes et mêmes données) : tableau de bord, projets, tâches (changement de statut), réunions vidéo, messagerie, profil, compte de démonstration, français / anglais et thème sombre.
+
+**Télécharger l'application Android :** [DevManager.apk](https://github.com/TAGUE-GITH/DevManager/releases/latest/download/DevManager.apk) (sur le téléphone, autorisez l'installation d'applications inconnues). Le fichier est construit avec **EAS Build** et publié dans les [Releases GitHub](https://github.com/TAGUE-GITH/DevManager/releases) ; le guide [mobile/PUBLICATION.md](mobile/PUBLICATION.md) décrit la construction et la publication sur le Play Store.
+
+Pour la lancer en développement :
 
 ```bash
 cd mobile

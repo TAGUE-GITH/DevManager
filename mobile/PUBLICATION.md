@@ -54,9 +54,9 @@ npx eas-cli@latest build -p android --profile preview
 
 **5. Installer sur un téléphone Android** : ouvrez le lien sur le téléphone, téléchargez le fichier, puis autorisez l'installation (« Installer des applications inconnues » pour le navigateur). L'application utilise le serveur en ligne : mêmes comptes que le site et bouton « Essayer la démo ».
 
-**6. Envoyez-moi le lien** : je l'ajouterai au README et à la page d'accueil du site (« Télécharger l'application Android »).
+**6. Publier un lien permanent** : le lien de téléchargement d'Expo expire (14 jours sur le compte gratuit). Téléchargez l'APK, renommez-le `DevManager.apk`, puis créez une **Release GitHub** (https://github.com/TAGUE-GITH/DevManager/releases/new, tag `v1.0.0`, fichier joint). Le site et le README utilisent le lien permanent https://github.com/TAGUE-GITH/DevManager/releases/latest/download/DevManager.apk, qui pointe toujours vers la dernière Release.
 
-> Après chaque modification de l'application, refaites l'étape 3 pour obtenir un nouvel APK.
+> Après chaque modification de l'application, refaites l'étape 3, puis publiez une nouvelle Release (`v1.0.1`, `v1.1.0`…) avec le fichier `DevManager.apk`.
 
 ---
 

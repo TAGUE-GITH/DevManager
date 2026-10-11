@@ -27,6 +27,9 @@ import { useAuth } from '../context/useAuth'
 import { formatCurrency } from '../utils/format'
 import { useTranslation } from 'react-i18next'
 
+// Application Android : derniere version publiee dans les Releases GitHub (lien permanent)
+const ANDROID_APK_URL = 'https://github.com/TAGUE-GITH/DevManager/releases/latest/download/DevManager.apk'
+
 const NAV_LINKS = [
   { href: '#fonctionnalites', key: 'landing.nav.features' },
   { href: '#securite', key: 'landing.nav.security' },
@@ -199,7 +202,16 @@ function Hero() {
           )}
         </div>
         <div className="mt-5 flex flex-col items-center gap-3">
-          <VideoButton />
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <VideoButton />
+            <a
+              href={ANDROID_APK_URL}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-700 hover:text-indigo-600"
+            >
+              <Smartphone className="size-5" aria-hidden />
+              {t('landing.android.button')}
+            </a>
+          </div>
           <p className="text-sm text-slate-500">{t('landing.hero.note')}</p>
         </div>
       </div>
@@ -452,6 +464,10 @@ function Footer() {
           </Link>
           <a href="https://github.com/TAGUE-GITH/DevManager" target="_blank" rel="noreferrer" className="hover:text-slate-900">
             {t('landing.footer.source')}
+          </a>
+          <a href={ANDROID_APK_URL} className="flex items-center gap-1.5 hover:text-slate-900">
+            <Smartphone className="size-4" aria-hidden />
+            {t('landing.android.footer')}
           </a>
         </nav>
       </div>

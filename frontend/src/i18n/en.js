@@ -537,6 +537,10 @@ export default {
       title: 'See for yourself',
       text: 'Explore a fictitious company already filled with data: projects, tasks, budgets and messages. No sign-up needed.',
     },
+    android: {
+      button: 'Download the Android app',
+      footer: 'Android app',
+    },
     footer: {
       author: 'Project built by TAGUE.',
       links: 'Useful links',
