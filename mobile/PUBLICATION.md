@@ -56,6 +56,8 @@ npx eas-cli@latest build -p android --profile preview
 
 **6. Publier un lien permanent** : le lien de téléchargement d'Expo expire (14 jours sur le compte gratuit). Téléchargez l'APK, renommez-le `DevManager.apk`, puis créez une **Release GitHub** (https://github.com/TAGUE-GITH/DevManager/releases/new, tag `v1.0.0`, fichier joint). Le site et le README utilisent le lien permanent https://github.com/TAGUE-GITH/DevManager/releases/latest/download/DevManager.apk, qui pointe toujours vers la dernière Release.
 
+> L'adresse du serveur est fixée dans `eas.json` (`EXPO_PUBLIC_API_URL`), et `.easignore` empêche l'envoi des réglages locaux (`.env.local`, qui pointe vers `localhost`) à EAS.
+
 > Après chaque modification de l'application, refaites l'étape 3, puis publiez une nouvelle Release (`v1.0.1`, `v1.1.0`…) avec le fichier `DevManager.apk`.
 
 ---
