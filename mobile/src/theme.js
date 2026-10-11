@@ -44,3 +44,40 @@ export function useColors() {
 }
 
 export const radius = { sm: 8, md: 12, lg: 16 }
+
+// Pastilles de statut et de priorite : fond doux + texte fonce (clair en theme sombre)
+const tones = {
+  light: {
+    neutral: { bg: '#f1f5f9', fg: '#334155' },
+    indigo: { bg: '#eef2ff', fg: '#4338ca' },
+    amber: { bg: '#fffbeb', fg: '#b45309' },
+    green: { bg: '#ecfdf5', fg: '#047857' },
+    sky: { bg: '#f0f9ff', fg: '#0369a1' },
+    red: { bg: '#fef2f2', fg: '#b91c1c' },
+  },
+  dark: {
+    neutral: { bg: '#1e293b', fg: '#cbd5e1' },
+    indigo: { bg: '#1e1b4b', fg: '#a5b4fc' },
+    amber: { bg: '#3b2a07', fg: '#fcd34d' },
+    green: { bg: '#052e1f', fg: '#6ee7b7' },
+    sky: { bg: '#082f49', fg: '#7dd3fc' },
+    red: { bg: '#3b1219', fg: '#fca5a5' },
+  },
+}
+
+export const STATUS_TONE = { TODO: 'neutral', IN_PROGRESS: 'indigo', REVIEW: 'amber', DONE: 'green' }
+export const PRIORITY_TONE = { LOW: 'neutral', MEDIUM: 'sky', HIGH: 'red' }
+
+export function useTones() {
+  return useColorScheme() === 'dark' ? tones.dark : tones.light
+}
+
+// Palette des graphiques validee pour les daltoniens, identique au site web (ordre fixe)
+const CHART_SERIES = {
+  light: ['#2a78d6', '#eb6834', '#1baf7a', '#eda100'],
+  dark: ['#3987e5', '#d95926', '#199e70', '#c98500'],
+}
+
+export function useChartSeries() {
+  return CHART_SERIES[useColorScheme() === 'dark' ? 'dark' : 'light']
+}

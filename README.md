@@ -311,7 +311,7 @@ Les tests tournent sur H2 avec les **mêmes migrations Flyway** qu'en production
 
 ## Application mobile
 
-Une application **Android / iOS** en **React Native (Expo)** est en cours de développement dans [`mobile/`](mobile/README.md). Elle utilise **la même API** que le site web (mêmes comptes et mêmes données) : connexion, inscription, compte de démonstration, session sécurisée et choix de la langue sont déjà disponibles.
+Une application **Android / iOS** en **React Native (Expo)** se trouve dans [`mobile/`](mobile/README.md). Elle utilise **la même API** que le site web (mêmes comptes et mêmes données) : tableau de bord, projets, tâches (changement de statut), réunions vidéo, messagerie, profil, compte de démonstration, français / anglais et thème sombre.
 
 ```bash
 cd mobile

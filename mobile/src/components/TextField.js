@@ -2,7 +2,7 @@ import { StyleSheet, Text, TextInput, View } from 'react-native'
 import { radius, useColors } from '../theme'
 
 // Champ de saisie avec libelle et message d'erreur (renvoye par la validation du serveur)
-export default function TextField({ label, error, style, ...inputProps }) {
+export default function TextField({ label, error, style, inputStyle, ...inputProps }) {
   const colors = useColors()
   return (
     <View style={[styles.field, style]}>
@@ -13,6 +13,7 @@ export default function TextField({ label, error, style, ...inputProps }) {
         style={[
           styles.input,
           { color: colors.text, backgroundColor: colors.card, borderColor: error ? colors.danger : colors.inputBorder },
+          inputStyle,
         ]}
         {...inputProps}
       />
