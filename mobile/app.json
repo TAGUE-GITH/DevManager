@@ -44,6 +44,13 @@
       "expo-font"
     ],
     "scheme": "devmanager",
-    "description": "Gestion d’entreprise : projets, budgets, tâches et messagerie (application mobile de DevManager)."
+    "description": "Gestion d’entreprise : projets, budgets, tâches et messagerie (application mobile de DevManager).",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "64918ac5-29de-4ea9-9024-19eb56491ad2"
+      }
+    },
+    "owner": "tague"
   }
 }
