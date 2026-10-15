@@ -111,7 +111,7 @@ function Header() {
     <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
         <Logo />
-        <nav className="hidden items-center gap-8 md:flex" aria-label={t('landing.nav.label')}>
+        <nav className="hidden items-center gap-8 lg:flex" aria-label={t('landing.nav.label')}>
           {NAV_LINKS.map(({ href, key }) => (
             <a key={href} href={href} className="text-sm font-medium text-slate-600 hover:text-slate-900">
               {t(key)}
@@ -121,12 +121,12 @@ function Header() {
             {t('nav.help')}
           </Link>
         </nav>
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           <LanguageSwitcher className="mr-2 w-24" />
           {actions}
         </div>
         <button
-          className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 md:hidden"
+          className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
           onClick={() => setOpen(!open)}
           aria-label={open ? t('nav.closeMenu') : t('nav.openMenu')}
           aria-expanded={open}
@@ -135,7 +135,7 @@ function Header() {
         </button>
       </div>
       {open && (
-        <div className="space-y-1 border-t border-slate-200 bg-white px-4 py-4 md:hidden">
+        <div className="space-y-1 border-t border-slate-200 bg-white px-4 py-4 lg:hidden">
           {NAV_LINKS.map(({ href, key }) => (
             <a
               key={href}
